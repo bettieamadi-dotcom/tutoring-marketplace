@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Become a Tutor | Tutor Pearl</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 30px 16px;
+      background: #211038;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      max-width: 650px;
+      margin: 30px auto;
+      padding: 30px;
+      background: #30164A;
+      border-radius: 16px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #E7DBFF;
+    }
+
+    p {
+      text-align: center;
+      color: #D8CDE5;
+      line-height: 1.6;
+    }
+
+    label {
+      display: block;
+      margin-top: 18px;
+      margin-bottom: 7px;
+      font-weight: bold;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #C8A8FF;
+      border-radius: 8px;
+      background: #ffffff;
+      color: #211038;
+      font-size: 15px;
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 25px;
+      padding: 15px;
+      border: none;
+      border-radius: 8px;
+      background: #C8A8FF;
+      color: #211038;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    #message {
+      margin-top: 18px;
+      text-align: center;
+    }
+
+    a {
+      color: #E7DBFF;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Become a Tutor at Tutor Pearl</h1>
+    <p>Share your knowledge, inspire learners, and grow your teaching career.</p>
+
+    <form id="signupForm">
+      <label for="fullName">Full Name</label>
+      <input type="text" id="fullName" required>
+
+      <label for="email">Email Address</label>
+      <input type="email" id="email" required>
+
+      <label for="password">Password</label>
+      <input type="password" id="password" minlength="8" required>
+
+      <label for="headline">Professional Headline</label>
+      <input type="text" id="headline" placeholder="e.g. Experienced English and Mathematics Tutor" required>
+
+      <label for="subjects">Subjects You Teach</label>
+      <input type="text" id="subjects" placeholder="e.g. English, Mathematics, Igbo" required>
+
+      <label for="rate">Hourly Rate (USD)</label>
+      <input type="number" id="rate" min="1" step="0.01" required>
+
+      <label for="languages">Languages You Speak</label>
+      <input type="text" id="languages" placeholder="e.g. English, Igbo, French">
+
+      <label for="qualifications">Qualifications</label>
+      <textarea id="qualifications" placeholder="List your certificates, degrees, and teaching experience"></textarea>
+
+      <label for="biography">About You</label>
+      <textarea id="biography" placeholder="Tell learners about your teaching experience and approach" required></textarea>
+
+      <button type="submit" id="submitButton">Create Tutor Account</button>
+    </form>
+
+    <div id="message" role="status"></div>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+    const supabase = createClient(
+      'https://chmdsvfmlscrbqomqifp.supabase.co',
+      'sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ'
+    );
+
+    const form = document.getElementById('signupForm');
+    const message = document.getElementById('message');
+    const button = document.getElementById('submitButton');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      button.disabled = true;
+      button.textContent = 'Creating your account...';
+      message.textContent = '';
+
+      const fullName = document.getElementById('fullName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const headline = document.getElementById('headline').value.trim();
+      const subjects = document.getElementById('subjects').value.split(',').map(x => x.trim()).filter(Boolean);
+      const rate = Number(document.getElementById('rate').value);
+      const languages = document.getElementById('languages').value.split(',').map(x => x.trim()).filter(Boolean);
+      const qualifications = document.getElementById('qualifications').value.trim();
+      const biography = document.getElementById('biography').value.trim();
+
+      try {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password
+        });
+
+        if (error) throw error;
+
+        if (data.user && data.session) {
+          const { error: profileError } = await supabase
+            .from('tutor_profiles')
+            .insert({
+              id: data.user.id,
+              full_name: fullName,
+              headline,
+              subjects,
+              hourly_rate: rate,
+              currency: 'USD',
+              teaching_languages: languages,
+              qualifications,
+              biography,
+              approval_status: 'pending'
+            });
+
+          if (profileError) throw profileError;
+
+          message.textContent = 'Your tutor account has been created. Your profile is awaiting approval.';
+          form
