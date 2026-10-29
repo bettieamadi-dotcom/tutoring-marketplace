@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Registration | Tutor Pearl</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #211038;
+      color: #fff;
+      padding: 30px 16px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 30px auto;
+      background: #30164A;
+      padding: 30px;
+      border-radius: 16px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .intro {
+      text-align: center;
+      color: #D8CDE5;
+      margin-bottom: 25px;
+      line-height: 1.6;
+    }
+
+    label {
+      display: block;
+      margin: 16px 0 7px;
+      font-weight: bold;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #80649B;
+      border-radius: 8px;
+      background: #211038;
+      color: white;
+      font-size: 15px;
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      margin-top: 24px;
+      border: none;
+      border-radius: 8px;
+      background: #C8A8FF;
+      color: #211038;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    #message {
+      margin-top: 18px;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      color: #E7DBFF;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Join Tutor Pearl</h1>
+
+    <p class="intro">
+      Create your student account and start your learning journey
+      with tutors who match your goals.
+    </p>
+
+    <form id="studentForm">
+      <label for="fullName">Full Name</label>
+      <input type="text" id="fullName" required>
+
+      <label for="email">Email Address</label>
+      <input type="email" id="email" required>
+
+      <label for="password">Password</label>
+      <input type="password" id="password" minlength="8" required>
+
+      <label for="accountType">Who is this account for?</label>
+      <select id="accountType" required>
+        <option value="">Select an option</option>
+        <option value="myself">Myself</option>
+        <option value="child">My child</option>
+      </select>
+
+      <label for="ageGroup">Learner's Age Group</label>
+      <select id="ageGroup" required>
+        <option value="">Select age group</option>
+        <option value="Under 13">Under 13</option>
+        <option value="13–17">13–17</option>
+        <option value="18–24">18–24</option>
+        <option value="25–34">25–34</option>
+        <option value="35 and above">35 and above</option>
+      </select>
+
+      <label for="subjects">What do you want to learn?</label>
+      <input
+        type="text"
+        id="subjects"
+        placeholder="e.g. English, Mathematics, Igbo, French"
+        required
+      >
+
+      <label for="goals">What are your learning goals?</label>
+      <textarea
+        id="goals"
+        placeholder="Tell us what you hope to achieve..."
+        required
+      ></textarea>
+
+      <label for="lessonFormat">Preferred Lesson Format</label>
+      <select id="lessonFormat" required>
+        <option value="">Choose a format</option>
+        <option value="One-on-one lessons">One-on-one lessons</option>
+        <option value="Group lessons">Group lessons</option>
+        <option value="Not sure yet">Not sure yet</option>
+      </select>
+
+      <button type="submit" id="submitButton">
+        Create Student Account
+      </button>
+
+      <p id="message" aria-live="polite"></p>
+    </form>
+
+    <a href="index.html" class="back-link">Back to Tutor Pearl</a>
+  </div>
+
+  <script type="module">
+    import { createClient } from
+      'https://esm.sh/@supabase/supabase-js@2';
+
+    const supabase = createClient(
+      'https://chmdsvfmlscrbqomqifp.supabase.co',
+      'sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ
+'
+    );
+
+    const form = document.getElementById('studentForm');
+    const message = document.getElementById('message');
+    const button = document.getElementById('submitButton');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      button.disabled = true;
+      button.textContent = 'Creating account...';
+      message.textContent = '';
+
+      const fullName = document.getElementById('fullName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const accountType = document.getElementById('accountType').value;
+      const ageGroup = document.getElementById('ageGroup').value;
+      const subjects = document.getElementById('subjects').value;
+      const goals = document.getElementById('goals').value;
+      const lessonFormat = document.getElementById('lessonFormat').value;
+
+      try {
+        const
