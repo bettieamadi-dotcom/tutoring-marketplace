@@ -1,359 +1,220 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <meta name="description" content="Discover tutors, learn new skills, master subjects, and prepare for important exams with our online tutoring marketplace.">  <meta name="theme-color" content="#211038">  <title>Tutor Pearl | Find Your Perfect Tutor</title>  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head><body>  <header class="site-header">
+    <a href="#" class="logo" aria-label="Tutor Pearl homepage">
+      Tutor<span>Pearl</span>
+    </a><button
+  class="menu-toggle"
+  id="menu-toggle"
+  aria-label="Open navigation menu"
+  aria-expanded="false"
+  aria-controls="main-navigation"
+>
+  ☰
+</button>
 
-  <title>Tutor Pearl | Find Your Perfect Tutor</title>
+<nav class="navigation" id="main-navigation">
+  <a href="#subjects">Subjects</a>
+  <a href="#tutors">Find Tutors</a>
+  <a href="#how-it-works">How It Works</a>
+  <a href="#become-tutor">Teach With Us</a>
+  <a href="#subjects" class="nav-button">Get Started</a>
+</nav>
 
-  <meta name="description" content="Discover tutors, explore subjects, and take the next step in your learning journey.">
+  </header>  <main><section class="hero">
+  <div class="hero-content">
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <div class="hero-badge">
+      Your next learning journey starts here
+    </div>
 
-    body {
-      font-family: Arial, sans-serif;
-      background: #211038;
-      color: #ffffff;
-      line-height: 1.6;
-    }
+    <h1>
+      Find the Right Tutor.
+      <span>Unlock Your Potential.</span>
+    </h1>
 
-    header {
-      padding: 20px 7%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #49345f;
-    }
+    <p class="hero-description">
+      Learn from anywhere in the world. Connect with tutors,
+      develop new skills, and work towards your personal,
+      academic, and professional goals.
+    </p>
 
-    .logo {
-      color: #c8a8ff;
-      font-size: 23px;
-      font-weight: bold;
-    }
+    <div class="hero-actions">
+      <a href="#subjects" class="button button-primary">
+        Explore Subjects
+      </a>
 
-    nav a {
-      color: #ffffff;
-      text-decoration: none;
-      margin-left: 18px;
-      font-size: 14px;
-    }
-
-    .hero {
-      padding: 75px 7% 65px;
-      text-align: center;
-      background: linear-gradient(145deg, #211038, #30164a);
-    }
-
-    .label {
-      display: inline-block;
-      color: #e7dbff;
-      background: #49345f;
-      padding: 7px 15px;
-      border-radius: 30px;
-      font-size: 13px;
-      margin-bottom: 20px;
-    }
-
-    h1 {
-      font-size: clamp(36px, 6vw, 58px);
-      line-height: 1.15;
-      max-width: 800px;
-      margin: 0 auto 20px;
-    }
-
-    h1 span {
-      color: #c8a8ff;
-    }
-
-    .hero p {
-      max-width: 620px;
-      margin: 0 auto 28px;
-      color: #d8cde5;
-      font-size: 17px;
-    }
-
-    .button {
-      display: inline-block;
-      background: #c8a8ff;
-      color: #211038;
-      padding: 13px 24px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: bold;
-      margin: 5px;
-    }
-
-    .button-outline {
-      background: transparent;
-      color: #ffffff;
-      border: 1px solid #c8a8ff;
-    }
-
-    section {
-      padding: 55px 7%;
-    }
-
-    .section-title {
-      text-align: center;
-      font-size: 30px;
-      margin-bottom: 12px;
-    }
-
-    .section-description {
-      text-align: center;
-      color: #d8cde5;
-      margin-bottom: 30px;
-    }
-
-    .subjects {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 16px;
-    }
-
-    .subject-card {
-      background: #3b2058;
-      border: 1px solid #51376e;
-      border-radius: 12px;
-      padding: 24px 15px;
-      text-align: center;
-    }
-
-    .subject-card .icon {
-      font-size: 30px;
-      margin-bottom: 8px;
-    }
-
-    .subject-card h3 {
-      font-size: 17px;
-    }
-
-    .tutor-section {
-      background: #30164a;
-    }
-
-    .tutor-card {
-      max-width: 700px;
-      margin: 25px auto 0;
-      background: #3b2058;
-      border: 1px solid #51376e;
-      border-radius: 14px;
-      padding: 28px;
-      text-align: center;
-    }
-
-    .tutor-card p {
-      color: #d8cde5;
-      margin: 12px 0 20px;
-    }
-
-    .how-it-works {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-      gap: 22px;
-      margin-top: 30px;
-    }
-
-    .step {
-      padding: 20px;
-      text-align: center;
-    }
-
-    .step-number {
-      width: 45px;
-      height: 45px;
-      margin: 0 auto 15px;
-      display: grid;
-      place-items: center;
-      background: #c8a8ff;
-      color: #211038;
-      border-radius: 50%;
-      font-weight: bold;
-    }
-
-    .step p {
-      color: #d8cde5;
-      margin-top: 8px;
-    }
-
-    .join-section {
-      text-align: center;
-      background: #30164a;
-    }
-
-    .join-section p {
-      color: #d8cde5;
-      margin: 15px auto 25px;
-      max-width: 550px;
-    }
-
-    footer {
-      text-align: center;
-      padding: 25px 7%;
-      color: #d8cde5;
-      font-size: 13px;
-      border-top: 1px solid #49345f;
-    }
-
-    @media (max-width: 600px) {
-      header {
-        flex-direction: column;
-        gap: 14px;
-      }
-
-      nav {
-        text-align: center;
-      }
-
-      nav a {
-        display: inline-block;
-        margin: 5px 8px;
-      }
-
-      .hero {
-        padding-top: 55px;
-      }
-
-      section {
-        padding: 45px 6%;
-      }
-    }
-  </style>
-</head>
-
-<body>
-
-  <header>
-    <div class="logo">Tutor Pearl</div>
-
-    <nav>
-      <a href="#subjects">Subjects</a>
-      <a href="#how-it-works">How It Works</a>
-      <a href="#become-tutor">Become a Tutor</a>
-    </nav>
-  </header>
-
-  <main>
-    <section class="hero">
-      <div class="label">Your learning journey starts here</div>
-
-      <h1>
-        Find the Right Tutor.<br>
-        <span>Unlock Your Potential.</span>
-      </h1>
-
-      <p>
-        Connect with tutors who understand your goals.
-        Learn a language, master a subject, or prepare for
-        your next important exam.
-      </p>
-
-      <a href="#subjects" class="button">Explore Subjects</a>
-
-      <a href="#become-tutor" class="button button-outline">
+      <a href="#become-tutor" class="button button-secondary">
         Become a Tutor
       </a>
-    </section>
+    </div>
 
-    <section id="subjects">
-      <h2 class="section-title">Explore What You Can Learn</h2>
+    <form class="search-form" id="subject-search">
+      <label for="search-input">What would you like to learn?</label>
 
-      <p class="section-description">
-        From everyday learning to your biggest academic goals.
-      </p>
+      <div class="search-row">
+        <input
+          type="search"
+          id="search-input"
+          name="subject"
+          placeholder="Try English, Mathematics, IELTS..."
+          autocomplete="off"
+        >
 
-      <div class="subjects">
-        <div class="subject-card">
-          <div class="icon">📚</div>
-          <h3>English</h3>
-        </div>
-
-        <div class="subject-card">
-          <div class="icon">🔢</div>
-          <h3>Mathematics</h3>
-        </div>
-
-        <div class="subject-card">
-          <div class="icon">🌍</div>
-          <h3>Languages</h3>
-        </div>
-
-        <div class="subject-card">
-          <div class="icon">🎓</div>
-          <h3>Exam Preparation</h3>
-        </div>
-
-        <div class="subject-card">
-          <div class="icon">🧪</div>
-          <h3>Sciences</h3>
-        </div>
-
-        <div class="subject-card">
-          <div class="icon">💻</div>
-          <h3>Digital Skills</h3>
-        </div>
+        <button type="submit" class="button button-primary">
+          Search
+        </button>
       </div>
-    </section>
 
-    <section class="tutor-section">
-      <h2 class="section-title">Learning That Fits Your Goals</h2>
+      <p class="search-feedback" id="search-feedback" aria-live="polite"></p>
+    </form>
 
-      <p class="section-description">
-        Find learning support for children, adults, and exam candidates.
-      </p>
+  </div>
+</section>
 
-      <div class="tutor-card">
-        <h3>Your Next Learning Opportunity Starts Here</h3>
+<section class="subjects-section" id="subjects">
+  <div class="section-heading">
+    <span class="eyebrow">Explore your possibilities</span>
+    <h2>What Would You Like to Learn?</h2>
+    <p>
+      Discover subjects, develop valuable skills, and prepare
+      for the next step in your journey.
+    </p>
+  </div>
 
-        <p>
-          Explore different subjects and discover the kind of
-          tutor who can help you move forward.
-        </p>
+  <div class="subject-grid" id="subject-grid">
 
-        <a href="#subjects" class="button">Discover Subjects</a>
-      </div>
-    </section>
+    <button class="subject-card" type="button" data-subject="English">
+      <span class="subject-icon" aria-hidden="true">📚</span>
+      <span class="subject-name">English</span>
+      <span class="subject-description">Speaking, grammar and writing</span>
+    </button>
 
-    <section id="how-it-works">
-      <h2 class="section-title">How It Works</h2>
+    <button class="subject-card" type="button" data-subject="Mathematics">
+      <span class="subject-icon" aria-hidden="true">🔢</span>
+      <span class="subject-name">Mathematics</span>
+      <span class="subject-description">Build confidence with numbers</span>
+    </button>
 
-      <p class="section-description">
-        A simple path towards your learning goals.
-      </p>
+    <button class="subject-card" type="button" data-subject="Languages">
+      <span class="subject-icon" aria-hidden="true">🌍</span>
+      <span class="subject-name">Languages</span>
+      <span class="subject-description">Igbo, Yoruba, French and more</span>
+    </button>
 
-      <div class="how-it-works">
-        <div class="step">
-          <div class="step-number">1</div>
-          <h3>Choose a Subject</h3>
-          <p>Explore the subjects and skills you want to learn.</p>
-        </div>
+    <button class="subject-card" type="button" data-subject="Exam Preparation">
+      <span class="subject-icon" aria-hidden="true">🎓</span>
+      <span class="subject-name">Exam Preparation</span>
+      <span class="subject-description">IELTS, SAT and other exams</span>
+    </button>
 
-        <div class="step">
-          <div class="step-number">2</div>
-          <h3>Find Your Tutor</h3>
-          <p>Compare tutor profiles and find a suitable match.</p>
-        </div>
+    <button class="subject-card" type="button" data-subject="Sciences">
+      <span class="subject-icon" aria-hidden="true">🧪</span>
+      <span class="subject-name">Sciences</span>
+      <span class="subject-description">Biology, Chemistry and Physics</span>
+    </button>
 
-        <div class="step">
-          <div class="step-number">3</div>
-          <h3>Start Learning</h3>
-          <p>Prepare to book lessons and work towards your goals.</p>
-        </div>
-      </div>
-    </section>
+    <button class="subject-card" type="button" data-subject="Digital Skills">
+      <span class="subject-icon" aria-hidden="true">💻</span>
+      <span class="subject-name">Digital Skills</span>
+      <span class="subject-description">Technology and career skills</span>
+    </button>
 
-    <section class="join-section" id="become-tutor">
-      <h2 class="section-title">Share Your Knowledge</h2>
+  </div>
 
+  <p class="empty-state" id="empty-state" hidden>
+    No matching categories found. Try another search.
+  </p>
+</section>
+
+<section class="tutors-section" id="tutors">
+  <div class="section-heading">
+    <span class="eyebrow">Your goals matter</span>
+    <h2>Discover Your Learning Journey</h2>
+    <p>
+      Find the right learning experience for your needs.
+      Tutor listings will appear here as tutors join the platform.
+    </p>
+  </div>
+
+  <div class="tutor-placeholder">
+    <div class="placeholder-icon" aria-hidden="true">✦</div>
+    <h3>Your Future Tutor Could Be Here</h3>
+    <p>
+      We're building a community where students can discover
+      tutors, compare profiles, and choose lessons that suit them.
+    </p>
+    <a href="#become-tutor" class="button button-primary">
+      Interested in Teaching?
+    </a>
+  </div>
+</section>
+
+<section class="how-section" id="how-it-works">
+  <div class="section-heading">
+    <span class="eyebrow">Simple and convenient</span>
+    <h2>How It Will Work</h2>
+    <p>
+      A straightforward path from discovering a subject
+      to learning with a tutor.
+    </p>
+  </div>
+
+  <div class="steps-grid">
+
+    <article class="step-card">
+      <div class="step-number">01</div>
+      <h3>Choose a Subject</h3>
       <p>
-        Are you passionate about teaching?
-        Our future tutor community will connect educators
-        with students who want to learn.
+        Explore the subjects and skills that match your goals.
       </p>
+    </article>
 
-      <a href="mailto
+    <article class="step-card">
+      <div class="step-number">02</div>
+      <h3>Find Your Tutor</h3>
+      <p>
+        Review tutor profiles, qualifications, and teaching styles.
+      </p>
+    </article>
+
+    <article class="step-card">
+      <div class="step-number">03</div>
+      <h3>Book a Lesson</h3>
+      <p>
+        Choose a suitable time and arrange your learning session.
+      </p>
+    </article>
+
+  </div>
+</section>
+
+<section class="become-section" id="become-tutor">
+  <div class="become-content">
+    <span class="eyebrow">For educators and experts</span>
+    <h2>Turn Your Knowledge Into Opportunity</h2>
+    <p>
+      Are you passionate about teaching? We're working towards
+      a platform where educators can share their expertise,
+      connect with learners, and grow their teaching careers.
+    </p>
+
+    <a href="mailto:hello@example.com" class="button button-primary">
+      Express Your Interest
+    </a>
+  </div>
+</section>
+
+  </main>  <footer class="site-footer">
+    <a href="#" class="logo">Tutor<span>Pearl</span></a><p>Learn more. Grow further. Reach your potential.</p>
+
+<p class="copyright">
+  &copy; <span id="current-year">2026</span> Tutor Pearl.
+  All rights reserved.
+</p>
+
+  </footer></body>
+</html>
