@@ -103,29 +103,13 @@
 
 <form id="studentForm">
   <label for="fullName">Full Name</label>
-  <input
-    type="text"
-    id="fullName"
-    autocomplete="name"
-    required
-  >
+  <input type="text" id="fullName" autocomplete="name" required>
 
   <label for="email">Email Address</label>
-  <input
-    type="email"
-    id="email"
-    autocomplete="email"
-    required
-  >
+  <input type="email" id="email" autocomplete="email" required>
 
   <label for="password">Password</label>
-  <input
-    type="password"
-    id="password"
-    minlength="8"
-    autocomplete="new-password"
-    required
-  >
+  <input type="password" id="password" minlength="8" autocomplete="new-password" required>
 
   <label for="accountType">Who is this account for?</label>
   <select id="accountType" required>
@@ -145,19 +129,10 @@
   </select>
 
   <label for="subjects">What do you want to learn?</label>
-  <input
-    type="text"
-    id="subjects"
-    placeholder="e.g. English, Mathematics, Igbo, French"
-    required
-  >
+  <input type="text" id="subjects" placeholder="e.g. English, Mathematics, Igbo, French" required>
 
   <label for="goals">What are your learning goals?</label>
-  <textarea
-    id="goals"
-    placeholder="Tell us what you hope to achieve..."
-    required
-  ></textarea>
+  <textarea id="goals" placeholder="Tell us what you hope to achieve..." required></textarea>
 
   <label for="lessonFormat">Preferred Lesson Format</label>
   <select id="lessonFormat" required>
@@ -174,9 +149,7 @@
   <p id="message" aria-live="polite"></p>
 </form>
 
-<a href="index.html" class="back-link">
-  Back to Tutor Pearl
-</a>
+<a href="index.html" class="back-link">Back to Tutor Pearl</a>
 
   </div>  <script type="module">
     import { createClient } from
@@ -200,42 +173,18 @@
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
 
-      if (
-        SUPABASE_PUBLISHABLE_KEY ===
-        'sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ'
-      ) {
-        message.textContent =
-          'The registration page has not been connected to Supabase yet.';
-        return;
-      }
-
       button.disabled = true;
       button.textContent = 'Creating account...';
       message.textContent = '';
 
-      const fullName =
-        document.getElementById('fullName').value.trim();
-
-      const email =
-        document.getElementById('email').value.trim();
-
-      const password =
-        document.getElementById('password').value;
-
-      const accountType =
-        document.getElementById('accountType').value;
-
-      const ageGroup =
-        document.getElementById('ageGroup').value;
-
-      const subjects =
-        document.getElementById('subjects').value.trim();
-
-      const goals =
-        document.getElementById('goals').value.trim();
-
-      const lessonFormat =
-        document.getElementById('lessonFormat').value;
+      const fullName = document.getElementById('fullName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const accountType = document.getElementById('accountType').value;
+      const ageGroup = document.getElementById('ageGroup').value;
+      const subjects = document.getElementById('subjects').value.trim();
+      const goals = document.getElementById('goals').value.trim();
+      const lessonFormat = document.getElementById('lessonFormat').value;
 
       try {
         const { data, error } = await supabase.auth.signUp({
@@ -259,13 +208,9 @@
         }
 
         if (data.user) {
-          if (data.session) {
-            message.textContent =
-              'Your student account has been created successfully!';
-          } else {
-            message.textContent =
-              'Your account has been created. Please check your email and confirm your address before signing in.';
-          }
+          message.textContent = data.session
+            ? 'Your student account has been created successfully!'
+            : 'Your account has been created. Please check your email and confirm your address before signing in.';
 
           form.reset();
         } else {
