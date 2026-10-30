@@ -1,0 +1,200 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Bookings | Tutor Pearl</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f7f3fc;color:#211038}
+header{background:#211038;color:white;padding:20px 6%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+header h2{margin:0}
+header a{color:white;text-decoration:none;margin-left:15px}
+main{max-width:1050px;margin:35px auto;padding:0 18px}
+h1{margin-bottom:8px}
+.intro{color:#6c6079;margin-bottom:25px}
+.booking{background:white;border-radius:14px;padding:22px;margin-bottom:18px;box-shadow:0 4px 15px #21103812}
+.booking h3{margin-top:0}
+.details{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin:18px 0}
+.label{font-size:12px;color:#82758e;margin-bottom:5px}
+.value{font-weight:600;overflow-wrap:anywhere}
+.status{display:inline-block;padding:8px 13px;border-radius:20px;font-size:13px;font-weight:bold;text-transform:capitalize}
+.pending{background:#fff2cf;color:#805600}
+.accepted{background:#dff7e8;color:#17643b}
+.declined,.cancelled{background:#ffe2e2;color:#a32626}
+.completed{background:#e8e1ff;color:#51329b}
+.message{background:#f7f3fc;padding:13px;border-radius:9px;margin-top:14px;white-space:pre-wrap}
+button{background:#6d42a5;color:white;border:0;padding:11px 17px;border-radius:8px;cursor:pointer}
+button:hover{background:#513078}
+.empty,.notice{background:white;padding:28px;border-radius:12px;text-align:center}
+.error{color:#b42318}
+.tutor{color:#6d42a5;font-weight:bold}
+@media(max-width:600px){header{padding:18px}header a{margin-left:8px}main{margin:25px auto}}
+</style>
+</head>
+<body><header>
+  <h2>Tutor Pearl</h2>
+  <nav>
+    <a href="student-dashboard.html">Dashboard</a>
+    <a href="find-tutors.html">Find Tutors</a>
+  </nav>
+</header><main>
+  <h1>My Lesson Bookings</h1>
+  <p class="intro">View your lesson requests and check their latest status.</p><button id="refreshBtn">Refresh Bookings</button>
+
+  <p id="notice" class="notice" style="display:none"></p>
+  <div id="bookings" style="margin-top:22px">
+    <div class="notice">Loading your bookings...</div>
+  </div>
+</main><script>
+const SUPABASE_URL = "https://chmdsvfmlscrbqomqifp.supabase.co";
+const SUPABASE_KEY = "sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ";
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const bookingsContainer = document.getElementById("bookings");
+const notice = document.getElementById("notice");
+
+function showNotice(message, isError=false) {
+  notice.textContent = message;
+  notice.style.display = "block";
+  notice.className = isError ? "notice error" : "notice";
+}
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[char]);
+}
+
+function formatDate(value) {
+  if (!value) return "Not specified";
+  const date = new Date(value + "T00:00:00");
+  return date.toLocaleDateString(undefined, {
+    day:"numeric", month:"long", year:"numeric"
+  });
+}
+
+function formatTime(value) {
+  if (!value) return "Not specified";
+  const parts = value.split(":");
+  const hour = Number(parts[0]);
+  const minute = parts[1] || "00";
+  const suffix = hour >= 12 ? "PM" : "AM";
+  return `${hour % 12 || 12}:${minute} ${suffix}`;
+}
+
+async function loadBookings() {
+  bookingsContainer.innerHTML = '<div class="notice">Loading your bookings...</div>';
+  notice.style.display = "none";
+
+  const {data: authData, error: authError} = await supabase.auth.getUser();
+
+  if (authError || !authData.user) {
+    window.location.href = "student-login.html";
+    return;
+  }
+
+  const user = authData.user;
+
+  if (user.user_metadata?.account_type !== "student") {
+    showNotice("Please log in with your student account.", true);
+    await supabase.auth.signOut();
+    setTimeout(() => {
+      window.location.href = "student-login.html";
+    }, 1500);
+    return;
+  }
+
+  const {data: bookings, error} = await supabase
+    .from("lesson_bookings")
+    .select("*")
+    .eq("student_id", user.id)
+    .order("created_at", {ascending:false});
+
+  if (error) {
+    bookingsContainer.innerHTML = "";
+    showNotice("Could not load bookings: " + error.message, true);
+    return;
+  }
+
+  if (!bookings || bookings.length === 0) {
+    bookingsContainer.innerHTML = `
+      <div class="empty">
+        <h3>No lesson bookings yet</h3>
+        <p>When you request a lesson with a tutor, it will appear here.</p>
+        <a href="find-tutors.html"><button>Find a Tutor</button></a>
+      </div>`;
+    return;
+  }
+
+  const tutorIds = [...new Set(bookings.map(item => item.tutor_id))];
+
+  const {data: tutors, error: tutorError} = await supabase
+    .from("tutor_profiles")
+    .select("id, full_name, headline, profile_photo_url")
+    .in("id", tutorIds);
+
+  if (tutorError) {
+    showNotice("Your bookings loaded, but tutor details could not be retrieved.", true);
+  }
+
+  const tutorMap = {};
+  (tutors || []).forEach(tutor => {
+    tutorMap[tutor.id] = tutor;
+  });
+
+  bookingsContainer.innerHTML = "";
+
+  bookings.forEach(booking => {
+    const tutor = tutorMap[booking.tutor_id];
+    const status = String(booking.status || "pending").toLowerCase();
+    const allowedStatuses = ["pending","accepted","declined","cancelled","completed"];
+    const safeStatus = allowedStatuses.includes(status) ? status : "pending";
+
+    const tutorName = tutor?.full_name || "Tutor";
+    const headline = tutor?.headline || "Tutor Pearl tutor";
+
+    const card = document.createElement("section");
+    card.className = "booking";
+
+    card.innerHTML = `
+      <h3>${escapeHTML(booking.subject)}</h3>
+      <p class="tutor">${escapeHTML(tutorName)}</p>
+      <p>${escapeHTML(headline)}</p>
+
+      <div class="details">
+        <div>
+          <div class="label">Lesson date</div>
+          <div class="value">${escapeHTML(formatDate(booking.lesson_date))}</div>
+        </div>
+        <div>
+          <div class="label">Start time</div>
+          <div class="value">${escapeHTML(formatTime(booking.start_time))}</div>
+        </div>
+        <div>
+          <div class="label">Duration</div>
+          <div class="value">${escapeHTML(booking.duration_minutes)} minutes</div>
+        </div>
+        <div>
+          <div class="label">Booking status</div>
+          <div><span class="status ${safeStatus}">${escapeHTML(safeStatus)}</span></div>
+        </div>
+      </div>
+
+      ${booking.student_message ? `
+        <div class="message">
+          <strong>Your message:</strong><br>
+          ${escapeHTML(booking.student_message)}
+        </div>` : ""}
+    `;
+
+    bookingsContainer.appendChild(card);
+  });
+}
+
+document.getElementById("refreshBtn").addEventListener("click", loadBookings);
+
+loadBookings();
+</script></body>
+</html>
