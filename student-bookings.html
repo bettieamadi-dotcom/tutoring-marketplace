@@ -2,9 +2,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Bookings | Tutor Pearl</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
+<title>My Bookings | Tutor Pearl</title><style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#f7f3fc;color:#211038}
 header{background:#211038;color:white;padding:20px 6%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
@@ -25,14 +23,16 @@ h1{margin-bottom:8px}
 .completed{background:#e8e1ff;color:#51329b}
 .message{background:#f7f3fc;padding:13px;border-radius:9px;margin-top:14px;white-space:pre-wrap}
 button{background:#6d42a5;color:white;border:0;padding:11px 17px;border-radius:8px;cursor:pointer}
-.empty,.notice{background:white;padding:28px;border-radius:12px;text-align:center}
+button:hover{background:#513078}
+.empty,.notice{background:white;padding:25px;border-radius:12px;text-align:center;margin-top:18px}
 .error{color:#b42318}
 .tutor{color:#6d42a5;font-weight:bold}
-@media(max-width:600px){header{padding:18px}header a{margin-left:8px}main{margin:25px auto}}
-</style>
-</head>
-<body>
-<header>
+@media(max-width:600px){
+header{padding:18px}
+header a{margin-left:8px}
+main{margin:25px auto}
+}
+</style></head><body><header>
 <h2>Tutor Pearl</h2>
 <nav>
 <a href="student-dashboard.html">Dashboard</a>
@@ -40,156 +40,306 @@ button{background:#6d42a5;color:white;border:0;padding:11px 17px;border-radius:8
 </nav>
 </header><main>
 <h1>My Lesson Bookings</h1>
-<p class="intro">View your lesson requests and check their latest status.</p>
-<button id="refreshBtn">Refresh Bookings</button>
-<p id="notice" class="notice">Connecting...</p>
-<div id="bookings" style="margin-top:22px"></div>
+<p class="intro">View your lesson requests and check their latest status.</p><button id="refreshBtn">Refresh Bookings</button>
+
+<div id="notice" class="notice">Connecting to Tutor Pearl...</div>
+<div id="bookings"></div>
 </main><script>
 const SUPABASE_URL = "https://chmdsvfmlscrbqomqifp.supabase.co";
 const SUPABASE_KEY = "sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ";
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-const container = document.getElementById("bookings");
 const notice = document.getElementById("notice");
+const container = document.getElementById("bookings");
 
-function showNotice(message, error=false) {
-  notice.textContent = message;
-  notice.className = error ? "notice error" : "notice";
-  notice.style.display = "block";
+let supabaseClient = null;
+
+function showNotice(message, isError = false) {
+    notice.textContent = message;
+    notice.className = isError ? "notice error" : "notice";
+    notice.style.display = "block";
 }
 
 function escapeHTML(value) {
-  return String(value ?? "").replace(/[&<>"']/g, c => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-  })[c]);
-}
-
-function timed(promise, label) {
-  return Promise.race([
-    promise,
-    new Promise((_, reject) =>
-      setTimeout(() => reject(new Error(label + " timed out. Check your internet connection and try again.")), 15000)
-    )
-  ]);
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    })[char]);
 }
 
 function formatDate(value) {
-  if (!value) return "Not specified";
-  return new Date(value + "T00:00:00").toLocaleDateString(undefined, {
-    day:"numeric",month:"long",year:"numeric"
-  });
+    if (!value) return "Not specified";
+
+    return new Date(value + "T00:00:00").toLocaleDateString(undefined, {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+    });
 }
 
 function formatTime(value) {
-  if (!value) return "Not specified";
-  const parts = value.split(":");
-  const hour = Number(parts[0]);
-  return `${hour % 12 || 12}:${parts[1] || "00"} ${hour >= 12 ? "PM" : "AM"}`;
+    if (!value) return "Not specified";
+
+    const parts = value.split(":");
+    const hour = Number(parts[0]);
+    const minute = parts[1] || "00";
+    const suffix = hour >= 12 ? "PM" : "AM";
+
+    return `${hour % 12 || 12}:${minute} ${suffix}`;
+}
+
+function loadScript(url) {
+    return new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+
+        script.src = url;
+        script.async = true;
+
+        const timer = setTimeout(() => {
+            script.onload = null;
+            script.onerror = null;
+            script.remove();
+            reject(new Error("The connection to the library timed out."));
+        }, 12000);
+
+        script.onload = () => {
+            clearTimeout(timer);
+
+            if (window.supabase && window.supabase.createClient) {
+                resolve();
+            } else {
+                reject(new Error("The library loaded but could not be initialized."));
+            }
+        };
+
+        script.onerror = () => {
+            clearTimeout(timer);
+            script.remove();
+            reject(new Error("Could not load this library address."));
+        };
+
+        document.head.appendChild(script);
+    });
+}
+
+async function initializeSupabase() {
+    if (window.supabase && window.supabase.createClient) {
+        return;
+    }
+
+    showNotice("Loading the connection library...");
+
+    const cdnAddresses = [
+        "https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js",
+        "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"
+    ];
+
+    let lastError;
+
+    for (const address of cdnAddresses) {
+        try {
+            await loadScript(address);
+            return;
+        } catch (error) {
+            lastError = error;
+        }
+    }
+
+    throw new Error(
+        "The Supabase library could not load. Check your internet connection or try again. " +
+        (lastError ? lastError.message : "")
+    );
+}
+
+async function timed(promise, label) {
+    return Promise.race([
+        promise,
+        new Promise((_, reject) => {
+            setTimeout(() => {
+                reject(new Error(label + " timed out. Please try again."));
+            }, 15000);
+        })
+    ]);
 }
 
 async function loadBookings() {
-  container.innerHTML = "";
-  showNotice("Checking your student login...");
+    container.innerHTML = "";
+    showNotice("Checking your student login...");
 
-  try {
-    const {data: authData, error: authError} = await timed(
-      supabase.auth.getUser(),
-      "Student login check"
-    );
+    try {
+        if (!supabaseClient) {
+            await initializeSupabase();
 
-    if (authError) throw authError;
+            supabaseClient = window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+        }
 
-    if (!authData.user) {
-      window.location.href = "student-login.html";
-      return;
+        showNotice("Checking your student login...");
+
+        const {data: authData, error: authError} = await timed(
+            supabaseClient.auth.getUser(),
+            "Student login check"
+        );
+
+        if (authError) throw authError;
+
+        if (!authData.user) {
+            window.location.href = "student-login.html";
+            return;
+        }
+
+        const user = authData.user;
+
+        if (user.user_metadata?.account_type !== "student") {
+            showNotice("Please log in with your student account.", true);
+            return;
+        }
+
+        showNotice("Loading your lesson bookings...");
+
+        const {data: bookings, error} = await timed(
+            supabaseClient
+                .from("lesson_bookings")
+                .select("*")
+                .eq("student_id", user.id)
+                .order("created_at", {ascending: false}),
+            "Booking request"
+        );
+
+        if (error) throw error;
+
+        if (!bookings || bookings.length === 0) {
+            container.innerHTML = `
+                <div class="empty">
+                    <h3>No lesson bookings yet</h3>
+                    <p>Your lesson requests will appear here.</p>
+                    <a href="find-tutors.html">
+                        <button>Find a Tutor</button>
+                    </a>
+                </div>
+            `;
+
+            showNotice("Your bookings have loaded.");
+            return;
+        }
+
+        showNotice("Loading tutor information...");
+
+        const tutorIds = [...new Set(bookings.map(item => item.tutor_id))];
+
+        const {data: tutors, error: tutorError} = await timed(
+            supabaseClient
+                .from("tutor_profiles")
+                .select("id,full_name,headline")
+                .in("id", tutorIds),
+            "Tutor information request"
+        );
+
+        if (tutorError) throw tutorError;
+
+        const tutorMap = {};
+
+        (tutors || []).forEach(tutor => {
+            tutorMap[tutor.id] = tutor;
+        });
+
+        container.innerHTML = "";
+
+        bookings.forEach(booking => {
+            const tutor = tutorMap[booking.tutor_id];
+
+            const status = String(booking.status || "pending").toLowerCase();
+
+            const allowedStatuses = [
+                "pending",
+                "accepted",
+                "declined",
+                "cancelled",
+                "completed"
+            ];
+
+            const safeStatus = allowedStatuses.includes(status)
+                ? status
+                : "pending";
+
+            const card = document.createElement("section");
+            card.className = "booking";
+
+            card.innerHTML = `
+                <h3>${escapeHTML(booking.subject)}</h3>
+
+                <p class="tutor">
+                    ${escapeHTML(tutor?.full_name || "Tutor")}
+                </p>
+
+                <p>
+                    ${escapeHTML(tutor?.headline || "Tutor Pearl tutor")}
+                </p>
+
+                <div class="details">
+                    <div>
+                        <div class="label">Lesson date</div>
+                        <div class="value">
+                            ${escapeHTML(formatDate(booking.lesson_date))}
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="label">Start time</div>
+                        <div class="value">
+                            ${escapeHTML(formatTime(booking.start_time))}
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="label">Duration</div>
+                        <div class="value">
+                            ${escapeHTML(booking.duration_minutes)} minutes
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="label">Booking status</div>
+                        <span class="status ${safeStatus}">
+                            ${escapeHTML(safeStatus)}
+                        </span>
+                    </div>
+                </div>
+
+                ${booking.student_message ? `
+                    <div class="message">
+                        <strong>Your message:</strong><br>
+                        ${escapeHTML(booking.student_message)}
+                    </div>
+                ` : ""}
+            `;
+
+            container.appendChild(card);
+        });
+
+        showNotice("Your bookings have loaded successfully.");
+
+    } catch (error) {
+        container.innerHTML = `
+            <div class="empty">
+                <h3>We couldn't load your bookings</h3>
+                <p class="error">
+                    ${escapeHTML(error.message || "An unexpected error occurred.")}
+                </p>
+                <button onclick="loadBookings()">Try Again</button>
+            </div>
+        `;
+
+        showNotice("There was a problem connecting to Tutor Pearl.", true);
     }
-
-    const user = authData.user;
-
-    if (user.user_metadata?.account_type !== "student") {
-      showNotice("Please log in with your student account.", true);
-      return;
-    }
-
-    showNotice("Loading your lesson bookings...");
-
-    const {data: bookings, error} = await timed(
-      supabase.from("lesson_bookings")
-        .select("*")
-        .eq("student_id", user.id)
-        .order("created_at", {ascending:false}),
-      "Booking request"
-    );
-
-    if (error) throw error;
-
-    if (!bookings || bookings.length === 0) {
-      container.innerHTML = `
-        <div class="empty">
-          <h3>No lesson bookings yet</h3>
-          <p>Your lesson requests will appear here.</p>
-          <a href="find-tutors.html"><button>Find a Tutor</button></a>
-        </div>`;
-      showNotice("Your bookings have loaded.");
-      return;
-    }
-
-    showNotice("Loading tutor details...");
-
-    const tutorIds = [...new Set(bookings.map(b => b.tutor_id))];
-
-    const {data: tutors, error: tutorError} = await timed(
-      supabase.from("tutor_profiles")
-        .select("id,full_name,headline")
-        .in("id", tutorIds),
-      "Tutor details request"
-    );
-
-    if (tutorError) throw tutorError;
-
-    const tutorMap = {};
-    (tutors || []).forEach(t => tutorMap[t.id] = t);
-
-    bookings.forEach(booking => {
-      const tutor = tutorMap[booking.tutor_id];
-      const status = String(booking.status || "pending").toLowerCase();
-      const valid = ["pending","accepted","declined","cancelled","completed"];
-      const safeStatus = valid.includes(status) ? status : "pending";
-
-      const card = document.createElement("section");
-      card.className = "booking";
-
-      card.innerHTML = `
-        <h3>${escapeHTML(booking.subject)}</h3>
-        <p class="tutor">${escapeHTML(tutor?.full_name || "Tutor")}</p>
-        <p>${escapeHTML(tutor?.headline || "Tutor Pearl tutor")}</p>
-        <div class="details">
-          <div><div class="label">Lesson date</div><div class="value">${escapeHTML(formatDate(booking.lesson_date))}</div></div>
-          <div><div class="label">Start time</div><div class="value">${escapeHTML(formatTime(booking.start_time))}</div></div>
-          <div><div class="label">Duration</div><div class="value">${escapeHTML(booking.duration_minutes)} minutes</div></div>
-          <div><div class="label">Booking status</div><span class="status ${safeStatus}">${escapeHTML(safeStatus)}</span></div>
-        </div>
-        ${booking.student_message ? `<div class="message"><strong>Your message:</strong><br>${escapeHTML(booking.student_message)}</div>` : ""}
-      `;
-
-      container.appendChild(card);
-    });
-
-    showNotice("Your bookings have loaded successfully.");
-
-  } catch (error) {
-    container.innerHTML = `
-      <div class="empty">
-        <h3>We couldn't load your bookings</h3>
-        <p class="error">${escapeHTML(error.message || "An unexpected error occurred.")}</p>
-        <button onclick="loadBookings()">Try Again</button>
-      </div>`;
-    showNotice("Booking page encountered an error.", true);
-  }
 }
 
 document.getElementById("refreshBtn").addEventListener("click", loadBookings);
+
 loadBookings();
 </script></body>
 </html>
