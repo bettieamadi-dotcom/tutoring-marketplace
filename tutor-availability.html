@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Availability | Tutor Pearl</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    padding: 20px;
+    background: #211038;
+    color: #fff;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    max-width: 850px;
+    margin: 25px auto;
+}
+
+header {
+    background: #30164A;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+}
+
+h1, h2 { color: #E7DBFF; }
+
+p { color: #D8CDE5; line-height: 1.6; }
+
+.card {
+    background: #30164A;
+    border: 1px solid #51366c;
+    padding: 22px;
+    border-radius: 12px;
+    margin-bottom: 22px;
+}
+
+label {
+    display: block;
+    margin: 15px 0 7px;
+    color: #E7DBFF;
+}
+
+input, select {
+    width: 100%;
+    padding: 13px;
+    border-radius: 7px;
+    border: 1px solid #80649c;
+    background: #211038;
+    color: white;
+    font-size: 15px;
+}
+
+button, .back {
+    display: inline-block;
+    padding: 12px 18px;
+    border: none;
+    border-radius: 7px;
+    background: #C8A8FF;
+    color: #211038;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    margin-top: 15px;
+}
+
+button:hover, .back:hover {
+    background: #E7DBFF;
+}
+
+.slot {
+    background: #3B2058;
+    padding: 16px;
+    border-radius: 9px;
+    margin: 12px 0;
+}
+
+.slot strong { color: #E7DBFF; }
+
+.slot button {
+    margin-right: 8px;
+}
+
+.delete-btn {
+    background: #f2b5c0;
+}
+
+#message {
+    margin: 15px 0;
+    font-weight: bold;
+    overflow-wrap: anywhere;
+}
+
+.empty {
+    color: #D8CDE5;
+    padding: 15px 0;
+}
+
+@media(max-width: 500px) {
+    body { padding: 12px; }
+    .card { padding: 16px; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
+    <h1>My Teaching Availability</h1>
+    <p>
+        Set the days and times you are available to teach.
+        You can add multiple time slots for each day.
+    </p>
+    <a class="back" href="tutor-dashboard.html">
+        Back to Dashboard
+    </a>
+</header>
+
+<section class="card">
+
+    <h2>Add Availability</h2>
+
+    <form id="availabilityForm">
+
+        <label for="day">Teaching Day</label>
+
+        <select id="day" required>
+            <option value="">Choose a day</option>
+            <option value="0">Sunday</option>
+            <option value="1">Monday</option>
+            <option value="2">Tuesday</option>
+            <option value="3">Wednesday</option>
+            <option value="4">Thursday</option>
+            <option value="5">Friday</option>
+            <option value="6">Saturday</option>
+        </select>
+
+        <label for="startTime">Start Time</label>
+        <input type="time" id="startTime" required>
+
+        <label for="endTime">End Time</label>
+        <input type="time" id="endTime" required>
+
+        <label for="timezone">Time Zone</label>
+
+        <select id="timezone" required>
+            <option value="Africa/Lagos">Nigeria — Africa/Lagos</option>
+            <option value="Europe/London">United Kingdom — Europe/London</option>
+            <option value="Europe/Berlin">Germany — Europe/Berlin</option>
+            <option value="Europe/Paris">France — Europe/Paris</option>
+            <option value="America/New_York">New York — America/New_York</option>
+            <option value="America/Los_Angeles">Los Angeles — America/Los_Angeles</option>
+            <option value="America/Toronto">Toronto — America/Toronto</option>
+            <option value="Asia/Manila">Philippines — Asia/Manila</option>
+            <option value="Asia/Dubai">UAE — Asia/Dubai</option>
+            <option value="Asia/Kolkata">India — Asia/Kolkata</option>
+            <option value="Asia/Singapore">Singapore — Asia/Singapore</option>
+            <option value="Australia/Sydney">Australia — Australia/Sydney</option>
+        </select>
+
+        <button type="submit" id="saveButton">
+            Add Time Slot
+        </button>
+
+    </form>
+
+    <p id="message" role="status"></p>
+
+</section>
+
+<section class="card">
+
+    <h2>Your Weekly Schedule</h2>
+
+    <p>
+        These are the teaching hours you have saved.
+    </p>
+
+    <div id="availabilityList">
+        Loading your schedule...
+    </div>
+
+</section>
+
+</div>
+
+<script type="module">
+
+import { createClient } from
+"https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL =
+"https://chmdsvfmlscrbqomqifp.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ";
+
+const supabase = createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+const form = document.getElementById("availabilityForm");
+const message = document.getElementById("message");
+const list = document.getElementById("availabilityList");
+const saveButton = document.getElementById("saveButton");
+
+let currentUser = null;
+let editingId = null;
+
+const days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday"
+];
+
+function showMessage(text, isError = false) {
+    message.textContent = text;
+    message.style.color = isError ? "#ffb5c0" : "#C8A8FF";
+}
+
+async function checkTutor() {
+
+    const { data, error } = await supabase.auth.getUser();
+
+    if (error || !data.user) {
+        window.location.href = "tutor-login.html";
+        return false;
+    }
+
+    currentUser = data.user;
+
+    if (currentUser.user_metadata?.account_type !== "tutor") {
+        await supabase.auth.signOut();
+        window.location.href = "tutor-login.html";
+        return false;
+    }
+
+    return true;
+}
+
+async function loadAvailability() {
+
+    list.textContent = "Loading your schedule...";
+
+    const { data, error } = await supabase
+        .from("tutor_availability")
+        .select("id, day_of_week, start_time, end_time, timezone, is_available")
+        .eq("tutor_id", currentUser.id)
+        .order("day_of_week", { ascending: true })
+        .order("start_time", { ascending: true });
+
+    if (error) {
+        console.error(error);
+        list.textContent = "Unable to load your schedule. Please try again.";
+        return;
+    }
+
+    list.replaceChildren();
+
+    if (!data || data.length === 0) {
+        list.appendChild(
+            createText(
+                "p",
+                "empty",
+                "You have not added any teaching hours yet."
+            )
+        );
+        return;
+    }
+
+    data.forEach(slot => {
+
+        const box = document.createElement("div");
+        box.className = "slot";
+
+        const heading = createText(
+            "strong",
+            "",
+            days[slot.day_of_week]
+        );
+
+        const details = createText(
+            "p",
+            "",
+            formatTime(slot.start_time) +
+            " – " +
+            formatTime(slot.end_time)
+        );
+
+        const zone = createText(
+            "p",
+            "",
+            "Time zone: " + slot.timezone
+        );
+
+        const edit = document.createElement("button");
+        edit.textContent = "Edit";
+
+        edit.addEventListener("click", () => {
+            editSlot(slot);
+        });
+
+        const remove = document.createElement("button");
+        remove.textContent = "Delete";
+        remove.className = "delete-btn";
+
+        remove.addEventListener("click", () => {
+            deleteSlot(slot.id);
+        });
+
+        box.append(
+            heading,
+            details,
+            zone,
+            edit,
+            remove
+        );
+
+        list.appendChild(box);
+    });
+}
+
+function createText(tag, className, value) {
+    const element = document.createElement(tag);
+    element.className = className;
+    element.textContent = value;
+    return element;
+}
+
+function formatTime(value) {
+
+    const parts = value.slice(0, 5).split(":");
+    let hour = Number(parts[0]);
+
+    const minute = parts[1];
+    const period = hour >= 12 ? "PM" : "AM";
+
+    hour = hour % 12 || 12;
+
+    return hour + ":" + minute + " " + period;
+}
+
+function editSlot(slot) {
+
+    editingId = slot.id;
+
+    document.getElementById("day").value =
+        String(slot.day_of_week);
+
+    document.getElementById("startTime").value =
+        slot.start_time.slice(0, 5);
+
+    document.getElementById("endTime").value =
+        slot.end_time.slice(0, 5);
+
+    document.getElementById("timezone").value =
+        slot.timezone;
+
+    saveButton.textContent = "Save Changes";
+
+    showMessage("Editing your selected time slot.");
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+async function deleteSlot(id) {
+
+    if (!confirm("Are you sure you want to delete this time slot?")) {
+        return;
+    }
+
+    const { error } = await supabase
+        .from("tutor_availability")
+        .delete()
+        .eq("id", id)
+        .eq("tutor_id", currentUser.id);
+
+    if (error) {
+        console.error(error);
+        showMessage("Unable to delete this time slot.", true);
+        return;
+    }
+
+    showMessage("Time slot deleted successfully.");
+
+    await loadAvailability();
+}
+
+form.addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+    const day = Number(document.getElementById("day").value);
+    const start = document.getElementById("startTime").value;
+    const end = document.getElementById("endTime").value;
+    const timezone = document.getElementById("timezone").value;
+
+    if (!start || !end || end <= start) {
+        showMessage(
+            "Please choose an end time later than the start time.",
+            true
+        );
+        return;
+    }
+
+    const record = {
+        tutor_id: currentUser.id,
+        day_of_week: day,
+        start_time: start,
+        end_time: end,
+        timezone: timezone,
+        is_available: true
+    };
+
+    saveButton.disabled = true;
+    saveButton.textContent = "Saving...";
+
+    try {
+
+        let result;
+
+        if (editingId) {
+
+            result = await supabase
+                .from("tutor_availability")
+                .update(record)
+                .eq("id", editingId)
+                .eq("tutor_id", currentUser.id);
+
+        } else {
+
+            result = await supabase
+                .from("tutor_availability")
+                .insert(record);
+
+        }
+
+        if (result.error) {
+            throw result.error;
+        }
+
+        showMessage(
+            editingId
+                ? "Your availability has been updated."
+                : "Your availability has been added."
+        );
+
+        form.reset();
+        editingId = null;
+        saveButton.textContent = "Add Time Slot";
+
+        await loadAvailability();
+
+    } catch (error) {
+
+        console.error(error);
+
+        showMessage(
+            error.message || "Unable to save availability.",
+            true
+        );
+
+    } finally {
+
+        saveButton.disabled = false;
+
+    }
+
+});
+
+async function startPage() {
+
+    const allowed = await checkTutor();
+
+    if (allowed) {
+        await loadAvailability();
+    }
+
+}
+
+startPage();
+
+</script>
+
+</body>
+</html>
