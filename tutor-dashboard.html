@@ -113,6 +113,7 @@ main {
     font-size: 14px;
     margin-top: 12px;
     cursor: pointer;
+    border: none;
 }
 
 .card-button:hover {
@@ -158,71 +159,74 @@ footer {
         Manage your teaching profile, respond to student
         lesson requests and keep track of your tutoring activities.
     </p>
+</section><div class="notice" id="notice">
+    Checking your tutor account...
+</div><h2 class="section-title">Your Dashboard</h2><div class="dashboard-grid"><section class="card">
+    <h3>My Profile</h3>
+    <p>
+        Manage your teaching profile, qualifications,
+        subjects, profile photo and introduction video.
+    </p>
+    <a class="card-button" href="tutor-profile.html">
+        Manage Profile
+    </a>
 </section>
 
-<div class="notice" id="notice">
-    Checking your tutor account...
-</div>
+<section class="card">
+    <h3>My Lessons</h3>
+    <p>
+        View lesson requests from students, check booking
+        details and accept or decline pending requests.
+    </p>
+    <a class="card-button"
+       href="https://tutor-pearl.pages.dev/tutor-bookings.html">
+        View My Lessons
+    </a>
+</section>
 
-<h2 class="section-title">Your Dashboard</h2>
+<section class="card">
+    <h3>My Availability</h3>
+    <p>
+        Set your teaching days, available hours and
+        time zone so students can understand when
+        you are available for lessons.
+    </p>
+    <a class="card-button"
+       href="https://tutor-pearl.pages.dev/tutor-availability.html">
+        Manage Availability
+    </a>
+</section>
 
-<div class="dashboard-grid">
+<section class="card">
+    <h3>My Earnings</h3>
+    <p>
+        Your earnings and payment information will
+        appear here when payment processing is implemented.
+    </p>
+</section>
 
-    <section class="card">
-        <h3>My Profile</h3>
-        <p>
-            Manage your teaching profile, qualifications,
-            subjects, profile photo and introduction video.
-        </p>
-        <a class="card-button" href="tutor-profile.html">
-            Manage Profile
-        </a>
-    </section>
+<section class="card">
+    <h3>Teaching Opportunities</h3>
+    <p>
+        Visit the Tutor Pearl marketplace and see how
+        your approved tutor profile appears to students.
+    </p>
+    <a class="card-button" href="find-tutors.html">
+        View Marketplace
+    </a>
+</section>
 
-    <section class="card">
-        <h3>My Lessons</h3>
-        <p>
-            View lesson requests from students, check booking
-            details and accept or decline pending requests.
-        </p>
-        <a class="card-button"
-           href="https://tutor-pearl.pages.dev/tutor-bookings.html">
-            View My Lessons
-        </a>
-    </section>
+<section class="card">
+    <h3>Account Settings</h3>
+    <p>
+        Sign out of your tutor account securely.
+    </p>
+    <button class="card-button secondary-button" id="logoutBtn">
+        Log Out
+    </button>
+</section>
 
-    <section class="card">
-        <h3>My Earnings</h3>
-        <p>
-            Your earnings and payment information will
-            appear here when payment processing is implemented.
-        </p>
-    </section>
-
-    <section class="card">
-        <h3>Teaching Opportunities</h3>
-        <p>
-            Visit the Tutor Pearl marketplace and see how
-            your approved tutor profile appears to students.
-        </p>
-        <a class="card-button" href="find-tutors.html">
-            View Marketplace
-        </a>
-    </section>
-
-    <section class="card">
-        <h3>Account Settings</h3>
-        <p>
-            Sign out of your tutor account securely.
-        </p>
-        <button class="card-button secondary-button" id="logoutBtn">
-            Log Out
-        </button>
-    </section>
-
-</div>
-
-</main><footer>
+</div></main><footer>
     © 2026 Tutor Pearl. Learn, Grow and Achieve.
 </footer><script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
