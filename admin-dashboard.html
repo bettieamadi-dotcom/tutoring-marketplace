@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tutor Pearl | Admin Dashboard</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #211038;
+      color: #fff;
+    }
+
+    header {
+      padding: 22px;
+      background: #30164A;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 23px;
+      color: #C8A8FF;
+    }
+
+    main {
+      max-width: 1000px;
+      margin: 35px auto;
+      padding: 18px;
+    }
+
+    .panel {
+      background: #3B2058;
+      padding: 25px;
+      border-radius: 14px;
+      margin-bottom: 22px;
+    }
+
+    h2 { color: #C8A8FF; }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      margin: 9px 0;
+      border-radius: 7px;
+      border: none;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 12px 18px;
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+      font-weight: bold;
+      margin: 5px 5px 5px 0;
+    }
+
+    .primary { background: #C8A8FF; color: #211038; }
+    .approve { background: #24A36A; color: white; }
+    .reject { background: #D94C61; color: white; }
+    .logout { background: #fff; color: #211038; }
+
+    .message {
+      margin-top: 15px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .tutor-card {
+      background: #211038;
+      border: 1px solid #65458A;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 18px 0;
+    }
+
+    .tutor-card img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 12px;
+    }
+
+    .tutor-card p {
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    .muted { color: #D8CDE5; }
+
+    [hidden] { display: none !important; }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>Tutor Pearl Admin</h1>
+  <button id="logoutBtn" class="logout" hidden>Log Out</button>
+</header>
+
+<main>
+
+  <section id="loginPanel" class="panel">
+    <h2>Administrator Login</h2>
+    <p class="muted">Sign in with your Tutor Pearl administrator account.</p>
+
+    <form id="loginForm">
+      <input
+        type="email"
+        id="email"
+        placeholder="Administrator email"
+        autocomplete="username"
+        required
+      >
+
+      <input
+        type="password"
+        id="password"
+        placeholder="Password"
+        autocomplete="current-password"
+        required
+      >
+
+      <button type="submit" class="primary">Sign In</button>
+    </form>
+
+    <p id="loginMessage" class="message"></p>
+  </section>
+
+  <section id="dashboardPanel" hidden>
+    <div class="panel">
+      <h2>Welcome, Administrator</h2>
+      <p class="muted">Review tutor applications before they appear publicly on Tutor Pearl.</p>
+      <button id="refreshBtn" class="primary">Refresh Applications</button>
+      <p id="dashboardMessage" class="message"></p>
+    </div>
+
+    <div class="panel">
+      <h2>Pending Tutor Applications</h2>
+      <div id="tutorList"></div>
+    </div>
+  </section>
+
+</main>
+
+<script type="module">
+  import { createClient } from
+    "https://esm.sh/@supabase/supabase-js@2";
+
+  const SUPABASE_URL =
+    "https://chmdsvfmlscrbqomqifp.supabase.co";
+
+  const SUPABASE_KEY =
+    "sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ";
+
+  const supabase = createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+  const loginPanel = document.getElementById("loginPanel");
+  const dashboardPanel = document.getElementById("dashboardPanel");
+  const loginForm = document.getElementById("loginForm");
+  const loginMessage = document.getElementById("loginMessage");
+  const dashboardMessage = document.getElementById("dashboardMessage");
+  const tutorList = document.getElementById("tutorList");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const refreshBtn = document.getElementById("refreshBtn");
+
+  function showLogin(message = "") {
+    loginPanel.hidden = false;
+    dashboardPanel.hidden = true;
+    logoutBtn.hidden = true;
+    loginMessage.textContent = message;
+  }
+
+  async function showDashboard() {
+    const { data: access, error } =
+      await supabase.rpc("admin_check_access");
+
+    if (error || access !== true) {
+      showLogin(
+        "This account does not have administrator access. Sign out and use your administrator account."
+      );
+      logoutBtn.hidden = false;
+      return;
+    }
+
+    loginPanel.hidden = true;
+    dashboardPanel.hidden = false;
+    logoutBtn.hidden = false;
+
+    await loadTutors();
+  }
+
+  function addText(parent, tag, text, className = "") {
+    const element = document.createElement(tag);
+    element.textContent = text || "Not provided";
+
+    if (className) element.className = className;
+
+    parent.appendChild(element);
+    return element;
+  }
+
+  async function loadTutors() {
+    tutorList.replaceChildren();
+    dashboardMessage.textContent = "Loading applications...";
+
+    const { data, error } =
+      await supabase.rpc("admin_get_pending_tutors");
+
+    if (error) {
+      dashboardMessage.textContent =
+        "Could not load applications: " + error.message;
+      return;
+    }
+
+    dashboardMessage.textContent =
+      `${data.length} pending application(s) found.`;
+
+    if (!data.length) {
+      addText(
+        tutorList,
+        "p",
+        "There are currently no pending tutor applications.",
+        "muted"
+      );
+      return;
+    }
+
+    data.forEach(tutor => {
+      const card = document.createElement("article");
+      card.className = "tutor-card";
+
+      if (tutor.profile_photo_url) {
+        const photo = document.createElement("img");
+        photo.src = tutor.profile_photo_url;
+        photo.alt = "Tutor profile photo";
+        photo.onerror = () => photo.remove();
+        card.appendChild(photo);
+      }
+
+      addText(card, "h2", tutor.full_name);
+      addText(card, "p", tutor.headline);
+      addText(card, "p", "Subjects: " + tutor.subjects);
+      addText(card, "p", "Languages: " + tutor.teaching_languages);
+      addText(card, "p", "Qualifications: " + tutor.qualifications);
+      addText(card, "p", "Hourly rate: " +
+        (tutor.currency || "USD") + " " + tutor.hourly_rate);
+      addText(card, "p", "Biography: " + tutor.biography);
+
+      const approveBtn = document.createElement("button");
+      approveBtn.className = "approve";
+      approveBtn.textContent = "Approve";
+
+      approveBtn.addEventListener("click", () =>
+        reviewTutor(tutor.id, "approved", approveBtn, rejectBtn)
+      );
+
+      const rejectBtn = document.createElement("button");
+      rejectBtn.className = "reject";
+      rejectBtn.textContent = "Reject";
+
+      rejectBtn.addEventListener("click", () =>
+        reviewTutor(tutor.id, "rejected", approveBtn, rejectBtn)
+      );
+
+      card.append(approveBtn, rejectBtn);
+      tutorList.appendChild(card);
+    });
+  }
+
+  async function reviewTutor(id, decision, approveBtn, rejectBtn) {
+    const action = decision === "approved" ? "approve" : "reject";
+
+    if (!confirm(`Are you sure you want to ${action} this tutor?`)) {
+      return;
+    }
+
+    approveBtn.disabled = true;
+    rejectBtn.disabled = true;
+
+    const { data, error } = await supabase.rpc(
+      "admin_review_tutor",
+      {
+        tutor_id: id,
+        decision: decision
+      }
+    );
+
+    if (error) {
+      alert("Review failed: " + error.message);
+      approveBtn.disabled = false;
+      rejectBtn.disabled = false;
+      return;
+    }
+
+    if (data !== true) {
+      alert("This application was already reviewed or could not be found.");
+    } else {
+      alert(`Tutor application ${decision}.`);
+    }
+
+    await loadTutors();
+  }
+
+  loginForm.addEventListener("submit", async event => {
+    event.preventDefault();
+
+    loginMessage.textContent = "Signing in...";
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) {
+      loginMessage.textContent = error.message;
+      return;
+    }
+
+    await showDashboard();
+  });
+
+  logoutBtn.addEventListener("click", async () => {
+    await supabase.auth.signOut();
+    showLogin("You have signed out.");
+  });
+
+  refreshBtn.addEventListener("click", loadTutors);
+
+  const { data: { session } } =
+    await supabase.auth.getSession();
+
+  if (session) {
+    await showDashboard();
+  } else {
+    showLogin();
+  }
+</script>
+
+</body>
+  </html>
