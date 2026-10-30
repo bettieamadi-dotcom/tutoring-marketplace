@@ -1,174 +1,242 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Find Tutors | Tutor Pearl</title><style>
-*{box-sizing:border-box}
+<title>Find Tutors | Tutor Pearl</title>
 
-body{
-    margin:0;
-    font-family:Arial,sans-serif;
-    background:#211038;
-    color:#fff;
+<style>
+* {
+    box-sizing: border-box;
 }
 
-header{
-    background:#30164A;
-    padding:20px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    flex-wrap:wrap;
-    gap:15px;
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #211038;
+    color: #fff;
 }
 
-header h2{margin:0;color:#E7DBFF}
-
-nav a{
-    color:#D8CDE5;
-    text-decoration:none;
-    margin:0 8px;
+header {
+    background: #30164A;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
 }
 
-nav a:hover{color:#C8A8FF}
-
-.container{
-    max-width:1150px;
-    margin:35px auto;
-    padding:0 18px;
+header h2 {
+    margin: 0;
+    color: #E7DBFF;
 }
 
-h1{color:#E7DBFF}
-
-.intro{
-    color:#D8CDE5;
-    line-height:1.6;
+nav a {
+    color: #D8CDE5;
+    text-decoration: none;
+    margin: 0 8px;
 }
 
-.search-box{
-    display:flex;
-    gap:10px;
-    margin:25px 0;
-    flex-wrap:wrap;
+nav a:hover {
+    color: #C8A8FF;
 }
 
-input{
-    flex:1;
-    min-width:220px;
-    padding:14px;
-    border-radius:8px;
-    border:1px solid #80649c;
-    background:#30164A;
-    color:white;
-    font-size:15px;
+.container {
+    max-width: 1150px;
+    margin: 35px auto;
+    padding: 0 18px;
 }
 
-button{
-    border:0;
-    border-radius:8px;
-    padding:13px 20px;
-    cursor:pointer;
-    font-weight:bold;
+h1 {
+    color: #E7DBFF;
 }
 
-.search-btn{
-    background:#C8A8FF;
-    color:#211038;
+.intro {
+    color: #D8CDE5;
+    line-height: 1.6;
 }
 
-.tutor-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(270px,1fr));
-    gap:22px;
+.search-box {
+    display: flex;
+    gap: 10px;
+    margin: 25px 0;
+    flex-wrap: wrap;
 }
 
-.tutor-card{
-    background:#30164A;
-    padding:22px;
-    border-radius:14px;
-    border:1px solid #51366c;
-    display:flex;
-    flex-direction:column;
+input {
+    flex: 1;
+    min-width: 220px;
+    padding: 14px;
+    border-radius: 8px;
+    border: 1px solid #80649c;
+    background: #30164A;
+    color: white;
+    font-size: 15px;
 }
 
-.tutor-photo{
-    width:110px;
-    height:110px;
-    border-radius:50%;
-    object-fit:cover;
-    background:#51366c;
-    margin-bottom:15px;
+button {
+    border: 0;
+    border-radius: 8px;
+    padding: 13px 20px;
+    cursor: pointer;
+    font-weight: bold;
 }
 
-.tutor-card h3{
-    color:#E7DBFF;
-    margin:5px 0;
+.search-btn {
+    background: #C8A8FF;
+    color: #211038;
 }
 
-.tutor-card p{
-    color:#D8CDE5;
-    line-height:1.5;
-    overflow-wrap:anywhere;
+.tutor-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 22px;
 }
 
-.rate{
-    color:#C8A8FF !important;
-    font-weight:bold;
-    margin-top:auto;
-    padding-top:12px;
+.tutor-card {
+    background: #30164A;
+    padding: 22px;
+    border-radius: 14px;
+    border: 1px solid #51366c;
+    display: flex;
+    flex-direction: column;
 }
 
-.book-btn{
-    display:block;
-    text-align:center;
-    text-decoration:none;
-    background:#C8A8FF;
-    color:#211038;
-    padding:14px;
-    border-radius:8px;
-    font-weight:bold;
-    margin-top:15px;
+.tutor-photo {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #51366c;
+    margin-bottom: 15px;
 }
 
-.book-btn:hover{background:#E7DBFF}
-
-#status{
-    color:#D8CDE5;
-    margin:20px 0;
+.tutor-card h3 {
+    color: #E7DBFF;
+    margin: 5px 0;
 }
 
-@media(max-width:600px){
-    header{align-items:flex-start}
-    nav{display:flex;flex-wrap:wrap;gap:10px}
+.tutor-card p {
+    color: #D8CDE5;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
 }
-</style></head><body><header>
-    <h2>Tutor Pearl</h2><nav>
-    <a href="index.html">Home</a>
-    <a href="student-dashboard.html">Dashboard</a>
-    <a href="tutor-login.html">Tutor Login</a>
-</nav>
 
-</header><main class="container"><h1>Find Your Perfect Tutor</h1>
+.video-section {
+    margin-top: 15px;
+}
 
-<p class="intro">
-    Discover qualified tutors, explore their teaching experience
-    and request a lesson that suits your learning goals.
-</p>
+.video-title {
+    color: #E7DBFF;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
 
-<div class="search-box">
-    <input
-        type="search"
-        id="searchInput"
-        placeholder="Search by tutor, subject or language..."
-    >
-    <button class="search-btn" id="searchButton">Search</button>
-</div>
+.tutor-video {
+    width: 100%;
+    max-height: 230px;
+    display: block;
+    border-radius: 10px;
+    background: #211038;
+    object-fit: contain;
+}
 
-<p id="status">Loading approved tutors...</p>
+.no-video {
+    background: #3B2058;
+    border: 1px dashed #80649c;
+    border-radius: 10px;
+    padding: 15px;
+    color: #D8CDE5;
+    font-size: 13px;
+    line-height: 1.5;
+    text-align: center;
+}
 
-<div class="tutor-grid" id="tutorGrid"></div>
+.rate {
+    color: #C8A8FF !important;
+    font-weight: bold;
+    margin-top: auto;
+    padding-top: 12px;
+}
 
-</main><script type="module">
+.book-btn {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    background: #C8A8FF;
+    color: #211038;
+    padding: 14px;
+    border-radius: 8px;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+.book-btn:hover {
+    background: #E7DBFF;
+}
+
+#status {
+    color: #D8CDE5;
+    margin: 20px 0;
+}
+
+@media(max-width: 600px) {
+    header {
+        align-items: flex-start;
+    }
+
+    nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h2>Tutor Pearl</h2>
+
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="student-dashboard.html">Dashboard</a>
+        <a href="tutor-login.html">Tutor Login</a>
+    </nav>
+</header>
+
+<main class="container">
+
+    <h1>Find Your Perfect Tutor</h1>
+
+    <p class="intro">
+        Discover qualified tutors, explore their teaching experience
+        and request a lesson that suits your learning goals.
+    </p>
+
+    <div class="search-box">
+        <input
+            type="search"
+            id="searchInput"
+            placeholder="Search by tutor, subject or language..."
+        >
+
+        <button class="search-btn" id="searchButton">
+            Search
+        </button>
+    </div>
+
+    <p id="status">Loading approved tutors...</p>
+
+    <div class="tutor-grid" id="tutorGrid"></div>
+
+</main>
+
+<script type="module">
+
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const SUPABASE_URL = "https://chmdsvfmlscrbqomqifp.supabase.co";
@@ -184,28 +252,105 @@ let tutors = [];
 
 function createTextElement(tag, className, text) {
     const element = document.createElement(tag);
-    if (className) element.className = className;
+
+    if (className) {
+        element.className = className;
+    }
+
     element.textContent = text || "";
+
     return element;
 }
 
+function addIntroductionVideo(card, tutor) {
+
+    const section = document.createElement("div");
+    section.className = "video-section";
+
+    section.appendChild(
+        createTextElement(
+            "p",
+            "video-title",
+            "Meet Your Tutor"
+        )
+    );
+
+    if (tutor.intro_video_url) {
+
+        const video = document.createElement("video");
+
+        video.className = "tutor-video";
+        video.controls = true;
+        video.preload = "metadata";
+        video.playsInline = true;
+
+        const source = document.createElement("source");
+
+        source.src = tutor.intro_video_url;
+        source.type = "video/mp4";
+
+        video.appendChild(source);
+
+        video.appendChild(
+            document.createTextNode(
+                "Your browser does not support video playback."
+            )
+        );
+
+        video.addEventListener("error", () => {
+            const message = createTextElement(
+                "p",
+                "no-video",
+                "This introduction video could not be loaded. Please try again later."
+            );
+
+            section.replaceChildren(
+                createTextElement("p", "video-title", "Meet Your Tutor"),
+                message
+            );
+        });
+
+        section.appendChild(video);
+
+    } else {
+
+        section.appendChild(
+            createTextElement(
+                "p",
+                "no-video",
+                "This tutor has not uploaded an introduction video yet."
+            )
+        );
+
+    }
+
+    card.appendChild(section);
+}
+
 function renderTutors(list) {
+
     tutorGrid.innerHTML = "";
 
     if (!list.length) {
+
         statusText.textContent =
             "No approved tutors match your search. Please try another search.";
+
         return;
     }
 
-    statusText.textContent = list.length + " approved tutor(s) found.";
+    statusText.textContent =
+        list.length + " approved tutor(s) found.";
 
     list.forEach(tutor => {
+
         const card = document.createElement("article");
         card.className = "tutor-card";
 
         if (tutor.profile_photo_url) {
+
             const photo = document.createElement("img");
+
             photo.className = "tutor-photo";
             photo.src = tutor.profile_photo_url;
             photo.alt = "Photo of " + (tutor.full_name || "tutor");
@@ -219,28 +364,54 @@ function renderTutors(list) {
         }
 
         card.appendChild(
-            createTextElement("h3", "", tutor.full_name || "Tutor")
+            createTextElement(
+                "h3",
+                "",
+                tutor.full_name || "Tutor"
+            )
         );
 
         card.appendChild(
-            createTextElement("p", "", tutor.headline || "Professional Tutor")
+            createTextElement(
+                "p",
+                "",
+                tutor.headline || "Professional Tutor"
+            )
         );
 
         card.appendChild(
-            createTextElement("p", "", "Subjects: " + (tutor.subjects || "Not listed"))
+            createTextElement(
+                "p",
+                "",
+                "Subjects: " + (tutor.subjects || "Not listed")
+            )
         );
 
         card.appendChild(
-            createTextElement("p", "", "Languages: " + (tutor.teaching_languages || "Not listed"))
+            createTextElement(
+                "p",
+                "",
+                "Languages: " + (tutor.teaching_languages || "Not listed")
+            )
         );
 
         card.appendChild(
-            createTextElement("p", "", "Qualifications: " + (tutor.qualifications || "Not listed"))
+            createTextElement(
+                "p",
+                "",
+                "Qualifications: " + (tutor.qualifications || "Not listed")
+            )
         );
 
         card.appendChild(
-            createTextElement("p", "", tutor.biography || "No biography available yet.")
+            createTextElement(
+                "p",
+                "",
+                tutor.biography || "No biography available yet."
+            )
         );
+
+        addIntroductionVideo(card, tutor);
 
         const rate = tutor.hourly_rate != null
             ? (tutor.currency || "USD") + " " + tutor.hourly_rate + " per hour"
@@ -251,16 +422,20 @@ function renderTutors(list) {
         );
 
         const bookButton = document.createElement("a");
+
         bookButton.className = "book-btn";
         bookButton.textContent = "Book a Lesson";
-        bookButton.href = "book-lesson.html?tutor=" + encodeURIComponent(tutor.id);
+        bookButton.href =
+            "book-lesson.html?tutor=" + encodeURIComponent(tutor.id);
 
         card.appendChild(bookButton);
+
         tutorGrid.appendChild(card);
     });
 }
 
 async function loadTutors() {
+
     statusText.textContent = "Loading approved tutors...";
 
     const { data, error } = await supabase
@@ -275,30 +450,40 @@ async function loadTutors() {
             teaching_languages,
             qualifications,
             biography,
-            profile_photo_url
+            profile_photo_url,
+            intro_video_url
         `)
         .eq("approval_status", "approved")
         .order("created_at", { ascending: false });
 
     if (error) {
+
         console.error(error);
-        statusText.textContent = "Unable to load tutors. Please refresh the page.";
+
+        statusText.textContent =
+            "Unable to load tutors. Please refresh the page.";
+
         return;
     }
 
     tutors = data || [];
+
     renderTutors(tutors);
 }
 
 function searchTutors() {
+
     const term = searchInput.value.trim().toLowerCase();
 
     if (!term) {
+
         renderTutors(tutors);
+
         return;
     }
 
     const filtered = tutors.filter(tutor => {
+
         const searchableText = [
             tutor.full_name,
             tutor.headline,
@@ -320,5 +505,8 @@ document.getElementById("searchButton")
 searchInput.addEventListener("input", searchTutors);
 
 loadTutors();
-</script></body>
+
+</script>
+
+</body>
 </html>
