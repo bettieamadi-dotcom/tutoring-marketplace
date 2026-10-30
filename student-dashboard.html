@@ -1,0 +1,296 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard | Tutor Pearl</title>  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #F7F3FC;
+      color: #211038;
+    }
+
+    header {
+      background: #211038;
+      color: white;
+      padding: 18px 6%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      color: #C8A8FF;
+      font-size: 25px;
+      font-weight: bold;
+    }
+
+    .logout {
+      background: #C8A8FF;
+      color: #211038;
+      border: none;
+      padding: 11px 18px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    main {
+      width: 90%;
+      max-width: 1100px;
+      margin: 35px auto;
+    }
+
+    .welcome {
+      background: #30164A;
+      color: white;
+      padding: 30px;
+      border-radius: 16px;
+      margin-bottom: 28px;
+    }
+
+    .welcome h1 {
+      font-size: 27px;
+      margin-bottom: 12px;
+    }
+
+    .welcome p {
+      color: #D8CDE5;
+      line-height: 1.6;
+    }
+
+    .section-title {
+      font-size: 22px;
+      margin: 28px 0 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: white;
+      padding: 24px;
+      border-radius: 13px;
+      box-shadow: 0 4px 15px rgba(33,16,56,0.07);
+    }
+
+    .card h3 {
+      color: #30164A;
+      margin-bottom: 12px;
+    }
+
+    .card p {
+      color: #665875;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .card a {
+      display: inline-block;
+      margin-top: 16px;
+      color: #6E42A0;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .profile {
+      background: white;
+      padding: 24px;
+      border-radius: 13px;
+      margin-top: 25px;
+      line-height: 1.9;
+    }
+
+    .notice {
+      background: #E7DBFF;
+      padding: 16px;
+      border-radius: 10px;
+      margin-top: 20px;
+      color: #30164A;
+      line-height: 1.6;
+    }
+
+    #status {
+      text-align: center;
+      margin: 35px;
+      color: #665875;
+    }
+
+    @media (max-width: 600px) {
+      .welcome h1 {
+        font-size: 23px;
+      }
+
+      header {
+        padding: 16px 5%;
+      }
+    }
+  </style></head><body>  <header>
+    <div class="brand">Tutor Pearl</div>
+    <button class="logout" id="logoutButton">Sign Out</button>
+  </header>  <main id="dashboard" hidden><section class="welcome">
+  <h1>Welcome, <span id="studentName">Student</span>!</h1>
+  <p>
+    Your learning journey continues here.
+    Discover learning opportunities and manage your account.
+  </p>
+</section>
+
+<h2 class="section-title">Your Learning Space</h2>
+
+<section class="grid">
+
+  <div class="card">
+    <h3>Find a Tutor</h3>
+    <p>
+      Explore tutors who can help you achieve your learning goals.
+    </p>
+    <a href="index.html">Explore Tutor Pearl</a>
+  </div>
+
+  <div class="card">
+    <h3>My Lessons</h3>
+    <p>
+      Your lesson bookings and upcoming classes will appear here.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Learning Goals</h3>
+    <p>
+      Keep track of the subjects and skills you want to learn.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>My Account</h3>
+    <p>
+      View the information you provided when creating your account.
+    </p>
+  </div>
+
+</section>
+
+<h2 class="section-title">My Student Profile</h2>
+
+<section class="profile">
+  <p><strong>Full Name:</strong> <span id="profileName">Loading...</span></p>
+  <p><strong>Account For:</strong> <span id="accountFor">Loading...</span></p>
+  <p><strong>Age Group:</strong> <span id="ageGroup">Loading...</span></p>
+  <p><strong>Subjects:</strong> <span id="subjects">Loading...</span></p>
+  <p><strong>Learning Goals:</strong> <span id="goals">Loading...</span></p>
+  <p><strong>Lesson Format:</strong> <span id="lessonFormat">Loading...</span></p>
+</section>
+
+<div class="notice">
+  More features, including tutor search, lesson booking and student
+  account management, will be added as the marketplace develops.
+</div>
+
+  </main>  <p id="status">Checking your student account...</p>  <script type="module">
+    import { createClient } from
+      'https://esm.sh/@supabase/supabase-js@2';
+
+    const SUPABASE_URL =
+      'https://chmdsvfmlscrbqomqifp.supabase.co';
+
+    const SUPABASE_PUBLISHABLE_KEY =
+      'sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ';
+
+    const supabase = createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+    const status = document.getElementById('status');
+    const dashboard = document.getElementById('dashboard');
+
+    function showValue(id, value) {
+      document.getElementById(id).textContent =
+        value || 'Not provided';
+    }
+
+    async function loadDashboard() {
+      const { data: userData, error: userError } =
+        await supabase.auth.getUser();
+
+      if (userError || !userData.user) {
+        window.location.replace('student-login.html');
+        return;
+      }
+
+      const user = userData.user;
+
+      const { data: profile, error: profileError } =
+        await supabase
+          .from('student_profiles')
+          .select('*')
+          .eq('id', user.id)
+          .maybeSingle();
+
+      if (profileError) {
+        status.textContent =
+          'We could not load your student profile. Please refresh the page.';
+        return;
+      }
+
+      if (!profile) {
+        status.textContent =
+          'Your student profile could not be found. Please contact support.';
+        return;
+      }
+
+      const name =
+        profile.full_name ||
+        user.user_metadata?.full_name ||
+        'Student';
+
+      document.getElementById('studentName').textContent = name;
+
+      showValue('profileName', name);
+      showValue('accountFor', profile.learner_account_for);
+      showValue('ageGroup', profile.age_group);
+      showValue(
+        'subjects',
+        Array.isArray(profile.subjects)
+          ? profile.subjects.join(', ')
+          : profile.subjects
+      );
+      showValue('goals', profile.learning_goals);
+      showValue('lessonFormat', profile.lesson_format);
+
+      status.hidden = true;
+      dashboard.hidden = false;
+    }
+
+    document.getElementById('logoutButton')
+      .addEventListener('click', async () => {
+        const button = document.getElementById('logoutButton');
+        button.disabled = true;
+        button.textContent = 'Signing out...';
+
+        const { error } = await supabase.auth.signOut();
+
+        if (error) {
+          button.disabled = false;
+          button.textContent = 'Sign Out';
+          alert(error.message);
+          return;
+        }
+
+        window.location.replace('student-login.html');
+      });
+
+    loadDashboard();
+  </script></body>
+</html>
