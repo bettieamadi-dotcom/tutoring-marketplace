@@ -359,23 +359,17 @@ const refreshBtn =
 document.getElementById("refreshBtn");
 
 let loading = false;
-let currentUser = null;
 let rescheduleRequests = [];
-
 
 function showNotice(text, isError = false) {
     notice.textContent = text;
     notice.style.display = "block";
-    notice.className = isError
-        ? "notice error"
-        : "notice";
+    notice.className = isError ? "notice error" : "notice";
 }
-
 
 function hideNotice() {
     notice.style.display = "none";
 }
-
 
 function formatDate(value) {
     if (!value) return "Not specified";
@@ -389,27 +383,19 @@ function formatDate(value) {
     });
 }
 
-
 function formatTime(value) {
     if (!value) return "Not specified";
 
     const parts = value.split(":");
-
     const date = new Date();
 
-    date.setHours(
-        Number(parts[0]),
-        Number(parts[1]),
-        0,
-        0
-    );
+    date.setHours(Number(parts[0]), Number(parts[1]), 0, 0);
 
     return date.toLocaleTimeString([], {
         hour: "numeric",
         minute: "2-digit"
     });
 }
-
 
 function escapeHTML(value) {
     return String(value ?? "").replace(/[&<>"']/g, char => ({
@@ -421,7 +407,6 @@ function escapeHTML(value) {
     })[char]);
 }
 
-
 function getInitials(name) {
     return String(name || "Tutor")
         .trim()
@@ -431,43 +416,45 @@ function getInitials(name) {
         .join("");
 }
 
-
 function createTutorPhoto(tutor) {
-
     const photo = document.createElement("img");
 
     photo.className = "tutor-photo";
-
     photo.alt = tutor?.full_name || "Tutor";
 
-    photo.src = tutor?.profile_photo_url || "";
+    if (tutor?.profile_photo_url) {
+        photo.src = tutor.profile_photo_url;
 
-    photo.onerror = () => {
+        photo.onerror = () => {
+            const fallback = document.createElement("div");
+            fallback.className = "tutor-photo";
+            fallback.style.display = "flex";
+            fallback.style.alignItems = "center";
+            fallback.style.justifyContent = "center";
+            fallback.style.fontWeight = "bold";
+            fallback.style.color = "#513078";
+            fallback.textContent = getInitials(tutor?.full_name);
+            photo.replaceWith(fallback);
+        };
+    } else {
+        photo.style.display = "none";
+
         const fallback = document.createElement("div");
-
         fallback.className = "tutor-photo";
-
         fallback.style.display = "flex";
         fallback.style.alignItems = "center";
         fallback.style.justifyContent = "center";
         fallback.style.fontWeight = "bold";
         fallback.style.color = "#513078";
-
         fallback.textContent = getInitials(tutor?.full_name);
 
-        photo.replaceWith(fallback);
-    };
-
-    if (!tutor?.profile_photo_url) {
-        photo.onerror();
+        return fallback;
     }
 
     return photo;
 }
 
-
 function createDetail(label, value) {
-
     const wrapper = document.createElement("div");
 
     const labelElement = document.createElement("div");
@@ -483,45 +470,30 @@ function createDetail(label, value) {
     return wrapper;
 }
 
-
 function getRequestsForBooking(bookingId) {
     return rescheduleRequests.filter(
         request => request.booking_id === bookingId
     );
 }
 
-
 async function cancelBooking(booking, button) {
-
-    const confirmed = window.confirm(
+    if (!window.confirm(
         "Are you sure you want to cancel this lesson booking?"
-    );
-
-    if (!confirmed) return;
+    )) return;
 
     button.disabled = true;
     button.textContent = "Cancelling...";
 
     try {
-
-        const {
-            data,
-            error
-        } = await supabase.rpc(
+        const { data, error } = await supabase.rpc(
             "student_cancel_booking",
-            {
-                booking_id: booking.id
-            }
+            { booking_id: booking.id }
         );
 
-        if (error) {
-            throw error;
-        }
+        if (error) throw error;
 
         if (data !== true) {
-            throw new Error(
-                "The booking could not be cancelled. Please refresh and try again."
-            );
+            throw new Error("The booking could not be cancelled.");
         }
 
         await loadBookings();
@@ -531,24 +503,19 @@ async function cancelBooking(booking, button) {
         );
 
     } catch (error) {
-
         console.error("Booking cancellation error:", error);
 
         showNotice(
-            error.message || "Unable to cancel this booking. Please try again.",
+            error.message || "Unable to cancel this booking.",
             true
         );
 
         button.disabled = false;
         button.textContent = "Cancel Booking";
-
     }
-
 }
 
-
 function renderRequestHistory(booking) {
-
     const requests = getRequestsForBooking(booking.id);
 
     if (!requests.length) return null;
@@ -562,11 +529,12 @@ function renderRequestHistory(booking) {
     wrapper.appendChild(heading);
 
     requests.forEach(request => {
-
         const item = document.createElement("div");
         item.className = "request-item";
 
-        const status = String(request.status || "pending").toLowerCase();
+        const status = String(
+            request.status || "pending"
+        ).toLowerCase();
 
         const allowed = [
             "pending",
@@ -579,39 +547,40 @@ function renderRequestHistory(booking) {
             ? status
             : "pending";
 
-        item.innerHTML = `
-            <p><strong>Requested date:</strong>
-            ${escapeHTML(formatDate(request.requested_date))}</p>
+        const dateLine = document.createElement("p");
+        dateLine.textContent =
+            "Requested date: " + formatDate(request.requested_date);
 
-            <p><strong>Requested time:</strong>
-            ${escapeHTML(formatTime(request.requested_start_time))}</p>
+        const timeLine = document.createElement("p");
+        timeLine.textContent =
+            "Requested time: " + formatTime(request.requested_start_time);
 
-            <p><strong>Request status:</strong>
-            <span class="status ${safeStatus}">
-                ${safeStatus}
-            </span></p>
-        `;
+        const statusLine = document.createElement("p");
+        statusLine.textContent = "Request status: ";
+
+        const badge = document.createElement("span");
+        badge.className = "status " + safeStatus;
+        badge.textContent = safeStatus;
+
+        statusLine.appendChild(badge);
+
+        item.append(dateLine, timeLine, statusLine);
 
         if (request.student_message) {
             const message = document.createElement("p");
             message.textContent =
                 "Your reason: " + request.student_message;
-
             item.appendChild(message);
         }
 
         wrapper.appendChild(item);
-
     });
 
     return wrapper;
 }
 
-
 function createRescheduleForm(booking, button) {
-
     const form = document.createElement("form");
-
     form.className = "reschedule-form";
 
     const title = document.createElement("h4");
@@ -634,13 +603,11 @@ function createRescheduleForm(booking, button) {
 
     const now = new Date();
 
-    const localToday = [
+    dateInput.min = [
         now.getFullYear(),
         String(now.getMonth() + 1).padStart(2, "0"),
         String(now.getDate()).padStart(2, "0")
     ].join("-");
-
-    dateInput.min = localToday;
 
     dateGroup.append(dateLabel, dateInput);
 
@@ -706,7 +673,6 @@ function createRescheduleForm(booking, button) {
     );
 
     form.addEventListener("submit", async event => {
-
         event.preventDefault();
 
         errorText.style.display = "none";
@@ -714,11 +680,347 @@ function createRescheduleForm(booking, button) {
         if (!dateInput.value || !timeInput.value) {
             errorText.textContent =
                 "Please choose both a date and a time.";
-
             errorText.style.display = "block";
             return;
         }
 
         if (
             dateInput.value === booking.lesson_date &&
-            time
+            timeInput.value === booking.start_time.slice(0, 5)
+        ) {
+            errorText.textContent =
+                "Please choose a different date or time.";
+            errorText.style.display = "block";
+            return;
+        }
+
+        submit.disabled = true;
+        submit.textContent = "Sending request...";
+
+        try {
+            const { data, error } = await supabase.rpc(
+                "student_request_reschedule",
+                {
+                    p_booking_id: booking.id,
+                    p_requested_date: dateInput.value,
+                    p_requested_start_time: timeInput.value,
+                    p_student_message: messageInput.value.trim() || null
+                }
+            );
+
+            if (error) throw error;
+
+            if (!data) {
+                throw new Error(
+                    "Your rescheduling request could not be submitted."
+                );
+            }
+
+            await loadBookings();
+
+            showNotice(
+                "Your rescheduling request has been sent to your tutor. Your original booking remains unchanged until the tutor approves it."
+            );
+
+        } catch (error) {
+            console.error("Rescheduling request error:", error);
+
+            errorText.textContent =
+                error.message ||
+                "Unable to send your request. Please try again.";
+
+            errorText.style.display = "block";
+
+            submit.disabled = false;
+            submit.textContent = "Send Reschedule Request";
+        }
+    });
+
+    return form;
+}
+
+function renderBooking(booking, tutor) {
+    const card = document.createElement("section");
+    card.className = "booking";
+
+    const subject = document.createElement("h3");
+    subject.textContent = booking.subject || "Lesson request";
+
+    const profile = document.createElement("div");
+    profile.className = "tutor-profile";
+
+    profile.appendChild(createTutorPhoto(tutor));
+
+    const info = document.createElement("div");
+    info.className = "tutor-info";
+
+    const name = document.createElement("div");
+    name.className = "tutor-name";
+    name.textContent = tutor?.full_name || "Tutor";
+
+    const headline = document.createElement("div");
+    headline.className = "tutor-headline";
+    headline.textContent =
+        tutor?.headline || "Tutor Pearl tutor";
+
+    info.append(name, headline);
+    profile.appendChild(info);
+
+    const details = document.createElement("div");
+    details.className = "details";
+
+    const languages = Array.isArray(tutor?.teaching_language)
+        ? tutor.teaching_language.join(", ")
+        : (tutor?.teaching_language || "Not specified");
+
+    details.append(
+        createDetail("Teaching languages", languages),
+        createDetail(
+            "Qualifications",
+            tutor?.qualification || "Not provided"
+        ),
+        createDetail("Lesson date", formatDate(booking.lesson_date)),
+        createDetail("Start time", formatTime(booking.start_time)),
+        createDetail("Duration", booking.duration_minutes + " minutes")
+    );
+
+    const statusWrapper = document.createElement("div");
+
+    const statusLabel = document.createElement("div");
+    statusLabel.className = "label";
+    statusLabel.textContent = "Booking status";
+
+    const allowedStatuses = [
+        "pending",
+        "accepted",
+        "declined",
+        "cancelled",
+        "completed"
+    ];
+
+    const bookingStatus = String(
+        booking.status || "pending"
+    ).toLowerCase();
+
+    const safeStatus = allowedStatuses.includes(bookingStatus)
+        ? bookingStatus
+        : "pending";
+
+    const status = document.createElement("span");
+    status.className = "status " + safeStatus;
+    status.textContent = safeStatus;
+
+    statusWrapper.append(statusLabel, status);
+    details.appendChild(statusWrapper);
+
+    card.append(subject, profile, details);
+
+    if (booking.student_message) {
+        const message = document.createElement("div");
+        message.className = "message";
+
+        const strong = document.createElement("strong");
+        strong.textContent = "Your message:";
+
+        const text = document.createElement("div");
+        text.textContent = booking.student_message;
+
+        message.append(strong, text);
+        card.appendChild(message);
+    }
+
+    const requests = getRequestsForBooking(booking.id);
+
+    const hasPendingRequest = requests.some(
+        request => request.status === "pending"
+    );
+
+    if (safeStatus === "accepted") {
+        if (!hasPendingRequest) {
+            const rescheduleButton = document.createElement("button");
+
+            rescheduleButton.type = "button";
+            rescheduleButton.className = "reschedule-button";
+            rescheduleButton.textContent = "Reschedule Lesson";
+
+            const form = createRescheduleForm(
+                booking,
+                rescheduleButton
+            );
+
+            rescheduleButton.addEventListener("click", () => {
+                const visible = form.style.display === "block";
+
+                form.style.display = visible ? "none" : "block";
+
+                rescheduleButton.textContent = visible
+                    ? "Reschedule Lesson"
+                    : "Close Reschedule Form";
+            });
+
+            card.append(rescheduleButton, form);
+
+        } else {
+            const pendingMessage = document.createElement("div");
+            pendingMessage.className = "message";
+            pendingMessage.textContent =
+                "You have a pending rescheduling request for this lesson. Please wait for your tutor to respond.";
+
+            card.appendChild(pendingMessage);
+        }
+    }
+
+    const history = renderRequestHistory(booking);
+
+    if (history) {
+        card.appendChild(history);
+    }
+
+    if (
+        safeStatus === "pending" ||
+        safeStatus === "accepted"
+    ) {
+        const cancelButton = document.createElement("button");
+
+        cancelButton.type = "button";
+        cancelButton.className = "cancel-button";
+        cancelButton.textContent = "Cancel Booking";
+
+        cancelButton.addEventListener("click", () => {
+            cancelBooking(booking, cancelButton);
+        });
+
+        card.appendChild(cancelButton);
+    }
+
+    return card;
+}
+
+async function loadBookings() {
+    if (loading) return;
+
+    loading = true;
+
+    refreshBtn.disabled = true;
+    refreshBtn.textContent = "Loading...";
+
+    bookingsContainer.innerHTML =
+        '<div class="notice">Loading your bookings...</div>';
+
+    hideNotice();
+
+    try {
+        const { data: authData, error: authError } =
+            await supabase.auth.getUser();
+
+        if (authError) throw authError;
+
+        if (!authData.user) {
+            window.location.href = "student-login.html";
+            return;
+        }
+
+        const user = authData.user;
+
+        if (user.user_metadata?.account_type !== "student") {
+            showNotice(
+                "Please log in with your student account.",
+                true
+            );
+
+            bookingsContainer.innerHTML = "";
+            return;
+        }
+
+        const { data: bookings, error } = await supabase
+            .from("lesson_bookings")
+            .select("*")
+            .eq("student_id", user.id)
+            .order("created_at", { ascending: false });
+
+        if (error) throw error;
+
+        const { data: requests, error: requestError } =
+            await supabase.rpc("get_my_reschedule_requests");
+
+        if (requestError) throw requestError;
+
+        rescheduleRequests = requests || [];
+
+        if (!bookings || bookings.length === 0) {
+            bookingsContainer.innerHTML = `
+                <div class="empty">
+                    <h3>No lesson bookings yet</h3>
+                    <p>
+                        When you request a lesson with a tutor,
+                        it will appear here.
+                    </p>
+                    <a href="find-tutors.html">
+                        <button type="button">Find a Tutor</button>
+                    </a>
+                </div>
+            `;
+            return;
+        }
+
+        const tutorIds = [
+            ...new Set(bookings.map(item => item.tutor_id))
+        ];
+
+        const { data: tutors, error: tutorError } =
+            await supabase
+                .from("tutor_profiles")
+                .select(`
+                    id,
+                    full_name,
+                    headline,
+                    profile_photo_url,
+                    teaching_language,
+                    qualification
+                `)
+                .in("id", tutorIds);
+
+        if (tutorError) throw tutorError;
+
+        const tutorMap = {};
+
+        (tutors || []).forEach(tutor => {
+            tutorMap[tutor.id] = tutor;
+        });
+
+        bookingsContainer.innerHTML = "";
+
+        bookings.forEach(booking => {
+            const tutor = tutorMap[booking.tutor_id];
+
+            bookingsContainer.appendChild(
+                renderBooking(booking, tutor)
+            );
+        });
+
+    } catch (error) {
+        console.error("Student bookings error:", error);
+
+        bookingsContainer.innerHTML = "";
+
+        showNotice(
+            error.message ||
+            "Unable to load your bookings. Please try again.",
+            true
+        );
+
+    } finally {
+        loading = false;
+        refreshBtn.disabled = false;
+        refreshBtn.textContent = "Refresh Bookings";
+    }
+}
+
+refreshBtn.addEventListener("click", loadBookings);
+
+loadBookings();
+
+</script>
+
+</body>
+</html>
