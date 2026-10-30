@@ -3,7 +3,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Become a Tutor | Tutor Pearl</title>  <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -75,14 +77,18 @@
     #message {
       margin-top: 18px;
       text-align: center;
+      line-height: 1.6;
       overflow-wrap: anywhere;
     }
 
-    a { color: #E7DBFF; }
-  </style></head><body>
-  <div class="container">
-    <h1>Become a Tutor at Tutor Pearl</h1><p>
+    a {
+      color: #E7DBFF;
+    }
+  </style></head><body>  <div class="container"><h1>Become a Tutor at Tutor Pearl</h1>
+
+<p>
   Share your knowledge, inspire learners, and grow your teaching career.
+  Create your tutor account to join our learning community.
 </p>
 
 <form id="signupForm">
@@ -97,28 +103,49 @@
   <input type="password" id="password" minlength="8" required>
 
   <label for="headline">Professional Headline</label>
-  <input type="text" id="headline"
-    placeholder="Experienced English and Mathematics Tutor" required>
+  <input
+    type="text"
+    id="headline"
+    placeholder="Experienced English and Mathematics Tutor"
+    required
+  >
 
   <label for="subjects">Subjects You Teach</label>
-  <input type="text" id="subjects"
-    placeholder="English, Mathematics, Igbo" required>
+  <input
+    type="text"
+    id="subjects"
+    placeholder="English, Mathematics, Igbo"
+    required
+  >
 
   <label for="rate">Hourly Rate (USD)</label>
-  <input type="number" id="rate" min="1" step="0.01" required>
+  <input
+    type="number"
+    id="rate"
+    min="1"
+    step="0.01"
+    required
+  >
 
   <label for="languages">Languages You Speak</label>
-  <input type="text" id="languages"
-    placeholder="English, Igbo, French">
+  <input
+    type="text"
+    id="languages"
+    placeholder="English, Igbo, French"
+  >
 
   <label for="qualifications">Qualifications</label>
-  <textarea id="qualifications"
-    placeholder="List your certificates, degrees, and teaching experience"></textarea>
+  <textarea
+    id="qualifications"
+    placeholder="List your certificates, degrees, and teaching experience"
+  ></textarea>
 
   <label for="biography">About You</label>
-  <textarea id="biography"
+  <textarea
+    id="biography"
     placeholder="Tell learners about your teaching experience and approach"
-    required></textarea>
+    required
+  ></textarea>
 
   <button type="submit" id="submitButton">
     Create Tutor Account
@@ -129,6 +156,7 @@
 <div id="message" role="status" aria-live="polite"></div>
 
   </div>  <script type="module">
+
     import { createClient } from
       'https://esm.sh/@supabase/supabase-js@2';
 
@@ -142,6 +170,7 @@
     const button = document.getElementById('submitButton');
 
     form.addEventListener('submit', async (event) => {
+
       event.preventDefault();
 
       button.disabled = true;
@@ -179,68 +208,68 @@
       const biography =
         document.getElementById('biography').value.trim();
 
+      if (!Number.isFinite(rate) || rate <= 0) {
+        message.textContent = 'Please enter a valid hourly rate.';
+        button.disabled = false;
+        button.textContent = 'Create Tutor Account';
+        return;
+      }
+
       try {
+
         const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
+
+          email: email,
+          password: password,
+
           options: {
             data: {
               full_name: fullName,
-              account_type: 'tutor'
+              account_type: 'tutor',
+              headline: headline,
+              subjects: subjects.join(','),
+              hourly_rate: String(rate),
+              teaching_languages: languages.join(','),
+              qualifications: qualifications,
+              biography: biography
             }
           }
+
         });
 
-        if (error) throw error;
+        if (error) {
+          throw error;
+        }
 
         if (!data.user) {
           throw new Error('Account creation could not be confirmed. Please try again.');
         }
 
-        if (!data.session) {
-          message.textContent =
-            'Your login account has been created. Please check your email and confirm your address. Your tutor profile still needs to be submitted after confirmation.';
-
-          button.disabled = false;
-          button.textContent = 'Account Created';
-
-          return;
-        }
-
-        const { error: profileError } = await supabase
-          .from('tutor_profiles')
-          .insert({
-            id: data.user.id,
-            full_name: fullName,
-            headline: headline,
-            subjects: subjects,
-            hourly_rate: rate,
-            currency: 'USD',
-            teaching_languages: languages,
-            qualifications: qualifications,
-            biography: biography,
-            approval_status: 'pending'
-          });
-
-        if (profileError) throw profileError;
-
         message.textContent =
-          'Your tutor account and profile have been created. Your profile is awaiting approval. Please check your email if confirmation is required.';
+          'Your tutor account and profile have been created. Please check your email to confirm your address. Your profile is awaiting approval.';
 
         form.reset();
 
+        button.textContent = 'Account Created';
+
       } catch (error) {
+
         console.error('Tutor signup error:', error);
 
         message.textContent =
           error.message || 'Something went wrong. Please try again.';
 
+        button.textContent = 'Create Tutor Account';
+
       } finally {
+
         if (button.textContent !== 'Account Created') {
           button.disabled = false;
-          button.textContent = 'Create Tutor Account';
         }
+
       }
+
     });
+
   </script></body>
 </html>
