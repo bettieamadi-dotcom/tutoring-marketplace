@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Registration | Tutor Pearl</title>
-
-  <style>
+  <meta name="description" content="Create your Tutor Pearl student account and find tutors for your learning goals.">
+  <title>Student Registration | Tutor Pearl</title>  <style>
     * {
       box-sizing: border-box;
       margin: 0;
@@ -55,6 +53,11 @@
       font-size: 15px;
     }
 
+    input::placeholder,
+    textarea::placeholder {
+      color: #BBAACB;
+    }
+
     textarea {
       min-height: 110px;
       resize: vertical;
@@ -82,6 +85,7 @@
       margin-top: 18px;
       text-align: center;
       line-height: 1.5;
+      overflow-wrap: anywhere;
     }
 
     .back-link {
@@ -90,86 +94,103 @@
       margin-top: 20px;
       color: #E7DBFF;
     }
-  </style>
-</head>
-
-<body>
+  </style></head><body>
   <div class="container">
-    <h1>Join Tutor Pearl</h1>
+    <h1>Join Tutor Pearl</h1><p class="intro">
+  Create your student account and start your learning journey
+  with tutors who match your goals.
+</p>
 
-    <p class="intro">
-      Create your student account and start your learning journey
-      with tutors who match your goals.
-    </p>
+<form id="studentForm">
+  <label for="fullName">Full Name</label>
+  <input
+    type="text"
+    id="fullName"
+    autocomplete="name"
+    required
+  >
 
-    <form id="studentForm">
-      <label for="fullName">Full Name</label>
-      <input type="text" id="fullName" required>
+  <label for="email">Email Address</label>
+  <input
+    type="email"
+    id="email"
+    autocomplete="email"
+    required
+  >
 
-      <label for="email">Email Address</label>
-      <input type="email" id="email" required>
+  <label for="password">Password</label>
+  <input
+    type="password"
+    id="password"
+    minlength="8"
+    autocomplete="new-password"
+    required
+  >
 
-      <label for="password">Password</label>
-      <input type="password" id="password" minlength="8" required>
+  <label for="accountType">Who is this account for?</label>
+  <select id="accountType" required>
+    <option value="">Select an option</option>
+    <option value="myself">Myself</option>
+    <option value="child">My child</option>
+  </select>
 
-      <label for="accountType">Who is this account for?</label>
-      <select id="accountType" required>
-        <option value="">Select an option</option>
-        <option value="myself">Myself</option>
-        <option value="child">My child</option>
-      </select>
+  <label for="ageGroup">Learner's Age Group</label>
+  <select id="ageGroup" required>
+    <option value="">Select age group</option>
+    <option value="Under 13">Under 13</option>
+    <option value="13–17">13–17</option>
+    <option value="18–24">18–24</option>
+    <option value="25–34">25–34</option>
+    <option value="35 and above">35 and above</option>
+  </select>
 
-      <label for="ageGroup">Learner's Age Group</label>
-      <select id="ageGroup" required>
-        <option value="">Select age group</option>
-        <option value="Under 13">Under 13</option>
-        <option value="13–17">13–17</option>
-        <option value="18–24">18–24</option>
-        <option value="25–34">25–34</option>
-        <option value="35 and above">35 and above</option>
-      </select>
+  <label for="subjects">What do you want to learn?</label>
+  <input
+    type="text"
+    id="subjects"
+    placeholder="e.g. English, Mathematics, Igbo, French"
+    required
+  >
 
-      <label for="subjects">What do you want to learn?</label>
-      <input
-        type="text"
-        id="subjects"
-        placeholder="e.g. English, Mathematics, Igbo, French"
-        required
-      >
+  <label for="goals">What are your learning goals?</label>
+  <textarea
+    id="goals"
+    placeholder="Tell us what you hope to achieve..."
+    required
+  ></textarea>
 
-      <label for="goals">What are your learning goals?</label>
-      <textarea
-        id="goals"
-        placeholder="Tell us what you hope to achieve..."
-        required
-      ></textarea>
+  <label for="lessonFormat">Preferred Lesson Format</label>
+  <select id="lessonFormat" required>
+    <option value="">Choose a format</option>
+    <option value="One-on-one lessons">One-on-one lessons</option>
+    <option value="Group lessons">Group lessons</option>
+    <option value="Not sure yet">Not sure yet</option>
+  </select>
 
-      <label for="lessonFormat">Preferred Lesson Format</label>
-      <select id="lessonFormat" required>
-        <option value="">Choose a format</option>
-        <option value="One-on-one lessons">One-on-one lessons</option>
-        <option value="Group lessons">Group lessons</option>
-        <option value="Not sure yet">Not sure yet</option>
-      </select>
+  <button type="submit" id="submitButton">
+    Create Student Account
+  </button>
 
-      <button type="submit" id="submitButton">
-        Create Student Account
-      </button>
+  <p id="message" aria-live="polite"></p>
+</form>
 
-      <p id="message" aria-live="polite"></p>
-    </form>
+<a href="index.html" class="back-link">
+  Back to Tutor Pearl
+</a>
 
-    <a href="index.html" class="back-link">Back to Tutor Pearl</a>
-  </div>
-
-  <script type="module">
+  </div>  <script type="module">
     import { createClient } from
       'https://esm.sh/@supabase/supabase-js@2';
 
+    const SUPABASE_URL =
+      'https://chmdsvfmlscrbqomqifp.supabase.co';
+
+    const SUPABASE_PUBLISHABLE_KEY =
+      'sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ';
+
     const supabase = createClient(
-      'https://chmdsvfmlscrbqomqifp.supabase.co',
-      'sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ
-'
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
     );
 
     const form = document.getElementById('studentForm');
@@ -179,18 +200,87 @@
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
 
+      if (
+        SUPABASE_PUBLISHABLE_KEY ===
+        'sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ'
+      ) {
+        message.textContent =
+          'The registration page has not been connected to Supabase yet.';
+        return;
+      }
+
       button.disabled = true;
       button.textContent = 'Creating account...';
       message.textContent = '';
 
-      const fullName = document.getElementById('fullName').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-      const accountType = document.getElementById('accountType').value;
-      const ageGroup = document.getElementById('ageGroup').value;
-      const subjects = document.getElementById('subjects').value;
-      const goals = document.getElementById('goals').value;
-      const lessonFormat = document.getElementById('lessonFormat').value;
+      const fullName =
+        document.getElementById('fullName').value.trim();
+
+      const email =
+        document.getElementById('email').value.trim();
+
+      const password =
+        document.getElementById('password').value;
+
+      const accountType =
+        document.getElementById('accountType').value;
+
+      const ageGroup =
+        document.getElementById('ageGroup').value;
+
+      const subjects =
+        document.getElementById('subjects').value.trim();
+
+      const goals =
+        document.getElementById('goals').value.trim();
+
+      const lessonFormat =
+        document.getElementById('lessonFormat').value;
 
       try {
-        const
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              full_name: fullName,
+              account_type: 'student',
+              learner_account_for: accountType,
+              age_group: ageGroup,
+              subjects: subjects,
+              learning_goals: goals,
+              lesson_format: lessonFormat
+            }
+          }
+        });
+
+        if (error) {
+          throw error;
+        }
+
+        if (data.user) {
+          if (data.session) {
+            message.textContent =
+              'Your student account has been created successfully!';
+          } else {
+            message.textContent =
+              'Your account has been created. Please check your email and confirm your address before signing in.';
+          }
+
+          form.reset();
+        } else {
+          message.textContent =
+            'Registration could not be completed. Please try again.';
+        }
+
+      } catch (error) {
+        message.textContent =
+          error.message || 'Something went wrong. Please try again.';
+
+      } finally {
+        button.disabled = false;
+        button.textContent = 'Create Student Account';
+      }
+    });
+  </script></body>
+</html>
