@@ -2,24 +2,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Discover approved tutors on Tutor Pearl. Explore subjects, qualifications and hourly rates.">
-  <title>Find a Tutor | Tutor Pearl</title>  <style>
+  <title>Find Tutors | Tutor Pearl</title>  <style>
     * {
       box-sizing: border-box;
-      margin: 0;
-      padding: 0;
     }
 
     body {
+      margin: 0;
       font-family: Arial, sans-serif;
-      background: #F7F3FC;
-      color: #211038;
+      background: #211038;
+      color: #fff;
     }
 
     header {
-      background: #211038;
-      color: white;
-      padding: 18px 6%;
+      background: #30164A;
+      padding: 20px 6%;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -27,420 +24,377 @@
       gap: 15px;
     }
 
-    .brand {
+    .logo {
       color: #C8A8FF;
       font-size: 25px;
       font-weight: bold;
       text-decoration: none;
     }
 
-    .nav-links {
+    nav {
       display: flex;
       gap: 18px;
-      align-items: center;
       flex-wrap: wrap;
     }
 
-    .nav-links a {
-      color: white;
+    nav a {
+      color: #E7DBFF;
       text-decoration: none;
       font-size: 14px;
     }
 
     .hero {
-      background: #30164A;
-      color: white;
-      padding: 55px 6%;
       text-align: center;
+      padding: 65px 20px 45px;
+      background: #30164A;
     }
 
     .hero h1 {
-      font-size: 34px;
-      margin-bottom: 14px;
+      color: #E7DBFF;
+      font-size: 36px;
+      margin-bottom: 12px;
     }
 
     .hero p {
       color: #D8CDE5;
       line-height: 1.7;
-      max-width: 650px;
+      max-width: 600px;
       margin: auto;
     }
 
-    main {
-      width: 90%;
-      max-width: 1150px;
+    .container {
+      max-width: 1200px;
       margin: 35px auto;
+      padding: 0 20px;
     }
 
-    .search-panel {
-      background: white;
-      padding: 22px;
-      border-radius: 14px;
-      box-shadow: 0 4px 15px rgba(33,16,56,0.07);
-      margin-bottom: 30px;
-    }
-
-    .search-panel label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-
-    .search-row {
+    .search-area {
       display: flex;
-      gap: 10px;
+      gap: 12px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
     }
 
-    input {
+    .search-area input {
       flex: 1;
-      min-width: 0;
+      min-width: 200px;
       padding: 14px;
-      border: 1px solid #C8A8FF;
+      border: 1px solid #765B91;
       border-radius: 8px;
+      background: #3B2058;
+      color: white;
       font-size: 15px;
     }
 
-    button {
+    .search-area input::placeholder {
+      color: #D8CDE5;
+    }
+
+    .search-area button {
+      padding: 14px 22px;
       border: none;
       border-radius: 8px;
-      padding: 13px 20px;
       background: #C8A8FF;
       color: #211038;
       font-weight: bold;
       cursor: pointer;
     }
 
-    .section-heading {
-      margin-bottom: 22px;
-    }
-
-    .section-heading h2 {
-      color: #30164A;
-      margin-bottom: 8px;
-    }
-
-    .section-heading p {
-      color: #665875;
-      line-height: 1.6;
-    }
-
-    #status {
-      text-align: center;
-      padding: 30px 10px;
-      color: #665875;
-      line-height: 1.7;
+    .section-title {
+      color: #E7DBFF;
+      margin-bottom: 20px;
     }
 
     .tutor-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 24px;
     }
 
     .tutor-card {
-      background: white;
-      padding: 24px;
-      border-radius: 14px;
-      box-shadow: 0 4px 15px rgba(33,16,56,0.07);
+      background: #3B2058;
+      border-radius: 15px;
+      padding: 22px;
+      overflow: hidden;
     }
 
-    .avatar {
-      width: 62px;
-      height: 62px;
+    .tutor-photo {
+      width: 125px;
+      height: 125px;
       border-radius: 50%;
-      background: #E7DBFF;
-      color: #30164A;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 23px;
-      font-weight: bold;
-      margin-bottom: 15px;
+      object-fit: cover;
+      border: 3px solid #C8A8FF;
+      display: block;
+      margin: 0 auto 18px;
+      background: #211038;
     }
 
-    .tutor-card h3 {
-      color: #30164A;
-      margin-bottom: 7px;
+    .tutor-name {
+      color: #E7DBFF;
+      text-align: center;
+      margin: 0 0 8px;
+      font-size: 21px;
     }
 
     .headline {
-      color: #6E42A0;
-      font-weight: bold;
-      font-size: 14px;
-      margin-bottom: 14px;
+      text-align: center;
+      color: #C8A8FF;
       line-height: 1.5;
+      min-height: 42px;
     }
 
-    .details {
-      color: #665875;
+    .tutor-info {
+      color: #D8CDE5;
       font-size: 14px;
-      line-height: 1.8;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
     }
 
     .rate {
+      color: #C8A8FF;
       font-size: 19px;
       font-weight: bold;
-      color: #30164A;
-      margin-top: 17px;
-    }
-
-    .rate small {
-      font-size: 12px;
-      font-weight: normal;
-      color: #665875;
-    }
-
-    .profile-button {
-      display: block;
-      width: 100%;
-      margin-top: 18px;
-      text-align: center;
-      text-decoration: none;
-      background: #30164A;
-      color: white;
-      padding: 12px;
-      border-radius: 8px;
-      font-weight: bold;
+      margin-top: 15px;
     }
 
     .empty-state {
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
+      background: #3B2058;
+      padding: 35px 20px;
       text-align: center;
-      color: #665875;
+      border-radius: 12px;
+      color: #D8CDE5;
       line-height: 1.7;
     }
 
+    .error {
+      color: #FFAAAA;
+    }
+
     footer {
-      margin-top: 55px;
-      background: #211038;
-      color: #D8CDE5;
-      padding: 25px;
       text-align: center;
-      font-size: 14px;
+      padding: 30px 15px;
+      color: #D8CDE5;
+      font-size: 13px;
+      margin-top: 50px;
     }
 
     @media (max-width: 600px) {
       .hero h1 {
-        font-size: 27px;
+        font-size: 28px;
       }
 
-      .search-row {
-        flex-direction: column;
-      }
-
-      .search-row button {
-        width: 100%;
+      header {
+        padding: 18px;
       }
     }
-  </style></head><body>  <header>
-    <a href="index.html" class="brand">Tutor Pearl</a><nav class="nav-links">
-  <a href="index.html">Home</a>
-  <a href="student-dashboard.html">Dashboard</a>
-  <a href="tutor-signup.html">Become a Tutor</a>
-</nav>
-
-  </header>  <section class="hero">
-    <h1>Find Your Perfect Tutor</h1>
-    <p>
-      Discover experienced educators, explore different subjects,
-      and find a tutor who understands your learning goals.
-    </p>
-  </section>  <main><section class="search-panel">
-  <label for="searchInput">What would you like to learn?</label>
-
-  <div class="search-row">
+  </style></head><body><header>
+  <a href="index.html" class="logo">Tutor Pearl</a>  <nav>
+    <a href="index.html">Home</a>
+    <a href="student-dashboard.html">Student Dashboard</a>
+    <a href="tutor-login.html">Tutor Login</a>
+  </nav>
+</header><section class="hero">
+  <h1>Find Your Perfect Tutor</h1>  <p>
+    Discover qualified tutors, explore different subjects and find
+    the right learning support for your goals.
+  </p>
+</section><main class="container">  <div class="search-area">
     <input
       type="search"
       id="searchInput"
-      placeholder="Search by subject, tutor name or language..."
-    >
+      placeholder="Search by tutor name, subject or language..."
+    ><button type="button" id="searchButton">Search</button>
 
-    <button type="button" id="searchButton">Search</button>
-  </div>
-</section>
+  </div>  <h2 class="section-title">Explore Our Tutors</h2>  <div id="statusMessage" class="empty-state">
+    Loading approved tutors...
+  </div>  <div id="tutorGrid" class="tutor-grid"></div></main><footer>
+  © 2026 Tutor Pearl. All rights reserved.
+</footer><script type="module">
+  import { createClient } from
+    'https://esm.sh/@supabase/supabase-js@2';
 
-<section>
-  <div class="section-heading">
-    <h2>Meet Our Tutors</h2>
-    <p>Explore tutor profiles approved by Tutor Pearl.</p>
-  </div>
+  const SUPABASE_URL =
+    'https://chmdsvfmlscrbqomqifp.supabase.co';
 
-  <p id="status">Loading approved tutors...</p>
+  const SUPABASE_KEY =
+    'sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ';
 
-  <div class="tutor-grid" id="tutorGrid"></div>
-</section>
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  </main>  <footer>
-    <p>&copy; 2026 Tutor Pearl. All rights reserved.</p>
-  </footer>  <script type="module">
-    import { createClient } from
-      'https://esm.sh/@supabase/supabase-js@2';
+  const tutorGrid = document.getElementById('tutorGrid');
+  const statusMessage = document.getElementById('statusMessage');
+  const searchInput = document.getElementById('searchInput');
+  const searchButton = document.getElementById('searchButton');
 
-    const supabase = createClient(
-      'https://chmdsvfmlscrbqomqifp.supabase.co',
-      'sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ'
-    );
+  let allTutors = [];
 
-    const status = document.getElementById('status');
-    const tutorGrid = document.getElementById('tutorGrid');
-    const searchInput = document.getElementById('searchInput');
-    const searchButton = document.getElementById('searchButton');
+  function createTextElement(tag, className, text) {
+    const element = document.createElement(tag);
+    element.className = className;
+    element.textContent = text;
+    return element;
+  }
 
-    let allTutors = [];
+  function displayTutors(tutors) {
+    tutorGrid.replaceChildren();
 
-    function makeInitials(name) {
-      return (name || 'Tutor')
-        .split(' ')
-        .filter(Boolean)
-        .slice(0, 2)
-        .map(part => part[0].toUpperCase())
-        .join('');
+    if (!tutors.length) {
+      statusMessage.style.display = 'block';
+      statusMessage.textContent =
+        'No approved tutors match your search. Try another name, subject or language.';
+      return;
     }
 
-    function displayTutors(tutors) {
-      tutorGrid.innerHTML = '';
+    statusMessage.style.display = 'none';
 
-      if (!tutors.length) {
-        tutorGrid.innerHTML = `
-          <div class="empty-state">
-            <h3>No tutors found</h3>
-            <p>Try another subject or search term.</p>
-          </div>
-        `;
-        return;
+    tutors.forEach(tutor => {
+      const card = document.createElement('article');
+      card.className = 'tutor-card';
+
+      const photo = document.createElement('img');
+      photo.className = 'tutor-photo';
+      photo.alt = 'Tutor profile photograph';
+
+      if (tutor.profile_photo_url) {
+        photo.src = tutor.profile_photo_url;
+      } else {
+        photo.src =
+          'https://placehold.co/300x300/30164A/C8A8FF?text=Tutor';
       }
 
-      tutors.forEach(tutor => {
-        const subjects = Array.isArray(tutor.subjects)
-          ? tutor.subjects.join(', ')
-          : tutor.subjects || 'Not provided';
+      photo.onerror = () => {
+        photo.src =
+          'https://placehold.co/300x300/30164A/C8A8FF?text=Tutor';
+      };
 
-        const languages = Array.isArray(tutor.teaching_languages)
-          ? tutor.teaching_languages.join(', ')
-          : tutor.teaching_languages || 'Not provided';
+      const name = createTextElement(
+        'h3',
+        'tutor-name',
+        tutor.full_name || 'Tutor'
+      );
 
-        const card = document.createElement('article');
-        card.className = 'tutor-card';
+      const headline = createTextElement(
+        'p',
+        'headline',
+        tutor.headline || 'Tutor on Tutor Pearl'
+      );
 
-        const avatar = document.createElement('div');
-        avatar.className = 'avatar';
-        avatar.textContent = makeInitials(tutor.full_name);
+      const info = document.createElement('div');
+      info.className = 'tutor-info';
 
-        const name = document.createElement('h3');
-        name.textContent = tutor.full_name || 'Tutor';
+      const subjects = Array.isArray(tutor.subjects)
+        ? tutor.subjects.join(', ')
+        : 'Not specified';
 
-        const headline = document.createElement('p');
-        headline.className = 'headline';
-        headline.textContent = tutor.headline || 'Tutor Pearl Educator';
+      const languages = Array.isArray(tutor.teaching_languages)
+        ? tutor.teaching_languages.join(', ')
+        : 'Not specified';
 
-        const details = document.createElement('div');
-        details.className = 'details';
+      const qualifications =
+        tutor.qualifications || 'Not provided';
 
-        const subjectLine = document.createElement('p');
-        subjectLine.textContent = 'Subjects: ' + subjects;
+      const biography =
+        tutor.biography || 'This tutor has not added a biography yet.';
 
-        const languageLine = document.createElement('p');
-        languageLine.textContent = 'Languages: ' + languages;
+      const rate = tutor.hourly_rate !== null &&
+        tutor.hourly_rate !== undefined
+        ? Number(tutor.hourly_rate).toLocaleString()
+        : 'Contact tutor';
 
-        const qualificationLine = document.createElement('p');
-        qualificationLine.textContent =
-          'Qualifications: ' + (tutor.qualifications || 'Not provided');
+      const currency = tutor.currency || 'USD';
 
-        const biography = document.createElement('p');
-        biography.textContent =
-          tutor.biography || 'More information coming soon.';
+      [
+        ['Subjects', subjects],
+        ['Teaching languages', languages],
+        ['Qualifications', qualifications],
+        ['About the tutor', biography]
+      ].forEach(([label, value]) => {
+        const paragraph = document.createElement('p');
+        const strong = document.createElement('strong');
 
-        details.append(
-          subjectLine,
-          languageLine,
-          qualificationLine,
-          biography
-        );
+        strong.textContent = label + ': ';
+        paragraph.appendChild(strong);
+        paragraph.appendChild(document.createTextNode(value));
 
-        const rate = document.createElement('p');
-        rate.className = 'rate';
-        rate.textContent =
-          (tutor.currency || 'USD') + ' ' +
-          Number(tutor.hourly_rate || 0).toFixed(2);
-
-        const rateLabel = document.createElement('small');
-        rateLabel.textContent = ' / hour';
-        rate.appendChild(rateLabel);
-
-        card.append(avatar, name, headline, details, rate);
-        tutorGrid.appendChild(card);
-      });
-    }
-
-    function searchTutors() {
-      const term = searchInput.value.trim().toLowerCase();
-
-      if (!term) {
-        displayTutors(allTutors);
-        return;
-      }
-
-      const filtered = allTutors.filter(tutor => {
-        const searchableText = [
-          tutor.full_name,
-          tutor.headline,
-          tutor.biography,
-          tutor.qualifications,
-          ...(Array.isArray(tutor.subjects) ? tutor.subjects : []),
-          ...(Array.isArray(tutor.teaching_languages)
-            ? tutor.teaching_languages
-            : [])
-        ].join(' ').toLowerCase();
-
-        return searchableText.includes(term);
+        info.appendChild(paragraph);
       });
 
-      displayTutors(filtered);
+      const rateElement = createTextElement(
+        'p',
+        'rate',
+        rate === 'Contact tutor'
+          ? rate
+          : currency + ' ' + rate + ' / hour'
+      );
+
+      card.append(photo, name, headline, info, rateElement);
+      tutorGrid.appendChild(card);
+    });
+  }
+
+  async function loadTutors() {
+    statusMessage.style.display = 'block';
+    statusMessage.textContent = 'Loading approved tutors...';
+
+    const { data, error } = await supabase
+      .from('tutor_profiles')
+      .select(`
+        full_name,
+        headline,
+        subjects,
+        hourly_rate,
+        currency,
+        teaching_languages,
+        qualifications,
+        biography,
+        profile_photo_url
+      `)
+      .eq('approval_status', 'approved');
+
+    if (error) {
+      statusMessage.textContent =
+        'We could not load tutors. Please try again later.';
+
+      statusMessage.className = 'empty-state error';
+      console.error('Tutor loading error:', error);
+      return;
     }
 
-    async function loadTutors() {
-      status.textContent = 'Loading approved tutors...';
+    allTutors = data || [];
 
-      const { data, error } = await supabase
-        .from('tutor_profiles')
-        .select(
-          'full_name, headline, subjects, hourly_rate, currency, teaching_languages, qualifications, biography'
-        )
-        .eq('approval_status', 'approved')
-        .order('full_name', { ascending: true });
+    displayTutors(allTutors);
+  }
 
-      if (error) {
-        console.error('Tutor loading error:', error);
-        status.textContent =
-          'We could not load tutors right now. Please refresh the page.';
-        return;
-      }
+  function searchTutors() {
+    const searchTerm = searchInput.value.trim().toLowerCase();
 
-      allTutors = data || [];
-      status.hidden = true;
-
-      if (!allTutors.length) {
-        status.hidden = false;
-        status.innerHTML =
-          'No approved tutors are listed yet. Please check back soon.';
-        return;
-      }
-
+    if (!searchTerm) {
       displayTutors(allTutors);
+      return;
     }
 
-    searchButton.addEventListener('click', searchTutors);
+    const filteredTutors = allTutors.filter(tutor => {
+      const searchableText = [
+        tutor.full_name,
+        tutor.headline,
+        tutor.biography,
+        tutor.qualifications,
+        ...(Array.isArray(tutor.subjects) ? tutor.subjects : []),
+        ...(Array.isArray(tutor.teaching_languages)
+          ? tutor.teaching_languages
+          : [])
+      ].join(' ').toLowerCase();
 
-    searchInput.addEventListener('input', searchTutors);
-
-    searchInput.addEventListener('keydown', event => {
-      if (event.key === 'Enter') {
-        searchTutors();
-      }
+      return searchableText.includes(searchTerm);
     });
 
-    loadTutors();
-  </script></body>
+    displayTutors(filteredTutors);
+  }
+
+  searchButton.addEventListener('click', searchTutors);
+
+  searchInput.addEventListener('input', searchTutors);
+
+  loadTutors();
+</script></body>
 </html>
