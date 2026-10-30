@@ -1,0 +1,395 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Tutor Profile | Tutor Pearl</title>  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #211038;
+      color: #ffffff;
+    }
+
+    header {
+      padding: 20px;
+      background: #30164A;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      color: #C8A8FF;
+      font-size: 23px;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .back-link {
+      color: #E7DBFF;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 750px;
+      margin: 35px auto;
+      padding: 20px;
+    }
+
+    .card {
+      background: #3B2058;
+      padding: 28px;
+      border-radius: 16px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+      color: #E7DBFF;
+      margin-top: 0;
+    }
+
+    .intro {
+      color: #D8CDE5;
+      line-height: 1.6;
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin: 18px 0 8px;
+      font-weight: bold;
+      color: #E7DBFF;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #765B91;
+      border-radius: 8px;
+      background: #211038;
+      color: #ffffff;
+      font-size: 15px;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: 2px solid #C8A8FF;
+    }
+
+    .help {
+      display: block;
+      color: #D8CDE5;
+      font-size: 12px;
+      margin-top: 6px;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      margin-top: 25px;
+      border: none;
+      border-radius: 8px;
+      background: #C8A8FF;
+      color: #211038;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .status-box {
+      padding: 14px;
+      border-radius: 8px;
+      background: #211038;
+      color: #E7DBFF;
+      margin: 20px 0;
+      line-height: 1.5;
+    }
+
+    #message {
+      margin-top: 18px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .success {
+      color: #9EF0B0;
+    }
+
+    .error {
+      color: #FFAAAA;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        margin: 15px auto;
+        padding: 12px;
+      }
+
+      .card {
+        padding: 20px;
+      }
+    }
+  </style></head><body><header>
+  <a class="logo" href="index.html">Tutor Pearl</a>
+  <a class="back-link" href="tutor-dashboard.html">← Back to Dashboard</a>
+</header><main class="container">
+  <section class="card"><h1>Manage Your Tutor Profile</h1>
+
+<p class="intro">
+  Keep your teaching profile updated so students and parents can
+  understand your experience, subjects and teaching services.
+</p>
+
+<div class="status-box" id="approvalStatus">
+  Loading your profile status...
+</div>
+
+<form id="profileForm" style="display:none;">
+
+  <label for="fullName">Full Name</label>
+  <input type="text" id="fullName" required>
+
+  <label for="headline">Professional Headline</label>
+  <input
+    type="text"
+    id="headline"
+    placeholder="Example: Experienced English and Mathematics Tutor"
+  >
+
+  <label for="subjects">Subjects You Teach</label>
+  <input
+    type="text"
+    id="subjects"
+    placeholder="English, Mathematics, Biology"
+  >
+  <small class="help">Separate each subject with a comma.</small>
+
+  <label for="hourlyRate">Hourly Rate</label>
+  <input
+    type="number"
+    id="hourlyRate"
+    min="0"
+    step="0.01"
+    required
+  >
+
+  <label for="currency">Currency</label>
+  <select id="currency">
+    <option value="USD">USD ($)</option>
+    <option value="NGN">NGN (₦)</option>
+  </select>
+
+  <label for="languages">Teaching Languages</label>
+  <input
+    type="text"
+    id="languages"
+    placeholder="English, Igbo, French"
+  >
+  <small class="help">Separate each language with a comma.</small>
+
+  <label for="qualifications">Qualifications</label>
+  <textarea
+    id="qualifications"
+    placeholder="Describe your education, certificates and relevant training."
+  ></textarea>
+
+  <label for="biography">About You</label>
+  <textarea
+    id="biography"
+    placeholder="Tell students about your teaching experience, approach and what they can expect from your lessons."
+  ></textarea>
+
+  <button type="submit" id="saveButton">Save Changes</button>
+
+</form>
+
+<p id="message" role="status" aria-live="polite"></p>
+
+  </section>
+</main><script type="module">
+  import { createClient } from
+    'https://esm.sh/@supabase/supabase-js@2';
+
+  const SUPABASE_URL =
+    'https://chmdsvfmlscrbqomqifp.supabase.co';
+
+  const SUPABASE_KEY =
+    'sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ';
+
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const form = document.getElementById('profileForm');
+  const message = document.getElementById('message');
+  const saveButton = document.getElementById('saveButton');
+  const approvalStatus = document.getElementById('approvalStatus');
+
+  let currentUser = null;
+
+  function showMessage(text, type) {
+    message.textContent = text;
+    message.className = type;
+  }
+
+  async function loadProfile() {
+    const { data: { user }, error: authError } =
+      await supabase.auth.getUser();
+
+    if (authError || !user) {
+      window.location.href = 'tutor-login.html';
+      return;
+    }
+
+    if (user.user_metadata?.account_type !== 'tutor') {
+      await supabase.auth.signOut();
+      window.location.href = 'tutor-login.html';
+      return;
+    }
+
+    currentUser = user;
+
+    const { data: profile, error } = await supabase
+      .from('tutor_profiles')
+      .select('*')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (error) {
+      approvalStatus.textContent =
+        'We could not load your profile. Please try again.';
+      showMessage(error.message, 'error');
+      return;
+    }
+
+    if (!profile) {
+      approvalStatus.textContent =
+        'Your tutor profile was not found. Please contact support.';
+      return;
+    }
+
+    document.getElementById('fullName').value =
+      profile.full_name || '';
+
+    document.getElementById('headline').value =
+      profile.headline || '';
+
+    document.getElementById('subjects').value =
+      Array.isArray(profile.subjects)
+        ? profile.subjects.join(', ')
+        : '';
+
+    document.getElementById('hourlyRate').value =
+      profile.hourly_rate ?? '';
+
+    document.getElementById('currency').value =
+      profile.currency || 'USD';
+
+    document.getElementById('languages').value =
+      Array.isArray(profile.teaching_languages)
+        ? profile.teaching_languages.join(', ')
+        : '';
+
+    document.getElementById('qualifications').value =
+      profile.qualifications || '';
+
+    document.getElementById('biography').value =
+      profile.biography || '';
+
+    const status = profile.approval_status || 'pending';
+
+    approvalStatus.textContent =
+      'Profile approval status: ' + status.toUpperCase() +
+      '. You cannot change this status yourself.';
+
+    form.style.display = 'block';
+  }
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    if (!currentUser) {
+      showMessage('Please log in again.', 'error');
+      return;
+    }
+
+    const fullName =
+      document.getElementById('fullName').value.trim();
+
+    const rate =
+      document.getElementById('hourlyRate').value;
+
+    if (!fullName || rate === '' || Number(rate) < 0) {
+      showMessage(
+        'Please enter your full name and a valid hourly rate.',
+        'error'
+      );
+      return;
+    }
+
+    const subjects = document.getElementById('subjects').value
+      .split(',')
+      .map(item => item.trim())
+      .filter(Boolean);
+
+    const languages = document.getElementById('languages').value
+      .split(',')
+      .map(item => item.trim())
+      .filter(Boolean);
+
+    const updates = {
+      full_name: fullName,
+      headline: document.getElementById('headline').value.trim(),
+      subjects: subjects,
+      hourly_rate: Number(rate),
+      currency: document.getElementById('currency').value,
+      teaching_languages: languages,
+      qualifications:
+        document.getElementById('qualifications').value.trim(),
+      biography:
+        document.getElementById('biography').value.trim()
+    };
+
+    saveButton.disabled = true;
+    saveButton.textContent = 'Saving...';
+    showMessage('', '');
+
+    const { error } = await supabase
+      .from('tutor_profiles')
+      .update(updates)
+      .eq('id', currentUser.id);
+
+    saveButton.disabled = false;
+    saveButton.textContent = 'Save Changes';
+
+    if (error) {
+      showMessage(
+        'Your changes could not be saved: ' + error.message,
+        'error'
+      );
+      return;
+    }
+
+    showMessage(
+      'Your tutor profile has been updated successfully!',
+      'success'
+    );
+  });
+
+  loadProfile();
+</script></body>
+</html>
