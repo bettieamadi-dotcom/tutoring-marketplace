@@ -1,18 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Student Dashboard | Tutor Pearl</title>
-
-<style>
+<title>Student Dashboard | Tutor Pearl</title><style>
 *{box-sizing:border-box}
+
 body{
     margin:0;
     font-family:Arial,sans-serif;
     background:#f7f3fc;
     color:#211038;
 }
+
 header{
     background:#211038;
     color:white;
@@ -23,104 +22,229 @@ header{
     flex-wrap:wrap;
     gap:12px;
 }
+
 header h2{margin:0}
-header a{color:white;text-decoration:none}
-main{max-width:1050px;margin:35px auto;padding:0 18px}
+
+header a{
+    color:white;
+    text-decoration:none;
+}
+
+main{
+    max-width:1050px;
+    margin:35px auto;
+    padding:0 18px;
+}
+
 .welcome{margin-bottom:25px}
+
 .welcome p{color:#746780}
+
 .grid{
     display:grid;
     grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
     gap:20px;
 }
+
 .card{
     background:white;
     padding:24px;
     border-radius:14px;
     box-shadow:0 4px 15px #21103812;
 }
+
 .card h3{margin-top:0}
-.card p{color:#746780;line-height:1.6}
-button{
+
+.card p{
+    color:#746780;
+    line-height:1.6;
+}
+
+.button{
+    display:inline-block;
     background:#6d42a5;
     color:white;
     border:0;
     padding:12px 18px;
     border-radius:8px;
+    text-decoration:none;
     cursor:pointer;
     font-size:14px;
+    font-weight:bold;
 }
-button:hover{background:#513078}
-.secondary{
-    background:#211038;
-}
+
+.button:hover{background:#513078}
+
+.secondary{background:#211038}
+
 .notice{
     background:white;
     padding:18px;
     border-radius:10px;
     margin-bottom:20px;
 }
+
 .details p{margin:10px 0}
-footer{text-align:center;padding:30px;color:#82758e}
+
+footer{
+    text-align:center;
+    padding:30px;
+    color:#82758e;
+}
+
 @media(max-width:600px){
     header{padding:18px}
     main{margin:25px auto}
 }
-</style>
-</head>
-
-<body>
-
-<header>
+</style></head><body><header>
     <h2>Tutor Pearl</h2>
     <a href="find-tutors.html">Find Tutors</a>
-</header>
+</header><main><div class="welcome">
+    <h1>Student Dashboard</h1>
+    <p id="welcomeText">Welcome! Loading your account...</p>
+</div>
 
-<main>
+<div id="notice" class="notice">
+    Loading your student dashboard...
+</div>
 
-    <div class="welcome">
-        <h1>Student Dashboard</h1>
-        <p id="welcomeText">Welcome! Loading your account...</p>
-    </div>
+<div class="grid">
 
-    <div id="notice" class="notice">
-        Loading your student dashboard...
-    </div>
+    <section class="card">
+        <h3>My Lessons</h3>
+        <p>
+            View your lesson requests, accepted bookings
+            and upcoming classes.
+        </p>
 
-    <div class="grid">
+        <a class="button"
+           href="https://tutor-pearl.pages.dev/student-bookings.html">
+            View My Bookings
+        </a>
+    </section>
 
-        <section class="card">
-            <h3>My Lessons</h3>
-            <p>
-                View your lesson requests, accepted bookings
-                and upcoming classes.
-            </p>
-            <button onclick="openBookings()">
-                View My Bookings
-            </button>
-        </section>
+    <section class="card">
+        <h3>Find a Tutor</h3>
+        <p>
+            Explore approved tutors and find someone
+            who matches your learning goals.
+        </p>
 
-        <section class="card">
-            <h3>Find a Tutor</h3>
-            <p>
-                Explore approved tutors and find someone
-                who matches your learning goals.
-            </p>
-            <a href="find-tutors.html">
-                <button>Browse Tutors</button>
-            </a>
-        </section>
+        <a class="button" href="find-tutors.html">
+            Browse Tutors
+        </a>
+    </section>
 
-        <section class="card">
-            <h3>My Account</h3>
-            <p>View your student registration information.</p>
-            <div class="details" id="studentDetails">
-                Loading account information...
-            </div>
-        </section>
+    <section class="card">
+        <h3>My Account</h3>
+        <p>View your student registration information.</p>
 
-        <section class="card">
-            <h3>Account Settings</h3>
-            <p>Sign out of your student account securely.</p>
-            <button class="secondary" id="logoutBtn">
-                Log
+        <div id="studentDetails" class="details">
+            Loading account information...
+        </div>
+    </section>
+
+    <section class="card">
+        <h3>Account Settings</h3>
+        <p>Sign out of your student account securely.</p>
+
+        <button class="button secondary" id="logoutBtn">
+            Log Out
+        </button>
+    </section>
+
+</div>
+
+</main><footer>
+    © 2026 Tutor Pearl. Learn, Grow and Achieve.
+</footer><script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL =
+    "https://chmdsvfmlscrbqomqifp.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ";
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+async function loadDashboard(){
+    const notice = document.getElementById("notice");
+
+    try{
+        const {data, error} = await supabase.auth.getUser();
+
+        if(error) throw error;
+
+        if(!data.user){
+            window.location.href = "student-login.html";
+            return;
+        }
+
+        const user = data.user;
+
+        if(user.user_metadata?.account_type !== "student"){
+            notice.textContent =
+                "Please log in using your student account.";
+            return;
+        }
+
+        const name =
+            user.user_metadata?.full_name ||
+            user.email ||
+            "Student";
+
+        document.getElementById("welcomeText").textContent =
+            "Welcome back, " + name + "!";
+
+        const {error: profileError} = await supabase
+            .from("student_profiles")
+            .select("id")
+            .eq("id", user.id)
+            .maybeSingle();
+
+        if(profileError) throw profileError;
+
+        document.getElementById("studentDetails").innerHTML = `
+            <p><strong>Name:</strong> ${safe(name)}</p>
+            <p><strong>Email:</strong> ${safe(user.email)}</p>
+            <p><strong>Account:</strong> Student</p>
+        `;
+
+        notice.textContent =
+            "Your student dashboard is ready.";
+
+    }catch(error){
+        notice.textContent =
+            "Unable to load your dashboard: " +
+            (error.message || "Please try again.");
+    }
+}
+
+function safe(value){
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#39;"
+    })[char]);
+}
+
+document.getElementById("logoutBtn").addEventListener(
+    "click",
+    async function(){
+        const {error} = await supabase.auth.signOut();
+
+        if(error){
+            alert(error.message);
+            return;
+        }
+
+        window.location.href = "student-login.html";
+    }
+);
+
+loadDashboard();
+</script></body>
+</html>
