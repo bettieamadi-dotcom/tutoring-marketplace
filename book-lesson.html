@@ -1,0 +1,175 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book a Lesson | Tutor Pearl</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#211038;color:#fff;padding:25px 15px}
+.container{max-width:650px;margin:30px auto;background:#30164A;padding:28px;border-radius:16px}
+h1{margin-top:0;color:#E7DBFF}
+p{color:#D8CDE5;line-height:1.6}
+label{display:block;margin:17px 0 7px;font-weight:bold}
+input,select,textarea{width:100%;padding:13px;border:1px solid #80649c;border-radius:8px;background:#211038;color:white;font-size:15px}
+textarea{min-height:100px;resize:vertical}
+button{width:100%;padding:15px;margin-top:22px;background:#C8A8FF;color:#211038;border:0;border-radius:8px;font-weight:bold;font-size:16px;cursor:pointer}
+button:disabled{opacity:.6;cursor:not-allowed}
+.message{margin-top:18px;padding:12px;border-radius:8px;display:none;line-height:1.5}
+.success{background:#174c35;color:#c7ffdf}
+.error{background:#5a2525;color:#ffe0e0}
+.back{display:inline-block;color:#C8A8FF;margin-bottom:20px}
+</style>
+</head>
+<body><div class="container">
+<a class="back" href="find-tutors.html">← Back to tutors</a><h1>Book a Lesson</h1>
+<p>Send a lesson request to your chosen tutor. The tutor will review your request and respond.</p><div id="tutorInfo">Loading tutor information...</div><form id="bookingForm">
+<label for="subject">Subject</label>
+<input id="subject" type="text" required placeholder="e.g. English, Mathematics"><label for="lessonDate">Preferred date</label>
+<input id="lessonDate" type="date" required>
+
+<label for="startTime">Preferred start time</label>
+<input id="startTime" type="time" required>
+
+<label for="duration">Lesson duration</label>
+<select id="duration" required>
+
+<option value="30">30 minutes</option>
+<option value="60">60 minutes</option>
+<option value="90">90 minutes</option>
+</select><label for="studentMessage">Message to tutor (optional)</label>
+
+<textarea id="studentMessage" placeholder="Tell the tutor what you would like to learn."></textarea><button type="submit" id="submitButton">Send Booking Request</button>
+
+</form><div id="message" class="message"></div>
+</div><script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL = "https://chmdsvfmlscrbqomqifp.supabase.co";
+const SUPABASE_KEY = "sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ";
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const tutorInfo = document.getElementById("tutorInfo");
+const form = document.getElementById("bookingForm");
+const messageBox = document.getElementById("message");
+const submitButton = document.getElementById("submitButton");
+
+const tutorId = new URLSearchParams(window.location.search).get("tutor");
+let currentUser = null;
+let selectedTutor = null;
+
+function showMessage(text, type) {
+    messageBox.textContent = text;
+    messageBox.className = "message " + type;
+    messageBox.style.display = "block";
+}
+
+function getLocalDate() {
+    const now = new Date();
+    const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+    return local.toISOString().split("T")[0];
+}
+
+document.getElementById("lessonDate").min = getLocalDate();
+
+async function initializePage() {
+    if (!tutorId) {
+        tutorInfo.textContent = "No tutor was selected. Please return to Find Tutors.";
+        form.style.display = "none";
+        return;
+    }
+
+    const { data: authData, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !authData.user) {
+        tutorInfo.textContent = "Please log in with your student account to book a lesson.";
+        form.style.display = "none";
+        showMessage("Please log in first.", "error");
+        setTimeout(() => {
+            window.location.href = "student-login.html";
+        }, 2000);
+        return;
+    }
+
+    currentUser = authData.user;
+
+    if (currentUser.user_metadata?.account_type !== "student") {
+        tutorInfo.textContent = "Please use a student account to request lessons.";
+        form.style.display = "none";
+        return;
+    }
+
+    const { data: tutor, error } = await supabase
+        .from("tutor_profiles")
+        .select("id, full_name, headline, subjects, hourly_rate, currency")
+        .eq("id", tutorId)
+        .eq("approval_status", "approved")
+        .maybeSingle();
+
+    if (error || !tutor) {
+        tutorInfo.textContent = "This tutor could not be found or is not available for booking.";
+        form.style.display = "none";
+        return;
+    }
+
+    selectedTutor = tutor;
+
+    tutorInfo.innerHTML = "";
+    const name = document.createElement("h2");
+    name.textContent = tutor.full_name || "Tutor";
+    const headline = document.createElement("p");
+    headline.textContent = tutor.headline || "";
+    const rate = document.createElement("p");
+    rate.textContent = "Rate: " + (tutor.currency || "USD") + " " + (tutor.hourly_rate ?? "Not listed") + " per hour";
+    tutorInfo.append(name, headline, rate);
+}
+
+form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    if (!currentUser || !selectedTutor) {
+        showMessage("Please log in and select an available tutor.", "error");
+        return;
+    }
+
+    const lessonDate = document.getElementById("lessonDate").value;
+    const startTime = document.getElementById("startTime").value;
+
+    if (lessonDate < getLocalDate()) {
+        showMessage("Please choose today or a future date.", "error");
+        return;
+    }
+
+    submitButton.disabled = true;
+    submitButton.textContent = "Sending request...";
+
+    const booking = {
+        student_id: currentUser.id,
+        tutor_id: selectedTutor.id,
+        subject: document.getElementById("subject").value.trim(),
+        lesson_date: lessonDate,
+        start_time: startTime,
+        duration_minutes: Number(document.getElementById("duration").value),
+        student_message: document.getElementById("studentMessage").value.trim() || null,
+        status: "pending"
+    };
+
+    const { error } = await supabase
+        .from("lesson_bookings")
+        .insert(booking);
+
+    if (error) {
+        showMessage("Booking request could not be sent: " + error.message, "error");
+        submitButton.disabled = false;
+        submitButton.textContent = "Send Booking Request";
+        return;
+    }
+
+    showMessage("Your booking request has been sent successfully! You can check its status from your student dashboard.", "success");
+    form.reset();
+    submitButton.textContent = "Request Sent";
+});
+ 
+initializePage();
+</script></body>
+  </html>
