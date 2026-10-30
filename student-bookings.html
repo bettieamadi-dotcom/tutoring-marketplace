@@ -190,11 +190,6 @@ button:disabled {
     color: #b42318;
 }
 
-.tutor {
-    color: #6d42a5;
-    font-weight: bold;
-}
-
 @media(max-width: 600px) {
     header {
         padding: 18px;
@@ -245,13 +240,20 @@ button:disabled {
 
 </main>
 
-<script>
+<script type="module">
+
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const SUPABASE_URL =
 "https://chmdsvfmlscrbqomqifp.supabase.co";
 
 const SUPABASE_KEY =
 "sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ";
+
+const supabase = createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
 
 const bookingsContainer =
 document.getElementById("bookings");
@@ -262,91 +264,24 @@ document.getElementById("notice");
 const refreshBtn =
 document.getElementById("refreshBtn");
 
-let supabase = null;
+let loading = false;
 
 
-function loadSupabaseLibrary() {
-
-    return new Promise((resolve, reject) => {
-
-        if (window.supabase) {
-            resolve();
-            return;
-        }
-
-        const sources = [
-            "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2",
-            "https://unpkg.com/@supabase/supabase-js@2"
-        ];
-
-        let index = 0;
-
-        function tryNextSource() {
-
-            if (window.supabase) {
-                resolve();
-                return;
-            }
-
-            if (index >= sources.length) {
-                reject(new Error(
-                    "Unable to load the booking service. Please check your internet connection and refresh."
-                ));
-                return;
-            }
-
-            const script = document.createElement("script");
-
-            script.src = sources[index++];
-
-            script.onload = () => {
-                if (window.supabase) {
-                    resolve();
-                } else {
-                    tryNextSource();
-                }
-            };
-
-            script.onerror = tryNextSource;
-
-            document.head.appendChild(script);
-        }
-
-        tryNextSource();
-
-    });
-
-}
-
-
-function showNotice(message, isError = false) {
-
-    notice.textContent = message;
-
+function showNotice(text, isError = false) {
+    notice.textContent = text;
     notice.style.display = "block";
-
     notice.className = isError
         ? "notice error"
         : "notice";
-
 }
 
 
-function escapeHTML(value) {
-
-    return String(value ?? "").replace(/[&<>"']/g, char => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
-    })[char]);
-
+function hideNotice() {
+    notice.style.display = "none";
 }
 
 
 function formatDate(value) {
-
     if (!value) return "Not specified";
 
     const date = new Date(value + "T00:00:00");
@@ -356,76 +291,226 @@ function formatDate(value) {
         month: "long",
         year: "numeric"
     });
-
 }
 
 
 function formatTime(value) {
-
     if (!value) return "Not specified";
 
     const parts = value.split(":");
 
-    const hour = Number(parts[0]);
+    const date = new Date();
 
-    const minute = parts[1] || "00";
+    date.setHours(
+        Number(parts[0]),
+        Number(parts[1]),
+        0,
+        0
+    );
 
-    const suffix = hour >= 12 ? "PM" : "AM";
+    return date.toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit"
+    });
+}
 
-    return `${hour % 12 || 12}:${minute} ${suffix}`;
 
+function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    })[char]);
 }
 
 
 function getInitials(name) {
-
     return String(name || "Tutor")
         .trim()
         .split(/\s+/)
         .slice(0, 2)
         .map(part => part.charAt(0).toUpperCase())
         .join("");
-
 }
 
 
 function createTutorPhoto(tutor) {
 
-    if (tutor?.profile_photo_url) {
+    const photo = document.createElement("img");
 
-        return `
-            <img
-                class="tutor-photo"
-                src="${escapeHTML(tutor.profile_photo_url)}"
-                alt="${escapeHTML(tutor.full_name || "Tutor")}"
-                onerror="this.outerHTML='<div class=&quot;tutor-photo&quot; style=&quot;display:flex;align-items:center;justify-content:center;font-weight:bold;color:#513078;&quot;>${escapeHTML(getInitials(tutor.full_name))}</div>'"
-            >
-        `;
+    photo.className = "tutor-photo";
 
+    photo.alt = tutor?.full_name || "Tutor";
+
+    photo.src = tutor?.profile_photo_url || "";
+
+    photo.onerror = () => {
+        const fallback = document.createElement("div");
+
+        fallback.className = "tutor-photo";
+
+        fallback.style.display = "flex";
+        fallback.style.alignItems = "center";
+        fallback.style.justifyContent = "center";
+        fallback.style.fontWeight = "bold";
+        fallback.style.color = "#513078";
+
+        fallback.textContent = getInitials(tutor?.full_name);
+
+        photo.replaceWith(fallback);
+    };
+
+    if (!tutor?.profile_photo_url) {
+        photo.onerror();
     }
 
-    return `
-        <div
-            class="tutor-photo"
-            style="display:flex;align-items:center;justify-content:center;font-weight:bold;color:#513078;"
-        >
-            ${escapeHTML(getInitials(tutor?.full_name))}
-        </div>
-    `;
+    return photo;
+}
 
+
+function createDetail(label, value) {
+
+    const wrapper = document.createElement("div");
+
+    const labelElement = document.createElement("div");
+    labelElement.className = "label";
+    labelElement.textContent = label;
+
+    const valueElement = document.createElement("div");
+    valueElement.className = "value";
+    valueElement.textContent = value;
+
+    wrapper.append(labelElement, valueElement);
+
+    return wrapper;
+}
+
+
+function renderBooking(booking, tutor) {
+
+    const card = document.createElement("section");
+
+    card.className = "booking";
+
+    const subject = document.createElement("h3");
+    subject.textContent = booking.subject || "Lesson request";
+
+    const profile = document.createElement("div");
+    profile.className = "tutor-profile";
+
+    profile.appendChild(createTutorPhoto(tutor));
+
+    const info = document.createElement("div");
+    info.className = "tutor-info";
+
+    const name = document.createElement("div");
+    name.className = "tutor-name";
+    name.textContent = tutor?.full_name || "Tutor";
+
+    const headline = document.createElement("div");
+    headline.className = "tutor-headline";
+    headline.textContent =
+        tutor?.headline || "Tutor Pearl tutor";
+
+    info.append(name, headline);
+
+    profile.appendChild(info);
+
+    const details = document.createElement("div");
+    details.className = "details";
+
+    details.append(
+        createDetail(
+            "Teaching languages",
+            tutor?.teaching_languages || "Not specified"
+        ),
+        createDetail(
+            "Qualifications",
+            tutor?.qualifications || "Not provided"
+        ),
+        createDetail(
+            "Lesson date",
+            formatDate(booking.lesson_date)
+        ),
+        createDetail(
+            "Start time",
+            formatTime(booking.start_time)
+        ),
+        createDetail(
+            "Duration",
+            booking.duration_minutes + " minutes"
+        )
+    );
+
+    const statusWrapper = document.createElement("div");
+
+    const statusLabel = document.createElement("div");
+    statusLabel.className = "label";
+    statusLabel.textContent = "Booking status";
+
+    const status = document.createElement("span");
+
+    const allowedStatuses = [
+        "pending",
+        "accepted",
+        "declined",
+        "cancelled",
+        "completed"
+    ];
+
+    const bookingStatus = String(
+        booking.status || "pending"
+    ).toLowerCase();
+
+    const safeStatus = allowedStatuses.includes(bookingStatus)
+        ? bookingStatus
+        : "pending";
+
+    status.className = "status " + safeStatus;
+    status.textContent = safeStatus;
+
+    statusWrapper.append(statusLabel, status);
+
+    details.appendChild(statusWrapper);
+
+    card.append(subject, profile, details);
+
+    if (booking.student_message) {
+
+        const message = document.createElement("div");
+
+        message.className = "message";
+
+        const strong = document.createElement("strong");
+        strong.textContent = "Your message:";
+
+        const text = document.createElement("div");
+        text.textContent = booking.student_message;
+
+        message.append(strong, text);
+
+        card.appendChild(message);
+    }
+
+    return card;
 }
 
 
 async function loadBookings() {
 
-    refreshBtn.disabled = true;
+    if (loading) return;
 
+    loading = true;
+
+    refreshBtn.disabled = true;
     refreshBtn.textContent = "Loading...";
 
     bookingsContainer.innerHTML =
         '<div class="notice">Loading your bookings...</div>';
 
-    notice.style.display = "none";
+    hideNotice();
 
     try {
 
@@ -434,12 +519,13 @@ async function loadBookings() {
             error: authError
         } = await supabase.auth.getUser();
 
-        if (authError || !authData.user) {
+        if (authError) {
+            throw authError;
+        }
 
+        if (!authData.user) {
             window.location.href = "student-login.html";
-
             return;
-
         }
 
         const user = authData.user;
@@ -451,14 +537,9 @@ async function loadBookings() {
                 true
             );
 
-            await supabase.auth.signOut();
-
-            setTimeout(() => {
-                window.location.href = "student-login.html";
-            }, 1500);
+            bookingsContainer.innerHTML = "";
 
             return;
-
         }
 
         const {
@@ -471,16 +552,7 @@ async function loadBookings() {
             .order("created_at", { ascending: false });
 
         if (error) {
-
-            bookingsContainer.innerHTML = "";
-
-            showNotice(
-                "Could not load bookings: " + error.message,
-                true
-            );
-
-            return;
-
+            throw error;
         }
 
         if (!bookings || bookings.length === 0) {
@@ -488,20 +560,17 @@ async function loadBookings() {
             bookingsContainer.innerHTML = `
                 <div class="empty">
                     <h3>No lesson bookings yet</h3>
-
                     <p>
                         When you request a lesson with a tutor,
                         it will appear here.
                     </p>
-
                     <a href="find-tutors.html">
-                        <button>Find a Tutor</button>
+                        <button type="button">Find a Tutor</button>
                     </a>
                 </div>
             `;
 
             return;
-
         }
 
         const tutorIds = [
@@ -524,22 +593,13 @@ async function loadBookings() {
             .in("id", tutorIds);
 
         if (tutorError) {
-
-            console.error("Tutor details error:", tutorError);
-
-            showNotice(
-                "Bookings loaded, but some tutor details could not be retrieved.",
-                true
-            );
-
+            throw tutorError;
         }
 
         const tutorMap = {};
 
         (tutors || []).forEach(tutor => {
-
             tutorMap[tutor.id] = tutor;
-
         });
 
         bookingsContainer.innerHTML = "";
@@ -548,154 +608,26 @@ async function loadBookings() {
 
             const tutor = tutorMap[booking.tutor_id];
 
-            const status = String(
-                booking.status || "pending"
-            ).toLowerCase();
-
-            const allowedStatuses = [
-                "pending",
-                "accepted",
-                "declined",
-                "cancelled",
-                "completed"
-            ];
-
-            const safeStatus = allowedStatuses.includes(status)
-                ? status
-                : "pending";
-
-            const tutorName = tutor?.full_name || "Tutor";
-
-            const headline =
-                tutor?.headline || "Tutor Pearl tutor";
-
-            const languages =
-                tutor?.teaching_languages || "Not specified";
-
-            const qualifications =
-                tutor?.qualifications || "Not provided";
-
-            const card = document.createElement("section");
-
-            card.className = "booking";
-
-            card.innerHTML = `
-
-                <h3>${escapeHTML(booking.subject)}</h3>
-
-                <div class="tutor-profile">
-
-                    ${createTutorPhoto(tutor)}
-
-                    <div class="tutor-info">
-
-                        <div class="tutor-name">
-                            ${escapeHTML(tutorName)}
-                        </div>
-
-                        <div class="tutor-headline">
-                            ${escapeHTML(headline)}
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <div class="details">
-
-                    <div>
-                        <div class="label">
-                            Teaching languages
-                        </div>
-
-                        <div class="value">
-                            ${escapeHTML(languages)}
-                        </div>
-                    </div>
-
-                    <div>
-                        <div class="label">
-                            Qualifications
-                        </div>
-
-                        <div class="value">
-                            ${escapeHTML(qualifications)}
-                        </div>
-                    </div>
-
-                    <div>
-                        <div class="label">
-                            Lesson date
-                        </div>
-
-                        <div class="value">
-                            ${escapeHTML(formatDate(booking.lesson_date))}
-                        </div>
-                    </div>
-
-                    <div>
-                        <div class="label">
-                            Start time
-                        </div>
-
-                        <div class="value">
-                            ${escapeHTML(formatTime(booking.start_time))}
-                        </div>
-                    </div>
-
-                    <div>
-                        <div class="label">
-                            Duration
-                        </div>
-
-                        <div class="value">
-                            ${escapeHTML(booking.duration_minutes)} minutes
-                        </div>
-                    </div>
-
-                    <div>
-                        <div class="label">
-                            Booking status
-                        </div>
-
-                        <div>
-                            <span class="status ${safeStatus}">
-                                ${escapeHTML(safeStatus)}
-                            </span>
-                        </div>
-                    </div>
-
-                </div>
-
-                ${
-                    booking.student_message
-                    ? `
-                        <div class="message">
-                            <strong>Your message:</strong><br>
-                            ${escapeHTML(booking.student_message)}
-                        </div>
-                    `
-                    : ""
-                }
-
-            `;
-
-            bookingsContainer.appendChild(card);
+            bookingsContainer.appendChild(
+                renderBooking(booking, tutor)
+            );
 
         });
 
     } catch (error) {
 
-        console.error(error);
+        console.error("Student bookings error:", error);
 
         bookingsContainer.innerHTML = "";
 
         showNotice(
-            error.message || "Something went wrong while loading bookings.",
+            error.message || "Unable to load your bookings. Please try again.",
             true
         );
 
     } finally {
+
+        loading = false;
 
         refreshBtn.disabled = false;
 
@@ -709,35 +641,7 @@ async function loadBookings() {
 refreshBtn.addEventListener("click", loadBookings);
 
 
-async function initialize() {
-
-    try {
-
-        await loadSupabaseLibrary();
-
-        supabase = window.supabase.createClient(
-            SUPABASE_URL,
-            SUPABASE_KEY
-        );
-
-        await loadBookings();
-
-    } catch (error) {
-
-        bookingsContainer.innerHTML = "";
-
-        showNotice(error.message, true);
-
-        refreshBtn.disabled = false;
-
-        refreshBtn.textContent = "Refresh Bookings";
-
-    }
-
-}
-
-
-initialize();
+loadBookings();
 
 </script>
 
