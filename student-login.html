@@ -1,0 +1,266 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Login | Tutor Pearl</title>  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #211038;
+      color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .login-card {
+      background: #30164A;
+      width: 100%;
+      max-width: 440px;
+      padding: 36px 28px;
+      border-radius: 18px;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.25);
+    }
+
+    .brand {
+      text-align: center;
+      color: #C8A8FF;
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 25px;
+      margin-bottom: 10px;
+    }
+
+    .intro {
+      text-align: center;
+      color: #D8CDE5;
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+
+    label {
+      display: block;
+      margin: 17px 0 8px;
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #755B91;
+      border-radius: 8px;
+      background: #211038;
+      color: white;
+      font-size: 15px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #C8A8FF;
+    }
+
+    .password-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .password-row input {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .show-button {
+      background: #51336C;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 14px 10px;
+      cursor: pointer;
+    }
+
+    .forgot {
+      display: block;
+      text-align: right;
+      margin-top: 12px;
+      color: #C8A8FF;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .submit-button {
+      width: 100%;
+      padding: 15px;
+      margin-top: 25px;
+      background: #C8A8FF;
+      color: #211038;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .submit-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    #message {
+      margin-top: 18px;
+      line-height: 1.5;
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
+
+    .signup {
+      text-align: center;
+      margin-top: 25px;
+      color: #D8CDE5;
+      line-height: 1.8;
+    }
+
+    a {
+      color: #C8A8FF;
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      text-decoration: none;
+    }
+  </style></head><body>  <main class="login-card"><div class="brand">Tutor Pearl</div>
+
+<h1>Welcome Back</h1>
+
+<p class="intro">
+  Sign in to continue your learning journey with Tutor Pearl.
+</p>
+
+<form id="loginForm">
+
+  <label for="email">Email Address</label>
+  <input
+    type="email"
+    id="email"
+    autocomplete="email"
+    required
+  >
+
+  <label for="password">Password</label>
+
+  <div class="password-row">
+    <input
+      type="password"
+      id="password"
+      autocomplete="current-password"
+      required
+    >
+
+    <button
+      type="button"
+      class="show-button"
+      id="showPassword"
+    >
+      Show
+    </button>
+  </div>
+
+  <a href="reset-password.html" class="forgot">
+    Forgot password?
+  </a>
+
+  <button
+    type="submit"
+    class="submit-button"
+    id="submitButton"
+  >
+    Sign In
+  </button>
+
+  <p id="message" aria-live="polite"></p>
+
+</form>
+
+<div class="signup">
+  Don't have a student account?
+  <a href="student-signup.html">Create an account</a>
+</div>
+
+<a href="index.html" class="back-link">
+  Back to Tutor Pearl
+</a>
+
+  </main>  <script type="module">
+    import { createClient } from
+      'https://esm.sh/@supabase/supabase-js@2';
+
+    const SUPABASE_URL =
+      'https://chmdsvfmlscrbqomqifp.supabase.co';
+
+    const SUPABASE_PUBLISHABLE_KEY =
+      'sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ';
+
+    const supabase = createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+    const form = document.getElementById('loginForm');
+    const message = document.getElementById('message');
+    const button = document.getElementById('submitButton');
+    const passwordInput = document.getElementById('password');
+
+    document.getElementById('showPassword').addEventListener(
+      'click',
+      function () {
+        const isHidden = passwordInput.type === 'password';
+
+        passwordInput.type = isHidden ? 'text' : 'password';
+        this.textContent = isHidden ? 'Hide' : 'Show';
+      }
+    );
+
+    form.addEventListener('submit', async function (event) {
+      event.preventDefault();
+
+      const email = document.getElementById('email').value.trim();
+      const password = passwordInput.value;
+
+      message.textContent = 'Signing you in...';
+      button.disabled = true;
+
+      const { data, error } =
+        await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+
+      button.disabled = false;
+
+      if (error) {
+        message.textContent = error.message;
+        return;
+      }
+
+      if (data.user) {
+        message.textContent =
+          'Login successful! Your student account is active. Your dashboard will be available here soon.';
+        form.reset();
+      }
+    });
+  </script></body>
+  </html>
