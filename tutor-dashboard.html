@@ -1,0 +1,394 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tutor Dashboard | Tutor Pearl</title>  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #F7F3FC;
+      color: #211038;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      background: #211038;
+      color: white;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      color: #E7DBFF;
+      font-size: 23px;
+      font-weight: bold;
+    }
+
+    .logout {
+      background: #C8A8FF;
+      color: #211038;
+      border: none;
+      padding: 11px 18px;
+      border-radius: 7px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 30px auto;
+      padding: 0 18px 40px;
+    }
+
+    .welcome {
+      background: #30164A;
+      color: white;
+      padding: 30px;
+      border-radius: 15px;
+      margin-bottom: 25px;
+    }
+
+    .welcome h1 {
+      margin-top: 0;
+      color: #E7DBFF;
+    }
+
+    .welcome p {
+      line-height: 1.6;
+      color: #D8CDE5;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 9px 14px;
+      border-radius: 20px;
+      background: #FCECCB;
+      color: #704B00;
+      font-weight: bold;
+      font-size: 13px;
+    }
+
+    .section-title {
+      margin: 30px 0 15px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: white;
+      padding: 22px;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px rgba(33, 16, 56, 0.07);
+    }
+
+    .card h3 {
+      margin-top: 0;
+      color: #30164A;
+    }
+
+    .card p {
+      color: #65566F;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    .profile {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      margin-top: 25px;
+      box-shadow: 0 3px 12px rgba(33, 16, 56, 0.07);
+    }
+
+    .profile h2 {
+      color: #30164A;
+    }
+
+    .profile-item {
+      padding: 12px 0;
+      border-bottom: 1px solid #EEE7F5;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    .profile-item strong {
+      display: block;
+      color: #30164A;
+      margin-bottom: 4px;
+    }
+
+    .empty {
+      color: #765F86;
+      background: #F1EAF9;
+      padding: 16px;
+      border-radius: 8px;
+      line-height: 1.6;
+    }
+
+    .notice {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      background: #F1EAF9;
+      color: #30164A;
+      line-height: 1.6;
+    }
+
+    #message {
+      margin: 20px 0;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #765F86;
+    }
+
+    @media (max-width: 480px) {
+      .welcome {
+        padding: 22px;
+      }
+
+      header {
+        padding: 16px;
+      }
+    }
+  </style></head><body>  <header>
+    <div class="brand">Tutor Pearl</div><button class="logout" id="logoutButton">
+  Log Out
+</button>
+
+  </header>  <main><section class="welcome">
+  <h1>Welcome, <span id="tutorName">Tutor</span>!</h1>
+
+  <p>
+    Welcome to your Tutor Pearl workspace.
+    Manage your teaching profile and prepare to connect
+    with learners around the world.
+  </p>
+
+  <span class="status" id="approvalStatus">
+    Checking profile status...
+  </span>
+</section>
+
+<h2 class="section-title">Your Workspace</h2>
+
+<section class="grid">
+
+  <div class="card">
+    <h3>My Profile</h3>
+    <p>
+      View your teaching information, subjects,
+      qualifications and hourly rate.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>My Lessons</h3>
+    <p>
+      Your lesson bookings and scheduled classes
+      will appear here when booking is available.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>My Earnings</h3>
+    <p>
+      Your lesson earnings and payment information
+      will be available here when payments are implemented.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Teaching Opportunities</h3>
+    <p>
+      Get ready to connect with students looking
+      for tutors in your subject areas.
+    </p>
+  </div>
+
+</section>
+
+<section class="profile">
+
+  <h2>Your Teaching Profile</h2>
+
+  <div id="profileDetails">
+    <p>Loading your profile...</p>
+  </div>
+
+</section>
+
+<div class="notice" id="approvalNotice">
+  Your profile information will appear here.
+</div>
+
+<div id="message" role="status" aria-live="polite"></div>
+
+  </main>  <footer>
+    © 2026 Tutor Pearl. All rights reserved.
+  </footer>  <script type="module">
+
+    import { createClient } from
+      'https://esm.sh/@supabase/supabase-js@2';
+
+    const supabase = createClient(
+      'https://chmdsvfmlscrbqomqifp.supabase.co',
+      'sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ'
+    );
+
+    const tutorName = document.getElementById('tutorName');
+    const approvalStatus = document.getElementById('approvalStatus');
+    const profileDetails = document.getElementById('profileDetails');
+    const approvalNotice = document.getElementById('approvalNotice');
+    const message = document.getElementById('message');
+
+    function addProfileItem(label, value) {
+      const item = document.createElement('div');
+      item.className = 'profile-item';
+
+      const heading = document.createElement('strong');
+      heading.textContent = label;
+
+      const content = document.createElement('span');
+      content.textContent =
+        value === null || value === undefined || value === ''
+          ? 'Not provided'
+          : Array.isArray(value)
+            ? (value.length ? value.join(', ') : 'Not provided')
+            : String(value);
+
+      item.append(heading, content);
+      profileDetails.appendChild(item);
+    }
+
+    async function loadTutorDashboard() {
+
+      try {
+
+        const { data: { user }, error: userError } =
+          await supabase.auth.getUser();
+
+        if (userError || !user) {
+          window.location.href = 'tutor-login.html';
+          return;
+        }
+
+        if (user.user_metadata?.account_type !== 'tutor') {
+          await supabase.auth.signOut();
+          window.location.href = 'tutor-login.html';
+          return;
+        }
+
+        const { data: tutor, error: profileError } = await supabase
+          .from('tutor_profiles')
+          .select('*')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        if (profileError) {
+          throw profileError;
+        }
+
+        tutorName.textContent =
+          tutor?.full_name ||
+          user.user_metadata?.full_name ||
+          'Tutor';
+
+        profileDetails.replaceChildren();
+
+        if (!tutor) {
+
+          approvalStatus.textContent = 'Profile not found';
+
+          const notice = document.createElement('p');
+          notice.className = 'empty';
+          notice.textContent =
+            'Your tutor account exists, but no teaching profile was found yet. Your profile details may need to be submitted again.';
+
+          profileDetails.appendChild(notice);
+
+          approvalNotice.textContent =
+            'Your account is signed in, but your teaching profile is not available yet.';
+
+          return;
+        }
+
+        const status = tutor.approval_status || 'pending';
+
+        approvalStatus.textContent =
+          status.charAt(0).toUpperCase() + status.slice(1);
+
+        if (status === 'approved') {
+          approvalStatus.style.background = '#D9F5E3';
+          approvalStatus.style.color = '#176B35';
+
+          approvalNotice.textContent =
+            'Your tutor profile has been approved. You are ready for the next steps in joining our teaching community.';
+        } else if (status === 'rejected') {
+          approvalStatus.style.background = '#FCE1E1';
+          approvalStatus.style.color = '#9B2525';
+
+          approvalNotice.textContent =
+            'Your profile was not approved. Please contact Tutor Pearl support for further information.';
+        } else {
+          approvalNotice.textContent =
+            'Your profile is awaiting administrator review. You will be able to access approved tutor opportunities once your profile is approved.';
+        }
+
+        addProfileItem('Full Name', tutor.full_name);
+        addProfileItem('Professional Headline', tutor.headline);
+        addProfileItem('Subjects', tutor.subjects);
+        addProfileItem('Hourly Rate', tutor.hourly_rate
+          ? `${tutor.currency || 'USD'} ${tutor.hourly_rate}`
+          : 'Not provided');
+        addProfileItem('Teaching Languages', tutor.teaching_languages);
+        addProfileItem('Qualifications', tutor.qualifications);
+        addProfileItem('Biography', tutor.biography);
+
+      } catch (error) {
+
+        console.error('Dashboard error:', error);
+
+        message.textContent =
+          'We could not load your tutor profile. ' +
+          (error.message || 'Please try again later.');
+
+        profileDetails.replaceChildren();
+
+      }
+
+    }
+
+    document.getElementById('logoutButton')
+      .addEventListener('click', async () => {
+
+        const { error } = await supabase.auth.signOut();
+
+        if (error) {
+          message.textContent = error.message;
+          return;
+        }
+
+        window.location.href = 'tutor-login.html';
+
+      });
+
+    loadTutorDashboard();
+
+  </script></body>
+</html>
