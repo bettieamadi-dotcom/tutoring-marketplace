@@ -3,60 +3,235 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tutor Dashboard | Tutor Pearl</title><style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f7f3fc;color:#211038}
-header{background:#211038;color:white;padding:20px 6%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
-header h2{margin:0}
-header a{color:white;text-decoration:none}
-main{max-width:1050px;margin:35px auto;padding:0 18px}
-.welcome{margin-bottom:25px}
-.welcome p{color:#746780}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px}
-.card{background:white;padding:24px;border-radius:14px;box-shadow:0 4px 15px #21103812}
-.card h3{margin-top:0}
-.card p{color:#746780;line-height:1.6}
-.button{display:inline-block;background:#6d42a5;color:white;padding:12px 18px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:bold}
-.button:hover{background:#513078}
-.secondary{background:#211038}
-.notice{background:white;padding:18px;border-radius:10px;margin-bottom:20px}
-footer{text-align:center;padding:30px;color:#82758e}
-@media(max-width:600px){header{padding:18px}main{margin:25px auto}}
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #211038;
+    color: #ffffff;
+}
+
+header {
+    background: #30164A;
+    padding: 22px 6%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    border-bottom: 1px solid #53366D;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+header a {
+    color: #C8A8FF;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+main {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.welcome {
+    margin-bottom: 30px;
+}
+
+.welcome h1 {
+    font-size: 30px;
+    margin-bottom: 10px;
+}
+
+.welcome p {
+    color: #D8CDE5;
+    line-height: 1.6;
+}
+
+.notice {
+    background: #30164A;
+    border: 1px solid #6D4A91;
+    padding: 16px 20px;
+    border-radius: 12px;
+    margin-bottom: 28px;
+    color: #E7DBFF;
+}
+
+.section-title {
+    color: #C8A8FF;
+    margin-bottom: 18px;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 22px;
+}
+
+.card {
+    background: #3B2058;
+    border: 1px solid #654580;
+    border-radius: 16px;
+    padding: 25px;
+    min-height: 210px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+}
+
+.card h3 {
+    color: #E7DBFF;
+    margin-top: 0;
+    font-size: 20px;
+}
+
+.card p {
+    color: #D8CDE5;
+    line-height: 1.7;
+    font-size: 14px;
+    flex-grow: 1;
+}
+
+.card-button {
+    display: inline-block;
+    background: #C8A8FF;
+    color: #211038;
+    padding: 12px 18px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
+    margin-top: 12px;
+    cursor: pointer;
+}
+
+.card-button:hover {
+    background: #E7DBFF;
+}
+
+.secondary-button {
+    background: transparent;
+    color: #E7DBFF;
+    border: 1px solid #C8A8FF;
+}
+
+.secondary-button:hover {
+    background: #53366D;
+}
+
+footer {
+    text-align: center;
+    padding: 30px 15px;
+    color: #BCA9D1;
+    font-size: 13px;
+}
+
+@media(max-width:600px) {
+    header {
+        padding: 18px;
+    }
+
+    main {
+        margin: 28px auto;
+    }
+
+    .welcome h1 {
+        font-size: 25px;
+    }
+}
 </style></head><body><header>
-<h2>Tutor Pearl</h2>
-<a href="find-tutors.html">Marketplace</a>
-</header><main><div class="welcome">
-<h1>Tutor Dashboard</h1>
-<p id="welcomeText">Welcome! Loading your account...</p>
-</div><div id="notice" class="notice">Checking your tutor account...</div><div class="grid"><section class="card">
-<h3>My Lessons</h3>
-<p>
-View lesson requests from students, check booking details,
-and accept or decline pending requests.
-</p>
-<a class="button" href="https://tutor-pearl.pages.dev/tutor-bookings.html">
-View My Bookings
-</a>
-</section><section class="card">
-<h3>My Profile</h3>
-<p>Update your teaching information, qualifications, photo and introduction video.</p>
-<a class="button" href="tutor-profile.html">Manage Profile</a>
-</section><section class="card">
-<h3>My Earnings</h3>
-<p>Your earnings information will appear here when payment processing is implemented.</p>
-</section><section class="card">
-<h3>Teaching Opportunities</h3>
-<p>Explore the Tutor Pearl marketplace and see how your profile appears to students.</p>
-<a class="button" href="find-tutors.html">View Marketplace</a>
-</section><section class="card">
-<h3>Account Settings</h3>
-<p>Sign out of your tutor account securely.</p>
-<button class="button secondary" id="logoutBtn">Log Out</button>
-</section></div>
-</main><footer>© 2026 Tutor Pearl. Learn, Grow and Achieve.</footer><script type="module">
+    <div class="logo">Tutor Pearl</div>
+    <a href="find-tutors.html">View Marketplace</a>
+</header><main><section class="welcome">
+    <h1 id="welcomeText">Welcome to Your Tutor Dashboard</h1>
+    <p>
+        Manage your teaching profile, respond to student
+        lesson requests and keep track of your tutoring activities.
+    </p>
+</section>
+
+<div class="notice" id="notice">
+    Checking your tutor account...
+</div>
+
+<h2 class="section-title">Your Dashboard</h2>
+
+<div class="dashboard-grid">
+
+    <section class="card">
+        <h3>My Profile</h3>
+        <p>
+            Manage your teaching profile, qualifications,
+            subjects, profile photo and introduction video.
+        </p>
+        <a class="card-button" href="tutor-profile.html">
+            Manage Profile
+        </a>
+    </section>
+
+    <section class="card">
+        <h3>My Lessons</h3>
+        <p>
+            View lesson requests from students, check booking
+            details and accept or decline pending requests.
+        </p>
+        <a class="card-button"
+           href="https://tutor-pearl.pages.dev/tutor-bookings.html">
+            View My Lessons
+        </a>
+    </section>
+
+    <section class="card">
+        <h3>My Earnings</h3>
+        <p>
+            Your earnings and payment information will
+            appear here when payment processing is implemented.
+        </p>
+    </section>
+
+    <section class="card">
+        <h3>Teaching Opportunities</h3>
+        <p>
+            Visit the Tutor Pearl marketplace and see how
+            your approved tutor profile appears to students.
+        </p>
+        <a class="card-button" href="find-tutors.html">
+            View Marketplace
+        </a>
+    </section>
+
+    <section class="card">
+        <h3>Account Settings</h3>
+        <p>
+            Sign out of your tutor account securely.
+        </p>
+        <button class="card-button secondary-button" id="logoutBtn">
+            Log Out
+        </button>
+    </section>
+
+</div>
+
+</main><footer>
+    © 2026 Tutor Pearl. Learn, Grow and Achieve.
+</footer><script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const SUPABASE_URL = "https://chmdsvfmlscrbqomqifp.supabase.co";
-const SUPABASE_KEY = "sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ";
+const SUPABASE_URL =
+    "https://chmdsvfmlscrbqomqifp.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ";
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -64,7 +239,7 @@ async function loadDashboard() {
     const notice = document.getElementById("notice");
 
     try {
-        const {data, error} = await supabase.auth.getUser();
+        const { data, error } = await supabase.auth.getUser();
 
         if (error) throw error;
 
@@ -76,27 +251,34 @@ async function loadDashboard() {
         const user = data.user;
 
         if (user.user_metadata?.account_type !== "tutor") {
-            notice.textContent = "Please log in with your tutor account.";
+            notice.textContent =
+                "Please log in using your tutor account.";
             return;
         }
 
-        const name = user.user_metadata?.full_name || "Tutor";
+        const name =
+            user.user_metadata?.full_name || "Tutor";
 
         document.getElementById("welcomeText").textContent =
             "Welcome back, " + name + "!";
 
-        const {data: profile, error: profileError} = await supabase
-            .from("tutor_profiles")
-            .select("approval_status")
-            .eq("id", user.id)
-            .maybeSingle();
+        const { data: profile, error: profileError } =
+            await supabase
+                .from("tutor_profiles")
+                .select("approval_status")
+                .eq("id", user.id)
+                .maybeSingle();
 
         if (profileError) throw profileError;
 
-        notice.textContent = profile
-            ? "Your tutor dashboard is ready. Profile status: " +
-              profile.approval_status + "."
-            : "Your tutor account is active. Your profile information is not yet available.";
+        if (profile) {
+            notice.textContent =
+                "Your tutor account is active. Profile status: " +
+                profile.approval_status + ".";
+        } else {
+            notice.textContent =
+                "Welcome! Your tutor profile information is not available yet.";
+        }
 
     } catch (error) {
         notice.textContent =
@@ -105,16 +287,19 @@ async function loadDashboard() {
     }
 }
 
-document.getElementById("logoutBtn").addEventListener("click", async () => {
-    const {error} = await supabase.auth.signOut();
+document.getElementById("logoutBtn").addEventListener(
+    "click",
+    async function() {
+        const { error } = await supabase.auth.signOut();
 
-    if (error) {
-        alert(error.message);
-        return;
+        if (error) {
+            alert(error.message);
+            return;
+        }
+
+        window.location.href = "tutor-login.html";
     }
-
-    window.location.href = "tutor-login.html";
-});
+);
 
 loadDashboard();
 </script></body>
