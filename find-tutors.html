@@ -1,400 +1,324 @@
 <!DOCTYPE html><html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Find Tutors | Tutor Pearl</title>  <style>
-    * {
-      box-sizing: border-box;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Find Tutors | Tutor Pearl</title><style>
+*{box-sizing:border-box}
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #211038;
-      color: #fff;
-    }
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#211038;
+    color:#fff;
+}
 
-    header {
-      background: #30164A;
-      padding: 20px 6%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 15px;
-    }
+header{
+    background:#30164A;
+    padding:20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:15px;
+}
 
-    .logo {
-      color: #C8A8FF;
-      font-size: 25px;
-      font-weight: bold;
-      text-decoration: none;
-    }
+header h2{margin:0;color:#E7DBFF}
 
-    nav {
-      display: flex;
-      gap: 18px;
-      flex-wrap: wrap;
-    }
+nav a{
+    color:#D8CDE5;
+    text-decoration:none;
+    margin:0 8px;
+}
 
-    nav a {
-      color: #E7DBFF;
-      text-decoration: none;
-      font-size: 14px;
-    }
+nav a:hover{color:#C8A8FF}
 
-    .hero {
-      text-align: center;
-      padding: 65px 20px 45px;
-      background: #30164A;
-    }
+.container{
+    max-width:1150px;
+    margin:35px auto;
+    padding:0 18px;
+}
 
-    .hero h1 {
-      color: #E7DBFF;
-      font-size: 36px;
-      margin-bottom: 12px;
-    }
+h1{color:#E7DBFF}
 
-    .hero p {
-      color: #D8CDE5;
-      line-height: 1.7;
-      max-width: 600px;
-      margin: auto;
-    }
+.intro{
+    color:#D8CDE5;
+    line-height:1.6;
+}
 
-    .container {
-      max-width: 1200px;
-      margin: 35px auto;
-      padding: 0 20px;
-    }
+.search-box{
+    display:flex;
+    gap:10px;
+    margin:25px 0;
+    flex-wrap:wrap;
+}
 
-    .search-area {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 30px;
-      flex-wrap: wrap;
-    }
+input{
+    flex:1;
+    min-width:220px;
+    padding:14px;
+    border-radius:8px;
+    border:1px solid #80649c;
+    background:#30164A;
+    color:white;
+    font-size:15px;
+}
 
-    .search-area input {
-      flex: 1;
-      min-width: 200px;
-      padding: 14px;
-      border: 1px solid #765B91;
-      border-radius: 8px;
-      background: #3B2058;
-      color: white;
-      font-size: 15px;
-    }
+button{
+    border:0;
+    border-radius:8px;
+    padding:13px 20px;
+    cursor:pointer;
+    font-weight:bold;
+}
 
-    .search-area input::placeholder {
-      color: #D8CDE5;
-    }
+.search-btn{
+    background:#C8A8FF;
+    color:#211038;
+}
 
-    .search-area button {
-      padding: 14px 22px;
-      border: none;
-      border-radius: 8px;
-      background: #C8A8FF;
-      color: #211038;
-      font-weight: bold;
-      cursor: pointer;
-    }
+.tutor-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(270px,1fr));
+    gap:22px;
+}
 
-    .section-title {
-      color: #E7DBFF;
-      margin-bottom: 20px;
-    }
+.tutor-card{
+    background:#30164A;
+    padding:22px;
+    border-radius:14px;
+    border:1px solid #51366c;
+    display:flex;
+    flex-direction:column;
+}
 
-    .tutor-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
-      gap: 24px;
-    }
+.tutor-photo{
+    width:110px;
+    height:110px;
+    border-radius:50%;
+    object-fit:cover;
+    background:#51366c;
+    margin-bottom:15px;
+}
 
-    .tutor-card {
-      background: #3B2058;
-      border-radius: 15px;
-      padding: 22px;
-      overflow: hidden;
-    }
+.tutor-card h3{
+    color:#E7DBFF;
+    margin:5px 0;
+}
 
-    .tutor-photo {
-      width: 125px;
-      height: 125px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 3px solid #C8A8FF;
-      display: block;
-      margin: 0 auto 18px;
-      background: #211038;
-    }
+.tutor-card p{
+    color:#D8CDE5;
+    line-height:1.5;
+    overflow-wrap:anywhere;
+}
 
-    .tutor-name {
-      color: #E7DBFF;
-      text-align: center;
-      margin: 0 0 8px;
-      font-size: 21px;
-    }
+.rate{
+    color:#C8A8FF !important;
+    font-weight:bold;
+    margin-top:auto;
+    padding-top:12px;
+}
 
-    .headline {
-      text-align: center;
-      color: #C8A8FF;
-      line-height: 1.5;
-      min-height: 42px;
-    }
+.book-btn{
+    display:block;
+    text-align:center;
+    text-decoration:none;
+    background:#C8A8FF;
+    color:#211038;
+    padding:14px;
+    border-radius:8px;
+    font-weight:bold;
+    margin-top:15px;
+}
 
-    .tutor-info {
-      color: #D8CDE5;
-      font-size: 14px;
-      line-height: 1.7;
-      overflow-wrap: anywhere;
-    }
+.book-btn:hover{background:#E7DBFF}
 
-    .rate {
-      color: #C8A8FF;
-      font-size: 19px;
-      font-weight: bold;
-      margin-top: 15px;
-    }
+#status{
+    color:#D8CDE5;
+    margin:20px 0;
+}
 
-    .empty-state {
-      background: #3B2058;
-      padding: 35px 20px;
-      text-align: center;
-      border-radius: 12px;
-      color: #D8CDE5;
-      line-height: 1.7;
-    }
-
-    .error {
-      color: #FFAAAA;
-    }
-
-    footer {
-      text-align: center;
-      padding: 30px 15px;
-      color: #D8CDE5;
-      font-size: 13px;
-      margin-top: 50px;
-    }
-
-    @media (max-width: 600px) {
-      .hero h1 {
-        font-size: 28px;
-      }
-
-      header {
-        padding: 18px;
-      }
-    }
-  </style></head><body><header>
-  <a href="index.html" class="logo">Tutor Pearl</a>  <nav>
+@media(max-width:600px){
+    header{align-items:flex-start}
+    nav{display:flex;flex-wrap:wrap;gap:10px}
+}
+</style></head><body><header>
+    <h2>Tutor Pearl</h2><nav>
     <a href="index.html">Home</a>
-    <a href="student-dashboard.html">Student Dashboard</a>
+    <a href="student-dashboard.html">Dashboard</a>
     <a href="tutor-login.html">Tutor Login</a>
-  </nav>
-</header><section class="hero">
-  <h1>Find Your Perfect Tutor</h1>  <p>
-    Discover qualified tutors, explore different subjects and find
-    the right learning support for your goals.
-  </p>
-</section><main class="container">  <div class="search-area">
+</nav>
+
+</header><main class="container"><h1>Find Your Perfect Tutor</h1>
+
+<p class="intro">
+    Discover qualified tutors, explore their teaching experience
+    and request a lesson that suits your learning goals.
+</p>
+
+<div class="search-box">
     <input
-      type="search"
-      id="searchInput"
-      placeholder="Search by tutor name, subject or language..."
-    ><button type="button" id="searchButton">Search</button>
+        type="search"
+        id="searchInput"
+        placeholder="Search by tutor, subject or language..."
+    >
+    <button class="search-btn" id="searchButton">Search</button>
+</div>
 
-  </div>  <h2 class="section-title">Explore Our Tutors</h2>  <div id="statusMessage" class="empty-state">
-    Loading approved tutors...
-  </div>  <div id="tutorGrid" class="tutor-grid"></div></main><footer>
-  © 2026 Tutor Pearl. All rights reserved.
-</footer><script type="module">
-  import { createClient } from
-    'https://esm.sh/@supabase/supabase-js@2';
+<p id="status">Loading approved tutors...</p>
 
-  const SUPABASE_URL =
-    'https://chmdsvfmlscrbqomqifp.supabase.co';
+<div class="tutor-grid" id="tutorGrid"></div>
 
-  const SUPABASE_KEY =
-    'sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ';
+</main><script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+const SUPABASE_URL = "https://chmdsvfmlscrbqomqifp.supabase.co";
+const SUPABASE_KEY = "sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ";
 
-  const tutorGrid = document.getElementById('tutorGrid');
-  const statusMessage = document.getElementById('statusMessage');
-  const searchInput = document.getElementById('searchInput');
-  const searchButton = document.getElementById('searchButton');
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  let allTutors = [];
+const tutorGrid = document.getElementById("tutorGrid");
+const statusText = document.getElementById("status");
+const searchInput = document.getElementById("searchInput");
 
-  function createTextElement(tag, className, text) {
+let tutors = [];
+
+function createTextElement(tag, className, text) {
     const element = document.createElement(tag);
-    element.className = className;
-    element.textContent = text;
+    if (className) element.className = className;
+    element.textContent = text || "";
     return element;
-  }
+}
 
-  function displayTutors(tutors) {
-    tutorGrid.replaceChildren();
+function renderTutors(list) {
+    tutorGrid.innerHTML = "";
 
-    if (!tutors.length) {
-      statusMessage.style.display = 'block';
-      statusMessage.textContent =
-        'No approved tutors match your search. Try another name, subject or language.';
-      return;
+    if (!list.length) {
+        statusText.textContent =
+            "No approved tutors match your search. Please try another search.";
+        return;
     }
 
-    statusMessage.style.display = 'none';
+    statusText.textContent = list.length + " approved tutor(s) found.";
 
-    tutors.forEach(tutor => {
-      const card = document.createElement('article');
-      card.className = 'tutor-card';
+    list.forEach(tutor => {
+        const card = document.createElement("article");
+        card.className = "tutor-card";
 
-      const photo = document.createElement('img');
-      photo.className = 'tutor-photo';
-      photo.alt = 'Tutor profile photograph';
+        if (tutor.profile_photo_url) {
+            const photo = document.createElement("img");
+            photo.className = "tutor-photo";
+            photo.src = tutor.profile_photo_url;
+            photo.alt = "Photo of " + (tutor.full_name || "tutor");
+            photo.loading = "lazy";
 
-      if (tutor.profile_photo_url) {
-        photo.src = tutor.profile_photo_url;
-      } else {
-        photo.src =
-          'https://placehold.co/300x300/30164A/C8A8FF?text=Tutor';
-      }
+            photo.onerror = () => {
+                photo.style.display = "none";
+            };
 
-      photo.onerror = () => {
-        photo.src =
-          'https://placehold.co/300x300/30164A/C8A8FF?text=Tutor';
-      };
+            card.appendChild(photo);
+        }
 
-      const name = createTextElement(
-        'h3',
-        'tutor-name',
-        tutor.full_name || 'Tutor'
-      );
+        card.appendChild(
+            createTextElement("h3", "", tutor.full_name || "Tutor")
+        );
 
-      const headline = createTextElement(
-        'p',
-        'headline',
-        tutor.headline || 'Tutor on Tutor Pearl'
-      );
+        card.appendChild(
+            createTextElement("p", "", tutor.headline || "Professional Tutor")
+        );
 
-      const info = document.createElement('div');
-      info.className = 'tutor-info';
+        card.appendChild(
+            createTextElement("p", "", "Subjects: " + (tutor.subjects || "Not listed"))
+        );
 
-      const subjects = Array.isArray(tutor.subjects)
-        ? tutor.subjects.join(', ')
-        : 'Not specified';
+        card.appendChild(
+            createTextElement("p", "", "Languages: " + (tutor.teaching_languages || "Not listed"))
+        );
 
-      const languages = Array.isArray(tutor.teaching_languages)
-        ? tutor.teaching_languages.join(', ')
-        : 'Not specified';
+        card.appendChild(
+            createTextElement("p", "", "Qualifications: " + (tutor.qualifications || "Not listed"))
+        );
 
-      const qualifications =
-        tutor.qualifications || 'Not provided';
+        card.appendChild(
+            createTextElement("p", "", tutor.biography || "No biography available yet.")
+        );
 
-      const biography =
-        tutor.biography || 'This tutor has not added a biography yet.';
+        const rate = tutor.hourly_rate != null
+            ? (tutor.currency || "USD") + " " + tutor.hourly_rate + " per hour"
+            : "Rate not listed";
 
-      const rate = tutor.hourly_rate !== null &&
-        tutor.hourly_rate !== undefined
-        ? Number(tutor.hourly_rate).toLocaleString()
-        : 'Contact tutor';
+        card.appendChild(
+            createTextElement("p", "rate", rate)
+        );
 
-      const currency = tutor.currency || 'USD';
+        const bookButton = document.createElement("a");
+        bookButton.className = "book-btn";
+        bookButton.textContent = "Book a Lesson";
+        bookButton.href = "book-lesson.html?tutor=" + encodeURIComponent(tutor.id);
 
-      [
-        ['Subjects', subjects],
-        ['Teaching languages', languages],
-        ['Qualifications', qualifications],
-        ['About the tutor', biography]
-      ].forEach(([label, value]) => {
-        const paragraph = document.createElement('p');
-        const strong = document.createElement('strong');
-
-        strong.textContent = label + ': ';
-        paragraph.appendChild(strong);
-        paragraph.appendChild(document.createTextNode(value));
-
-        info.appendChild(paragraph);
-      });
-
-      const rateElement = createTextElement(
-        'p',
-        'rate',
-        rate === 'Contact tutor'
-          ? rate
-          : currency + ' ' + rate + ' / hour'
-      );
-
-      card.append(photo, name, headline, info, rateElement);
-      tutorGrid.appendChild(card);
+        card.appendChild(bookButton);
+        tutorGrid.appendChild(card);
     });
-  }
+}
 
-  async function loadTutors() {
-    statusMessage.style.display = 'block';
-    statusMessage.textContent = 'Loading approved tutors...';
+async function loadTutors() {
+    statusText.textContent = "Loading approved tutors...";
 
     const { data, error } = await supabase
-      .from('tutor_profiles')
-      .select(`
-        full_name,
-        headline,
-        subjects,
-        hourly_rate,
-        currency,
-        teaching_languages,
-        qualifications,
-        biography,
-        profile_photo_url
-      `)
-      .eq('approval_status', 'approved');
+        .from("tutor_profiles")
+        .select(`
+            id,
+            full_name,
+            headline,
+            subjects,
+            hourly_rate,
+            currency,
+            teaching_languages,
+            qualifications,
+            biography,
+            profile_photo_url
+        `)
+        .eq("approval_status", "approved")
+        .order("created_at", { ascending: false });
 
     if (error) {
-      statusMessage.textContent =
-        'We could not load tutors. Please try again later.';
-
-      statusMessage.className = 'empty-state error';
-      console.error('Tutor loading error:', error);
-      return;
+        console.error(error);
+        statusText.textContent = "Unable to load tutors. Please refresh the page.";
+        return;
     }
 
-    allTutors = data || [];
+    tutors = data || [];
+    renderTutors(tutors);
+}
 
-    displayTutors(allTutors);
-  }
+function searchTutors() {
+    const term = searchInput.value.trim().toLowerCase();
 
-  function searchTutors() {
-    const searchTerm = searchInput.value.trim().toLowerCase();
-
-    if (!searchTerm) {
-      displayTutors(allTutors);
-      return;
+    if (!term) {
+        renderTutors(tutors);
+        return;
     }
 
-    const filteredTutors = allTutors.filter(tutor => {
-      const searchableText = [
-        tutor.full_name,
-        tutor.headline,
-        tutor.biography,
-        tutor.qualifications,
-        ...(Array.isArray(tutor.subjects) ? tutor.subjects : []),
-        ...(Array.isArray(tutor.teaching_languages)
-          ? tutor.teaching_languages
-          : [])
-      ].join(' ').toLowerCase();
+    const filtered = tutors.filter(tutor => {
+        const searchableText = [
+            tutor.full_name,
+            tutor.headline,
+            tutor.subjects,
+            tutor.teaching_languages,
+            tutor.qualifications,
+            tutor.biography
+        ].join(" ").toLowerCase();
 
-      return searchableText.includes(searchTerm);
+        return searchableText.includes(term);
     });
 
-    displayTutors(filteredTutors);
-  }
+    renderTutors(filtered);
+}
 
-  searchButton.addEventListener('click', searchTutors);
+document.getElementById("searchButton")
+    .addEventListener("click", searchTutors);
 
-  searchInput.addEventListener('input', searchTutors);
+searchInput.addEventListener("input", searchTutors);
 
-  loadTutors();
+loadTutors();
 </script></body>
 </html>
