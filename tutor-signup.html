@@ -1,19 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Become a Tutor | Tutor Pearl</title>
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+  <title>Become a Tutor | Tutor Pearl</title>  <style>
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
       padding: 30px 16px;
       background: #211038;
-      color: #ffffff;
+      color: white;
       font-family: Arial, sans-serif;
     }
 
@@ -43,12 +39,12 @@
       font-weight: bold;
     }
 
-    input, textarea, select {
+    input, textarea {
       width: 100%;
       padding: 13px;
       border: 1px solid #C8A8FF;
       border-radius: 8px;
-      background: #ffffff;
+      background: white;
       color: #211038;
       font-size: 15px;
     }
@@ -79,55 +75,62 @@
     #message {
       margin-top: 18px;
       text-align: center;
+      overflow-wrap: anywhere;
     }
 
-    a {
-      color: #E7DBFF;
-    }
-  </style>
-</head>
-
-<body>
+    a { color: #E7DBFF; }
+  </style></head><body>
   <div class="container">
-    <h1>Become a Tutor at Tutor Pearl</h1>
-    <p>Share your knowledge, inspire learners, and grow your teaching career.</p>
+    <h1>Become a Tutor at Tutor Pearl</h1><p>
+  Share your knowledge, inspire learners, and grow your teaching career.
+</p>
 
-    <form id="signupForm">
-      <label for="fullName">Full Name</label>
-      <input type="text" id="fullName" required>
+<form id="signupForm">
 
-      <label for="email">Email Address</label>
-      <input type="email" id="email" required>
+  <label for="fullName">Full Name</label>
+  <input type="text" id="fullName" required>
 
-      <label for="password">Password</label>
-      <input type="password" id="password" minlength="8" required>
+  <label for="email">Email Address</label>
+  <input type="email" id="email" required>
 
-      <label for="headline">Professional Headline</label>
-      <input type="text" id="headline" placeholder="e.g. Experienced English and Mathematics Tutor" required>
+  <label for="password">Password</label>
+  <input type="password" id="password" minlength="8" required>
 
-      <label for="subjects">Subjects You Teach</label>
-      <input type="text" id="subjects" placeholder="e.g. English, Mathematics, Igbo" required>
+  <label for="headline">Professional Headline</label>
+  <input type="text" id="headline"
+    placeholder="Experienced English and Mathematics Tutor" required>
 
-      <label for="rate">Hourly Rate (USD)</label>
-      <input type="number" id="rate" min="1" step="0.01" required>
+  <label for="subjects">Subjects You Teach</label>
+  <input type="text" id="subjects"
+    placeholder="English, Mathematics, Igbo" required>
 
-      <label for="languages">Languages You Speak</label>
-      <input type="text" id="languages" placeholder="e.g. English, Igbo, French">
+  <label for="rate">Hourly Rate (USD)</label>
+  <input type="number" id="rate" min="1" step="0.01" required>
 
-      <label for="qualifications">Qualifications</label>
-      <textarea id="qualifications" placeholder="List your certificates, degrees, and teaching experience"></textarea>
+  <label for="languages">Languages You Speak</label>
+  <input type="text" id="languages"
+    placeholder="English, Igbo, French">
 
-      <label for="biography">About You</label>
-      <textarea id="biography" placeholder="Tell learners about your teaching experience and approach" required></textarea>
+  <label for="qualifications">Qualifications</label>
+  <textarea id="qualifications"
+    placeholder="List your certificates, degrees, and teaching experience"></textarea>
 
-      <button type="submit" id="submitButton">Create Tutor Account</button>
-    </form>
+  <label for="biography">About You</label>
+  <textarea id="biography"
+    placeholder="Tell learners about your teaching experience and approach"
+    required></textarea>
 
-    <div id="message" role="status"></div>
-  </div>
+  <button type="submit" id="submitButton">
+    Create Tutor Account
+  </button>
 
-  <script type="module">
-    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+</form>
+
+<div id="message" role="status" aria-live="polite"></div>
+
+  </div>  <script type="module">
+    import { createClient } from
+      'https://esm.sh/@supabase/supabase-js@2';
 
     const supabase = createClient(
       'https://chmdsvfmlscrbqomqifp.supabase.co',
@@ -145,41 +148,99 @@
       button.textContent = 'Creating your account...';
       message.textContent = '';
 
-      const fullName = document.getElementById('fullName').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-      const headline = document.getElementById('headline').value.trim();
-      const subjects = document.getElementById('subjects').value.split(',').map(x => x.trim()).filter(Boolean);
-      const rate = Number(document.getElementById('rate').value);
-      const languages = document.getElementById('languages').value.split(',').map(x => x.trim()).filter(Boolean);
-      const qualifications = document.getElementById('qualifications').value.trim();
-      const biography = document.getElementById('biography').value.trim();
+      const fullName =
+        document.getElementById('fullName').value.trim();
+
+      const email =
+        document.getElementById('email').value.trim();
+
+      const password =
+        document.getElementById('password').value;
+
+      const headline =
+        document.getElementById('headline').value.trim();
+
+      const subjects = document.getElementById('subjects')
+        .value.split(',')
+        .map(item => item.trim())
+        .filter(Boolean);
+
+      const rate =
+        Number(document.getElementById('rate').value);
+
+      const languages = document.getElementById('languages')
+        .value.split(',')
+        .map(item => item.trim())
+        .filter(Boolean);
+
+      const qualifications =
+        document.getElementById('qualifications').value.trim();
+
+      const biography =
+        document.getElementById('biography').value.trim();
 
       try {
         const { data, error } = await supabase.auth.signUp({
           email,
-          password
+          password,
+          options: {
+            data: {
+              full_name: fullName,
+              account_type: 'tutor'
+            }
+          }
         });
 
         if (error) throw error;
 
-        if (data.user && data.session) {
-          const { error: profileError } = await supabase
-            .from('tutor_profiles')
-            .insert({
-              id: data.user.id,
-              full_name: fullName,
-              headline,
-              subjects,
-              hourly_rate: rate,
-              currency: 'USD',
-              teaching_languages: languages,
-              qualifications,
-              biography,
-              approval_status: 'pending'
-            });
+        if (!data.user) {
+          throw new Error('Account creation could not be confirmed. Please try again.');
+        }
 
-          if (profileError) throw profileError;
+        if (!data.session) {
+          message.textContent =
+            'Your login account has been created. Please check your email and confirm your address. Your tutor profile still needs to be submitted after confirmation.';
 
-          message.textContent = 'Your tutor account has been created. Your profile is awaiting approval.';
-          form
+          button.disabled = false;
+          button.textContent = 'Account Created';
+
+          return;
+        }
+
+        const { error: profileError } = await supabase
+          .from('tutor_profiles')
+          .insert({
+            id: data.user.id,
+            full_name: fullName,
+            headline: headline,
+            subjects: subjects,
+            hourly_rate: rate,
+            currency: 'USD',
+            teaching_languages: languages,
+            qualifications: qualifications,
+            biography: biography,
+            approval_status: 'pending'
+          });
+
+        if (profileError) throw profileError;
+
+        message.textContent =
+          'Your tutor account and profile have been created. Your profile is awaiting approval. Please check your email if confirmation is required.';
+
+        form.reset();
+
+      } catch (error) {
+        console.error('Tutor signup error:', error);
+
+        message.textContent =
+          error.message || 'Something went wrong. Please try again.';
+
+      } finally {
+        if (button.textContent !== 'Account Created') {
+          button.disabled = false;
+          button.textContent = 'Create Tutor Account';
+        }
+      }
+    });
+  </script></body>
+</html>
