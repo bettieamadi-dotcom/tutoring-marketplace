@@ -1128,4 +1128,18 @@ async function loadBookings() {
 
         refreshBtn.disabled = false;
 
-        refreshBtn.textContent = "Refresh
+        refreshBtn.textContent = "Refresh Bookings";
+    }
+}
+
+refreshBtn.addEventListener(
+    "click",
+    loadBookings
+);
+
+loadBookings();
+
+</script>
+
+</body>
+</html>
