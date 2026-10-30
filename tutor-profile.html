@@ -1,189 +1,249 @@
 <!DOCTYPE html><html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manage Tutor Profile | Tutor Pearl</title>  <style>
-    * { box-sizing: border-box; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tutor Pearl | Manage My Profile</title><style>
+* {
+  box-sizing: border-box;
+}
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #211038;
-      color: white;
-    }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #211038;
+  color: #fff;
+}
 
-    header {
-      padding: 20px;
-      background: #30164A;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
+header {
+  background: #30164A;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
 
-    .logo {
-      color: #C8A8FF;
-      font-size: 23px;
-      font-weight: bold;
-      text-decoration: none;
-    }
+header h1 {
+  color: #C8A8FF;
+  margin: 0;
+  font-size: 22px;
+}
 
-    .back-link {
-      color: #E7DBFF;
-      text-decoration: none;
-    }
+header a {
+  color: #E7DBFF;
+  text-decoration: none;
+}
 
-    .container {
-      max-width: 750px;
-      margin: 35px auto;
-      padding: 20px;
-    }
+.container {
+  max-width: 850px;
+  margin: 30px auto;
+  padding: 16px;
+}
 
-    .card {
-      background: #3B2058;
-      padding: 28px;
-      border-radius: 16px;
-    }
+.card {
+  background: #3B2058;
+  padding: 25px;
+  border-radius: 14px;
+  margin-bottom: 22px;
+}
 
-    h1, h2 { color: #E7DBFF; }
+h2 {
+  color: #C8A8FF;
+}
 
-    .intro {
-      color: #D8CDE5;
-      line-height: 1.6;
-    }
+label {
+  display: block;
+  margin-top: 17px;
+  margin-bottom: 7px;
+  font-weight: bold;
+}
 
-    label {
-      display: block;
-      margin: 18px 0 8px;
-      font-weight: bold;
-      color: #E7DBFF;
-    }
+input,
+textarea,
+select {
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: 7px;
+  font-size: 15px;
+  background: #fff;
+  color: #211038;
+}
 
-    input, textarea, select {
-      width: 100%;
-      padding: 13px;
-      border: 1px solid #765B91;
-      border-radius: 8px;
-      background: #211038;
-      color: white;
-      font-size: 15px;
-    }
+textarea {
+  min-height: 120px;
+  resize: vertical;
+}
 
-    textarea {
-      min-height: 120px;
-      resize: vertical;
-    }
+button {
+  padding: 13px 18px;
+  border: none;
+  border-radius: 7px;
+  background: #C8A8FF;
+  color: #211038;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 15px;
+}
 
-    button {
-      width: 100%;
-      padding: 15px;
-      margin-top: 20px;
-      border: none;
-      border-radius: 8px;
-      background: #C8A8FF;
-      color: #211038;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
 
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
+.secondary {
+  background: #fff;
+  color: #211038;
+}
 
-    .status-box {
-      padding: 14px;
-      border-radius: 8px;
-      background: #211038;
-      color: #E7DBFF;
-      margin: 20px 0;
-      line-height: 1.5;
-    }
+.preview {
+  display: block;
+  max-width: 100%;
+  margin: 15px auto;
+  border-radius: 12px;
+}
 
-    .photo-area {
-      background: #211038;
-      padding: 20px;
-      border-radius: 12px;
-      margin: 20px 0;
-      text-align: center;
-    }
+#photoPreview {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  object-fit: cover;
+}
 
-    #photoPreview {
-      width: 150px;
-      height: 150px;
-      object-fit: cover;
-      border-radius: 50%;
-      border: 3px solid #C8A8FF;
-      display: none;
-      margin: 15px auto;
-    }
+#videoPreview {
+  width: 100%;
+  max-width: 500px;
+  max-height: 350px;
+  background: #10091b;
+}
 
-    .help {
-      display: block;
-      color: #D8CDE5;
-      font-size: 12px;
-      margin-top: 7px;
-    }
+.help {
+  display: block;
+  color: #D8CDE5;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-top: 8px;
+}
 
-    #message {
-      margin-top: 18px;
-      line-height: 1.5;
-      overflow-wrap: anywhere;
-    }
+#message {
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 18px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
 
-    .success { color: #9EF0B0; }
-    .error { color: #FFAAAA; }
+.success {
+  background: #164B35;
+  color: #D8FFE9;
+}
 
-    @media (max-width: 600px) {
-      .container {
-        margin: 15px auto;
-        padding: 12px;
-      }
+.error {
+  background: #642536;
+  color: #FFE0E7;
+}
 
-      .card { padding: 20px; }
-    }
-  </style></head><body><header>
-  <a class="logo" href="index.html">Tutor Pearl</a>
-  <a class="back-link" href="tutor-dashboard.html">← Back to Dashboard</a>
-</header><main class="container">
-  <section class="card"><h1>Manage Your Tutor Profile</h1>
+.status {
+  display: inline-block;
+  background: #E7DBFF;
+  color: #211038;
+  padding: 8px 13px;
+  border-radius: 20px;
+  font-weight: bold;
+}
 
-<p class="intro">
-  Update your teaching information and upload a professional
-  photograph to help students and parents recognize you.
+hr {
+  border: 0;
+  border-top: 1px solid #65458A;
+  margin: 25px 0;
+}
+
+[hidden] {
+  display: none !important;
+}
+</style></head><body><header>
+  <h1>Tutor Pearl</h1>
+  <a href="tutor-dashboard.html">← Back to Dashboard</a>
+</header><main class="container">  <section class="card">
+    <h2>My Tutor Profile</h2><p>
+  Keep your profile updated so students and parents can
+  learn more about you and your teaching services.
 </p>
 
-<div class="status-box" id="approvalStatus">
-  Loading your profile...
-</div>
+<p>
+  Application status:
+  <span id="approvalStatus" class="status">Loading...</span>
+</p>
 
-<div class="photo-area">
-  <h2>Profile Photograph</h2>
+<p id="message" hidden></p>
 
-  <img id="photoPreview" alt="Tutor profile photograph">
+  </section>  <section class="card"><h2>Profile Photograph</h2>
 
-  <p class="intro">
-    Upload a clear, professional photograph of yourself.
-  </p>
+<p>Upload a clear photograph so students can recognise you.</p>
 
-  <input
-    type="file"
-    id="photoInput"
-    accept="image/jpeg,image/png,image/webp"
-  >
+<img
+  id="photoPreview"
+  class="preview"
+  src=""
+  alt="Tutor profile photograph"
+  hidden
+>
 
-  <small class="help">
-    Accepted formats: JPG, PNG and WebP. Maximum size: 5 MB.
-  </small>
+<label for="photoInput">Choose Profile Photograph</label>
 
-  <button type="button" id="uploadPhotoBtn">
-    Upload Photograph
-  </button>
-</div>
+<input
+  type="file"
+  id="photoInput"
+  accept="image/jpeg,image/png,image/webp"
+>
 
-<form id="profileForm" style="display:none;">
+<small class="help">
+  Accepted formats: JPG, PNG and WebP.
+  Maximum file size: 5 MB.
+</small>
+
+<button type="button" id="uploadPhotoBtn">
+  Upload Profile Photograph
+</button>
+
+  </section>  <section class="card"><h2>Introduction Video</h2>
+
+<p>
+  Introduce yourself to students and parents.
+  Talk about your teaching experience, subjects
+  and teaching style.
+</p>
+
+<video
+  id="videoPreview"
+  class="preview"
+  controls
+  playsinline
+  preload="metadata"
+  hidden
+></video>
+
+<label for="videoInput">Choose Introduction Video</label>
+
+<input
+  type="file"
+  id="videoInput"
+  accept="video/mp4,video/webm,video/quicktime"
+>
+
+<small class="help">
+  Accepted formats: MP4, WebM and MOV.
+  Maximum file size: 50 MB.
+</small>
+
+<button type="button" id="uploadVideoBtn">
+  Upload Introduction Video
+</button>
+
+  </section>  <section class="card"><h2>Edit Professional Information</h2>
+
+<form id="profileForm" hidden>
 
   <label for="fullName">Full Name</label>
   <input type="text" id="fullName" required>
@@ -192,16 +252,20 @@
   <input
     type="text"
     id="headline"
-    placeholder="Experienced English and Mathematics Tutor"
+    placeholder="Example: Experienced English Tutor"
+    required
   >
 
   <label for="subjects">Subjects You Teach</label>
-  <input
-    type="text"
+  <textarea
     id="subjects"
-    placeholder="English, Mathematics, Biology"
-  >
-  <small class="help">Separate subjects with commas.</small>
+    placeholder="Example: English, Mathematics, Igbo"
+    required
+  ></textarea>
+
+  <small class="help">
+    Separate multiple subjects with commas.
+  </small>
 
   <label for="hourlyRate">Hourly Rate</label>
   <input
@@ -213,294 +277,590 @@
   >
 
   <label for="currency">Currency</label>
-  <select id="currency">
-    <option value="USD">USD ($)</option>
-    <option value="NGN">NGN (₦)</option>
+  <select id="currency" required>
+    <option value="USD">USD - US Dollar</option>
+    <option value="NGN">NGN - Nigerian Naira</option>
   </select>
 
   <label for="languages">Teaching Languages</label>
   <input
     type="text"
     id="languages"
-    placeholder="English, Igbo, French"
+    placeholder="Example: English, Igbo"
+    required
   >
 
   <label for="qualifications">Qualifications</label>
-  <textarea id="qualifications"></textarea>
+  <textarea
+    id="qualifications"
+    placeholder="Your educational qualifications and certifications"
+  ></textarea>
 
-  <label for="biography">About You</label>
-  <textarea id="biography"></textarea>
+  <label for="biography">Professional Biography</label>
+  <textarea
+    id="biography"
+    placeholder="Tell students about yourself and your teaching experience."
+    required
+  ></textarea>
 
-  <button type="submit" id="saveButton">Save Changes</button>
+  <button type="submit" id="saveButton">
+    Save Profile Changes
+  </button>
 
 </form>
 
-<p id="message" role="status" aria-live="polite"></p>
+<p id="loadingMessage">Loading your profile...</p>
 
-  </section>
-</main><script type="module">
-  import { createClient } from
-    'https://esm.sh/@supabase/supabase-js@2';
+  </section>  <section class="card">
+    <h2>Account</h2>
+    <button type="button" class="secondary" id="logoutBtn">
+      Log Out
+    </button>
+  </section></main><script type="module">
 
-  const SUPABASE_URL =
-    'https://chmdsvfmlscrbqomqifp.supabase.co';
+import { createClient } from
+  "https://esm.sh/@supabase/supabase-js@2";
 
-  const SUPABASE_KEY =
-    'sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ';
+const SUPABASE_URL =
+  "https://chmdsvfmlscrbqomqifp.supabase.co";
 
-  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+const SUPABASE_KEY =
+  "sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ";
 
-  const form = document.getElementById('profileForm');
-  const message = document.getElementById('message');
-  const saveButton = document.getElementById('saveButton');
-  const uploadPhotoBtn = document.getElementById('uploadPhotoBtn');
-  const photoInput = document.getElementById('photoInput');
-  const photoPreview = document.getElementById('photoPreview');
-  const approvalStatus = document.getElementById('approvalStatus');
+const supabase = createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
-  let currentUser = null;
-  let currentPhotoUrl = '';
+const profileForm =
+  document.getElementById("profileForm");
 
-  function showMessage(text, type) {
-    message.textContent = text;
-    message.className = type;
+const message =
+  document.getElementById("message");
+
+const approvalStatus =
+  document.getElementById("approvalStatus");
+
+const loadingMessage =
+  document.getElementById("loadingMessage");
+
+const photoInput =
+  document.getElementById("photoInput");
+
+const photoPreview =
+  document.getElementById("photoPreview");
+
+const uploadPhotoBtn =
+  document.getElementById("uploadPhotoBtn");
+
+const videoInput =
+  document.getElementById("videoInput");
+
+const videoPreview =
+  document.getElementById("videoPreview");
+
+const uploadVideoBtn =
+  document.getElementById("uploadVideoBtn");
+
+const saveButton =
+  document.getElementById("saveButton");
+
+let currentUser = null;
+let currentPhotoUrl = "";
+let currentVideoUrl = "";
+
+function showMessage(text, type = "success") {
+  message.textContent = text;
+  message.className = type;
+  message.hidden = false;
+}
+
+async function checkTutorAccess() {
+
+  const {
+    data: { session },
+    error
+  } = await supabase.auth.getSession();
+
+  if (error || !session) {
+    window.location.href = "tutor-login.html";
+    return false;
   }
 
-  async function loadProfile() {
-    const { data: { user }, error: authError } =
-      await supabase.auth.getUser();
+  currentUser = session.user;
 
-    if (authError || !user) {
-      window.location.href = 'tutor-login.html';
-      return;
-    }
-
-    if (user.user_metadata?.account_type !== 'tutor') {
-      await supabase.auth.signOut();
-      window.location.href = 'tutor-login.html';
-      return;
-    }
-
-    currentUser = user;
-
-    const { data: profile, error } = await supabase
-      .from('tutor_profiles')
-      .select('*')
-      .eq('id', user.id)
-      .maybeSingle();
-
-    if (error) {
-      approvalStatus.textContent = 'We could not load your profile.';
-      showMessage(error.message, 'error');
-      return;
-    }
-
-    if (!profile) {
-      approvalStatus.textContent = 'Your tutor profile was not found.';
-      return;
-    }
-
-    document.getElementById('fullName').value =
-      profile.full_name || '';
-
-    document.getElementById('headline').value =
-      profile.headline || '';
-
-    document.getElementById('subjects').value =
-      Array.isArray(profile.subjects)
-        ? profile.subjects.join(', ')
-        : '';
-
-    document.getElementById('hourlyRate').value =
-      profile.hourly_rate ?? '';
-
-    document.getElementById('currency').value =
-      profile.currency || 'USD';
-
-    document.getElementById('languages').value =
-      Array.isArray(profile.teaching_languages)
-        ? profile.teaching_languages.join(', ')
-        : '';
-
-    document.getElementById('qualifications').value =
-      profile.qualifications || '';
-
-    document.getElementById('biography').value =
-      profile.biography || '';
-
-    currentPhotoUrl = profile.profile_photo_url || '';
-
-    if (currentPhotoUrl) {
-      photoPreview.src = currentPhotoUrl;
-      photoPreview.style.display = 'block';
-    }
-
-    approvalStatus.textContent =
-      'Profile approval status: ' +
-      (profile.approval_status || 'pending').toUpperCase() +
-      '. You cannot change this status yourself.';
-
-    form.style.display = 'block';
+  if (
+    currentUser.user_metadata?.account_type !== "tutor"
+  ) {
+    await supabase.auth.signOut();
+    window.location.href = "tutor-login.html";
+    return false;
   }
 
-  photoInput.addEventListener('change', () => {
-    const file = photoInput.files[0];
+  return true;
+}
 
-    if (!file) return;
+async function loadProfile() {
 
-    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-      showMessage('Please select a JPG, PNG or WebP image.', 'error');
-      photoInput.value = '';
-      return;
-    }
+  loadingMessage.textContent = "Loading your profile...";
 
-    if (file.size > 5 * 1024 * 1024) {
-      showMessage('Your photograph must not exceed 5 MB.', 'error');
-      photoInput.value = '';
-      return;
-    }
+  const { data: profile, error } = await supabase
+    .from("tutor_profiles")
+    .select("*")
+    .eq("id", currentUser.id)
+    .single();
 
-    const temporaryUrl = URL.createObjectURL(file);
-    photoPreview.src = temporaryUrl;
-    photoPreview.style.display = 'block';
+  if (error) {
+    loadingMessage.textContent =
+      "Unable to load your profile: " + error.message;
 
-    showMessage('Preview ready. Tap Upload Photograph to save it.', 'success');
-  });
+    showMessage(
+      "Please refresh the page or contact support.",
+      "error"
+    );
 
-  uploadPhotoBtn.addEventListener('click', async () => {
-    const file = photoInput.files[0];
+    return;
+  }
 
-    if (!currentUser) {
-      showMessage('Please log in again.', 'error');
-      return;
-    }
+  document.getElementById("fullName").value =
+    profile.full_name || "";
 
-    if (!file) {
-      showMessage('Please select a photograph first.', 'error');
-      return;
-    }
+  document.getElementById("headline").value =
+    profile.headline || "";
 
-    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) ||
-        file.size > 5 * 1024 * 1024) {
-      showMessage('Choose a valid image no larger than 5 MB.', 'error');
-      return;
-    }
+  document.getElementById("subjects").value =
+    profile.subjects || "";
 
-    uploadPhotoBtn.disabled = true;
-    uploadPhotoBtn.textContent = 'Uploading...';
+  document.getElementById("hourlyRate").value =
+    profile.hourly_rate ?? "";
 
-    const extension = file.name.split('.').pop().toLowerCase();
-    const filePath =
-      currentUser.id + '/' + Date.now() + '.' + extension;
+  document.getElementById("currency").value =
+    profile.currency || "USD";
 
-    const { error: uploadError } = await supabase.storage
-      .from('tutor-photos')
-      .upload(filePath, file, {
-        contentType: file.type,
-        cacheControl: '3600',
-        upsert: false
-      });
+  document.getElementById("languages").value =
+    profile.teaching_languages || "";
 
-    if (uploadError) {
-      showMessage('Photo upload failed: ' + uploadError.message, 'error');
-      uploadPhotoBtn.disabled = false;
-      uploadPhotoBtn.textContent = 'Upload Photograph';
-      return;
-    }
+  document.getElementById("qualifications").value =
+    profile.qualifications || "";
 
-    const { data: publicData } = supabase.storage
-      .from('tutor-photos')
-      .getPublicUrl(filePath);
+  document.getElementById("biography").value =
+    profile.biography || "";
 
-    const newPhotoUrl = publicData.publicUrl;
+  approvalStatus.textContent =
+    profile.approval_status || "Pending";
 
-    const { error: updateError } = await supabase
-      .from('tutor_profiles')
-      .update({ profile_photo_url: newPhotoUrl })
-      .eq('id', currentUser.id);
+  currentPhotoUrl =
+    profile.profile_photo_url || "";
 
-    if (updateError) {
-      showMessage(
-        'The photo uploaded, but the profile could not be updated: ' +
-        updateError.message,
-        'error'
-      );
-      uploadPhotoBtn.disabled = false;
-      uploadPhotoBtn.textContent = 'Upload Photograph';
-      return;
-    }
+  currentVideoUrl =
+    profile.intro_video_url || "";
 
-    currentPhotoUrl = newPhotoUrl;
-    photoPreview.src = newPhotoUrl;
-    photoPreview.style.display = 'block';
+  if (currentPhotoUrl) {
+    photoPreview.src = currentPhotoUrl;
+    photoPreview.hidden = false;
+  }
 
-    showMessage('Your profile photograph has been saved successfully!', 'success');
+  if (currentVideoUrl) {
+    videoPreview.src = currentVideoUrl;
+    videoPreview.hidden = false;
+  }
 
-    photoInput.value = '';
-    uploadPhotoBtn.disabled = false;
-    uploadPhotoBtn.textContent = 'Upload Photograph';
-  });
+  profileForm.hidden = false;
+  loadingMessage.hidden = true;
+}
 
-  form.addEventListener('submit', async (event) => {
-    event.preventDefault();
+profileForm.addEventListener("submit", async (event) => {
 
-    if (!currentUser) {
-      showMessage('Please log in again.', 'error');
-      return;
-    }
+  event.preventDefault();
 
-    const fullName =
-      document.getElementById('fullName').value.trim();
+  saveButton.disabled = true;
+  saveButton.textContent = "Saving...";
 
-    const rate =
-      document.getElementById('hourlyRate').value;
+  const updatedProfile = {
 
-    if (!fullName || rate === '' || !Number.isFinite(Number(rate)) ||
-        Number(rate) < 0) {
-      showMessage('Please enter your full name and a valid hourly rate.', 'error');
-      return;
-    }
+    full_name:
+      document.getElementById("fullName").value.trim(),
 
-    const subjects = document.getElementById('subjects').value
-      .split(',')
-      .map(item => item.trim())
-      .filter(Boolean);
+    headline:
+      document.getElementById("headline").value.trim(),
 
-    const languages = document.getElementById('languages').value
-      .split(',')
-      .map(item => item.trim())
-      .filter(Boolean);
+    subjects:
+      document.getElementById("subjects").value.trim(),
 
-    const updates = {
-      full_name: fullName,
-      headline: document.getElementById('headline').value.trim(),
-      subjects: subjects,
-      hourly_rate: Number(rate),
-      currency: document.getElementById('currency').value,
-      teaching_languages: languages,
-      qualifications: document.getElementById('qualifications').value.trim(),
-      biography: document.getElementById('biography').value.trim()
-    };
+    hourly_rate:
+      Number(document.getElementById("hourlyRate").value),
 
-    saveButton.disabled = true;
-    saveButton.textContent = 'Saving...';
+    currency:
+      document.getElementById("currency").value,
 
-    const { error } = await supabase
-      .from('tutor_profiles')
-      .update(updates)
-      .eq('id', currentUser.id);
+    teaching_languages:
+      document.getElementById("languages").value.trim(),
+
+    qualifications:
+      document.getElementById("qualifications").value.trim(),
+
+    biography:
+      document.getElementById("biography").value.trim()
+
+  };
+
+  if (
+    !updatedProfile.full_name ||
+    !updatedProfile.headline ||
+    !updatedProfile.subjects ||
+    !updatedProfile.teaching_languages ||
+    !updatedProfile.biography ||
+    !Number.isFinite(updatedProfile.hourly_rate) ||
+    updatedProfile.hourly_rate <= 0
+  ) {
+
+    showMessage(
+      "Please complete all required fields and enter a valid hourly rate.",
+      "error"
+    );
 
     saveButton.disabled = false;
-    saveButton.textContent = 'Save Changes';
+    saveButton.textContent = "Save Profile Changes";
 
-    if (error) {
-      showMessage('Your changes could not be saved: ' + error.message, 'error');
-      return;
-    }
+    return;
+  }
 
-    showMessage('Your tutor profile has been updated successfully!', 'success');
-  });
+  const { error } = await supabase
+    .from("tutor_profiles")
+    .update(updatedProfile)
+    .eq("id", currentUser.id);
 
-  loadProfile();
+  if (error) {
+
+    showMessage(
+      "Profile update failed: " + error.message,
+      "error"
+    );
+
+  } else {
+
+    showMessage(
+      "Your profile has been updated successfully!",
+      "success"
+    );
+
+  }
+
+  saveButton.disabled = false;
+  saveButton.textContent = "Save Profile Changes";
+
+});
+
+photoInput.addEventListener("change", () => {
+
+  const file = photoInput.files[0];
+
+  if (!file) return;
+
+  const allowedTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/webp"
+  ];
+
+  if (!allowedTypes.includes(file.type)) {
+
+    showMessage(
+      "Please choose a JPG, PNG or WebP photograph.",
+      "error"
+    );
+
+    photoInput.value = "";
+    return;
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+
+    showMessage(
+      "Your photograph must not exceed 5 MB.",
+      "error"
+    );
+
+    photoInput.value = "";
+    return;
+  }
+
+  const previewUrl = URL.createObjectURL(file);
+
+  photoPreview.src = previewUrl;
+  photoPreview.hidden = false;
+
+});
+
+uploadPhotoBtn.addEventListener("click", async () => {
+
+  const file = photoInput.files[0];
+
+  if (!file) {
+    showMessage(
+      "Please select a photograph first.",
+      "error"
+    );
+    return;
+  }
+
+  uploadPhotoBtn.disabled = true;
+  uploadPhotoBtn.textContent = "Uploading photograph...";
+
+  const extensions = {
+    "image/jpeg": "jpg",
+    "image/png": "png",
+    "image/webp": "webp"
+  };
+
+  const extension = extensions[file.type];
+
+  const filePath =
+    currentUser.id + "/" + Date.now() + "." + extension;
+
+  const { error: uploadError } = await supabase.storage
+    .from("tutor-photos")
+    .upload(filePath, file, {
+      contentType: file.type,
+      cacheControl: "3600",
+      upsert: false
+    });
+
+  if (uploadError) {
+
+    showMessage(
+      "Photograph upload failed: " + uploadError.message,
+      "error"
+    );
+
+    uploadPhotoBtn.disabled = false;
+    uploadPhotoBtn.textContent = "Upload Profile Photograph";
+
+    return;
+  }
+
+  const { data: publicData } = supabase.storage
+    .from("tutor-photos")
+    .getPublicUrl(filePath);
+
+  const newPhotoUrl = publicData.publicUrl;
+
+  const { error: updateError } = await supabase
+    .from("tutor_profiles")
+    .update({
+      profile_photo_url: newPhotoUrl
+    })
+    .eq("id", currentUser.id);
+
+  if (updateError) {
+
+    showMessage(
+      "Photograph uploaded, but profile update failed: " +
+      updateError.message,
+      "error"
+    );
+
+    uploadPhotoBtn.disabled = false;
+    uploadPhotoBtn.textContent = "Upload Profile Photograph";
+
+    return;
+  }
+
+  currentPhotoUrl = newPhotoUrl;
+
+  photoPreview.src = newPhotoUrl;
+  photoPreview.hidden = false;
+
+  photoInput.value = "";
+
+  showMessage(
+    "Your profile photograph has been saved successfully!",
+    "success"
+  );
+
+  uploadPhotoBtn.disabled = false;
+  uploadPhotoBtn.textContent = "Upload Profile Photograph";
+
+});
+
+videoInput.addEventListener("change", () => {
+
+  const file = videoInput.files[0];
+
+  if (!file) return;
+
+  const allowedTypes = [
+    "video/mp4",
+    "video/webm",
+    "video/quicktime"
+  ];
+
+  if (!allowedTypes.includes(file.type)) {
+
+    showMessage(
+      "Please choose an MP4, WebM or MOV video.",
+      "error"
+    );
+
+    videoInput.value = "";
+    return;
+  }
+
+  if (file.size > 50 * 1024 * 1024) {
+
+    showMessage(
+      "Your video must not exceed 50 MB.",
+      "error"
+    );
+
+    videoInput.value = "";
+    return;
+  }
+
+  const previewUrl = URL.createObjectURL(file);
+
+  videoPreview.src = previewUrl;
+  videoPreview.hidden = false;
+
+  showMessage(
+    "Video preview ready. Tap Upload Introduction Video to save it.",
+    "success"
+  );
+
+});
+
+uploadVideoBtn.addEventListener("click", async () => {
+
+  const file = videoInput.files[0];
+
+  if (!file) {
+
+    showMessage(
+      "Please select an introduction video first.",
+      "error"
+    );
+
+    return;
+  }
+
+  const allowedTypes = [
+    "video/mp4",
+    "video/webm",
+    "video/quicktime"
+  ];
+
+  if (
+    !allowedTypes.includes(file.type) ||
+    file.size > 50 * 1024 * 1024
+  ) {
+
+    showMessage(
+      "Choose a supported video no larger than 50 MB.",
+      "error"
+    );
+
+    return;
+  }
+
+  uploadVideoBtn.disabled = true;
+  uploadVideoBtn.textContent = "Uploading video...";
+
+  const extensions = {
+    "video/mp4": "mp4",
+    "video/webm": "webm",
+    "video/quicktime": "mov"
+  };
+
+  const extension = extensions[file.type];
+
+  const filePath =
+    currentUser.id + "/" + Date.now() + "." + extension;
+
+  const { error: uploadError } = await supabase.storage
+    .from("tutor-intro-videos")
+    .upload(filePath, file, {
+      contentType: file.type,
+      cacheControl: "3600",
+      upsert: false
+    });
+
+  if (uploadError) {
+
+    showMessage(
+      "Video upload failed: " + uploadError.message,
+      "error"
+    );
+
+    uploadVideoBtn.disabled = false;
+    uploadVideoBtn.textContent = "Upload Introduction Video";
+
+    return;
+  }
+
+  const { data: publicData } = supabase.storage
+    .from("tutor-intro-videos")
+    .getPublicUrl(filePath);
+
+  const newVideoUrl = publicData.publicUrl;
+
+  const { error: updateError } = await supabase
+    .from("tutor_profiles")
+    .update({
+      intro_video_url: newVideoUrl
+    })
+    .eq("id", currentUser.id);
+
+  if (updateError) {
+
+    showMessage(
+      "Video uploaded, but profile update failed: " +
+      updateError.message,
+      "error"
+    );
+
+    uploadVideoBtn.disabled = false;
+    uploadVideoBtn.textContent = "Upload Introduction Video";
+
+    return;
+  }
+
+  currentVideoUrl = newVideoUrl;
+
+  videoPreview.src = newVideoUrl;
+  videoPreview.hidden = false;
+
+  videoInput.value = "";
+
+  showMessage(
+    "Your introduction video has been saved successfully!",
+    "success"
+  );
+
+  uploadVideoBtn.disabled = false;
+  uploadVideoBtn.textContent = "Upload Introduction Video";
+
+});
+
+document.getElementById("logoutBtn")
+.addEventListener("click", async () => {
+
+  await supabase.auth.signOut();
+
+  window.location.href = "tutor-login.html";
+
+});
+
+async function initializePage() {
+
+  const hasAccess = await checkTutorAccess();
+
+  if (!hasAccess) return;
+
+  await loadProfile();
+
+}
+
+initializePage();
+
 </script></body>
 </html>
