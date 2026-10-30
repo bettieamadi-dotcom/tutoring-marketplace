@@ -3,15 +3,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Manage Tutor Profile | Tutor Pearl</title>  <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background: #211038;
-      color: #ffffff;
+      color: white;
     }
 
     header {
@@ -34,7 +32,6 @@
     .back-link {
       color: #E7DBFF;
       text-decoration: none;
-      font-size: 14px;
     }
 
     .container {
@@ -47,18 +44,13 @@
       background: #3B2058;
       padding: 28px;
       border-radius: 16px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
     }
 
-    h1 {
-      color: #E7DBFF;
-      margin-top: 0;
-    }
+    h1, h2 { color: #E7DBFF; }
 
     .intro {
       color: #D8CDE5;
       line-height: 1.6;
-      margin-bottom: 25px;
     }
 
     label {
@@ -74,7 +66,7 @@
       border: 1px solid #765B91;
       border-radius: 8px;
       background: #211038;
-      color: #ffffff;
+      color: white;
       font-size: 15px;
     }
 
@@ -83,21 +75,10 @@
       resize: vertical;
     }
 
-    input:focus, textarea:focus, select:focus {
-      outline: 2px solid #C8A8FF;
-    }
-
-    .help {
-      display: block;
-      color: #D8CDE5;
-      font-size: 12px;
-      margin-top: 6px;
-    }
-
     button {
       width: 100%;
       padding: 15px;
-      margin-top: 25px;
+      margin-top: 20px;
       border: none;
       border-radius: 8px;
       background: #C8A8FF;
@@ -121,19 +102,39 @@
       line-height: 1.5;
     }
 
+    .photo-area {
+      background: #211038;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    #photoPreview {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 3px solid #C8A8FF;
+      display: none;
+      margin: 15px auto;
+    }
+
+    .help {
+      display: block;
+      color: #D8CDE5;
+      font-size: 12px;
+      margin-top: 7px;
+    }
+
     #message {
       margin-top: 18px;
       line-height: 1.5;
       overflow-wrap: anywhere;
     }
 
-    .success {
-      color: #9EF0B0;
-    }
-
-    .error {
-      color: #FFAAAA;
-    }
+    .success { color: #9EF0B0; }
+    .error { color: #FFAAAA; }
 
     @media (max-width: 600px) {
       .container {
@@ -141,9 +142,7 @@
         padding: 12px;
       }
 
-      .card {
-        padding: 20px;
-      }
+      .card { padding: 20px; }
     }
   </style></head><body><header>
   <a class="logo" href="index.html">Tutor Pearl</a>
@@ -152,12 +151,36 @@
   <section class="card"><h1>Manage Your Tutor Profile</h1>
 
 <p class="intro">
-  Keep your teaching profile updated so students and parents can
-  understand your experience, subjects and teaching services.
+  Update your teaching information and upload a professional
+  photograph to help students and parents recognize you.
 </p>
 
 <div class="status-box" id="approvalStatus">
-  Loading your profile status...
+  Loading your profile...
+</div>
+
+<div class="photo-area">
+  <h2>Profile Photograph</h2>
+
+  <img id="photoPreview" alt="Tutor profile photograph">
+
+  <p class="intro">
+    Upload a clear, professional photograph of yourself.
+  </p>
+
+  <input
+    type="file"
+    id="photoInput"
+    accept="image/jpeg,image/png,image/webp"
+  >
+
+  <small class="help">
+    Accepted formats: JPG, PNG and WebP. Maximum size: 5 MB.
+  </small>
+
+  <button type="button" id="uploadPhotoBtn">
+    Upload Photograph
+  </button>
 </div>
 
 <form id="profileForm" style="display:none;">
@@ -169,7 +192,7 @@
   <input
     type="text"
     id="headline"
-    placeholder="Example: Experienced English and Mathematics Tutor"
+    placeholder="Experienced English and Mathematics Tutor"
   >
 
   <label for="subjects">Subjects You Teach</label>
@@ -178,7 +201,7 @@
     id="subjects"
     placeholder="English, Mathematics, Biology"
   >
-  <small class="help">Separate each subject with a comma.</small>
+  <small class="help">Separate subjects with commas.</small>
 
   <label for="hourlyRate">Hourly Rate</label>
   <input
@@ -201,19 +224,12 @@
     id="languages"
     placeholder="English, Igbo, French"
   >
-  <small class="help">Separate each language with a comma.</small>
 
   <label for="qualifications">Qualifications</label>
-  <textarea
-    id="qualifications"
-    placeholder="Describe your education, certificates and relevant training."
-  ></textarea>
+  <textarea id="qualifications"></textarea>
 
   <label for="biography">About You</label>
-  <textarea
-    id="biography"
-    placeholder="Tell students about your teaching experience, approach and what they can expect from your lessons."
-  ></textarea>
+  <textarea id="biography"></textarea>
 
   <button type="submit" id="saveButton">Save Changes</button>
 
@@ -237,9 +253,13 @@
   const form = document.getElementById('profileForm');
   const message = document.getElementById('message');
   const saveButton = document.getElementById('saveButton');
+  const uploadPhotoBtn = document.getElementById('uploadPhotoBtn');
+  const photoInput = document.getElementById('photoInput');
+  const photoPreview = document.getElementById('photoPreview');
   const approvalStatus = document.getElementById('approvalStatus');
 
   let currentUser = null;
+  let currentPhotoUrl = '';
 
   function showMessage(text, type) {
     message.textContent = text;
@@ -270,15 +290,13 @@
       .maybeSingle();
 
     if (error) {
-      approvalStatus.textContent =
-        'We could not load your profile. Please try again.';
+      approvalStatus.textContent = 'We could not load your profile.';
       showMessage(error.message, 'error');
       return;
     }
 
     if (!profile) {
-      approvalStatus.textContent =
-        'Your tutor profile was not found. Please contact support.';
+      approvalStatus.textContent = 'Your tutor profile was not found.';
       return;
     }
 
@@ -310,14 +328,118 @@
     document.getElementById('biography').value =
       profile.biography || '';
 
-    const status = profile.approval_status || 'pending';
+    currentPhotoUrl = profile.profile_photo_url || '';
+
+    if (currentPhotoUrl) {
+      photoPreview.src = currentPhotoUrl;
+      photoPreview.style.display = 'block';
+    }
 
     approvalStatus.textContent =
-      'Profile approval status: ' + status.toUpperCase() +
+      'Profile approval status: ' +
+      (profile.approval_status || 'pending').toUpperCase() +
       '. You cannot change this status yourself.';
 
     form.style.display = 'block';
   }
+
+  photoInput.addEventListener('change', () => {
+    const file = photoInput.files[0];
+
+    if (!file) return;
+
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      showMessage('Please select a JPG, PNG or WebP image.', 'error');
+      photoInput.value = '';
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      showMessage('Your photograph must not exceed 5 MB.', 'error');
+      photoInput.value = '';
+      return;
+    }
+
+    const temporaryUrl = URL.createObjectURL(file);
+    photoPreview.src = temporaryUrl;
+    photoPreview.style.display = 'block';
+
+    showMessage('Preview ready. Tap Upload Photograph to save it.', 'success');
+  });
+
+  uploadPhotoBtn.addEventListener('click', async () => {
+    const file = photoInput.files[0];
+
+    if (!currentUser) {
+      showMessage('Please log in again.', 'error');
+      return;
+    }
+
+    if (!file) {
+      showMessage('Please select a photograph first.', 'error');
+      return;
+    }
+
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) ||
+        file.size > 5 * 1024 * 1024) {
+      showMessage('Choose a valid image no larger than 5 MB.', 'error');
+      return;
+    }
+
+    uploadPhotoBtn.disabled = true;
+    uploadPhotoBtn.textContent = 'Uploading...';
+
+    const extension = file.name.split('.').pop().toLowerCase();
+    const filePath =
+      currentUser.id + '/' + Date.now() + '.' + extension;
+
+    const { error: uploadError } = await supabase.storage
+      .from('tutor-photos')
+      .upload(filePath, file, {
+        contentType: file.type,
+        cacheControl: '3600',
+        upsert: false
+      });
+
+    if (uploadError) {
+      showMessage('Photo upload failed: ' + uploadError.message, 'error');
+      uploadPhotoBtn.disabled = false;
+      uploadPhotoBtn.textContent = 'Upload Photograph';
+      return;
+    }
+
+    const { data: publicData } = supabase.storage
+      .from('tutor-photos')
+      .getPublicUrl(filePath);
+
+    const newPhotoUrl = publicData.publicUrl;
+
+    const { error: updateError } = await supabase
+      .from('tutor_profiles')
+      .update({ profile_photo_url: newPhotoUrl })
+      .eq('id', currentUser.id);
+
+    if (updateError) {
+      showMessage(
+        'The photo uploaded, but the profile could not be updated: ' +
+        updateError.message,
+        'error'
+      );
+      uploadPhotoBtn.disabled = false;
+      uploadPhotoBtn.textContent = 'Upload Photograph';
+      return;
+    }
+
+    currentPhotoUrl = newPhotoUrl;
+    photoPreview.src = newPhotoUrl;
+    photoPreview.style.display = 'block';
+
+    showMessage('Your profile photograph has been saved successfully!', 'success');
+
+    photoInput.value = '';
+    uploadPhotoBtn.disabled = false;
+    uploadPhotoBtn.textContent = 'Upload Photograph';
+  });
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -333,11 +455,9 @@
     const rate =
       document.getElementById('hourlyRate').value;
 
-    if (!fullName || rate === '' || Number(rate) < 0) {
-      showMessage(
-        'Please enter your full name and a valid hourly rate.',
-        'error'
-      );
+    if (!fullName || rate === '' || !Number.isFinite(Number(rate)) ||
+        Number(rate) < 0) {
+      showMessage('Please enter your full name and a valid hourly rate.', 'error');
       return;
     }
 
@@ -358,15 +478,12 @@
       hourly_rate: Number(rate),
       currency: document.getElementById('currency').value,
       teaching_languages: languages,
-      qualifications:
-        document.getElementById('qualifications').value.trim(),
-      biography:
-        document.getElementById('biography').value.trim()
+      qualifications: document.getElementById('qualifications').value.trim(),
+      biography: document.getElementById('biography').value.trim()
     };
 
     saveButton.disabled = true;
     saveButton.textContent = 'Saving...';
-    showMessage('', '');
 
     const { error } = await supabase
       .from('tutor_profiles')
@@ -377,17 +494,11 @@
     saveButton.textContent = 'Save Changes';
 
     if (error) {
-      showMessage(
-        'Your changes could not be saved: ' + error.message,
-        'error'
-      );
+      showMessage('Your changes could not be saved: ' + error.message, 'error');
       return;
     }
 
-    showMessage(
-      'Your tutor profile has been updated successfully!',
-      'success'
-    );
+    showMessage('Your tutor profile has been updated successfully!', 'success');
   });
 
   loadProfile();
