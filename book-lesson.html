@@ -1,62 +1,260 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Book a Lesson | Tutor Pearl</title>
+
 <style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#211038;color:#fff;padding:25px 15px}
-.container{max-width:650px;margin:30px auto;background:#30164A;padding:28px;border-radius:16px}
-h1{margin-top:0;color:#E7DBFF}
-p{color:#D8CDE5;line-height:1.6}
-label{display:block;margin:17px 0 7px;font-weight:bold}
-input,select,textarea{width:100%;padding:13px;border:1px solid #80649c;border-radius:8px;background:#211038;color:white;font-size:15px}
-textarea{min-height:100px;resize:vertical}
-button{width:100%;padding:15px;margin-top:22px;background:#C8A8FF;color:#211038;border:0;border-radius:8px;font-weight:bold;font-size:16px;cursor:pointer}
-button:disabled{opacity:.6;cursor:not-allowed}
-.message{margin-top:18px;padding:12px;border-radius:8px;display:none;line-height:1.5}
-.success{background:#174c35;color:#c7ffdf}
-.error{background:#5a2525;color:#ffe0e0}
-.back{display:inline-block;color:#C8A8FF;margin-bottom:20px}
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #211038;
+    color: #fff;
+    padding: 25px 15px;
+}
+
+.container {
+    max-width: 650px;
+    margin: 30px auto;
+    background: #30164A;
+    padding: 28px;
+    border-radius: 16px;
+}
+
+h1 {
+    margin-top: 0;
+    color: #E7DBFF;
+}
+
+h2 {
+    color: #E7DBFF;
+}
+
+p {
+    color: #D8CDE5;
+    line-height: 1.6;
+}
+
+label {
+    display: block;
+    margin: 17px 0 7px;
+    font-weight: bold;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #80649c;
+    border-radius: 8px;
+    background: #211038;
+    color: white;
+    font-size: 15px;
+}
+
+textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    margin-top: 22px;
+    background: #C8A8FF;
+    color: #211038;
+    border: 0;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+.message {
+    margin-top: 18px;
+    padding: 12px;
+    border-radius: 8px;
+    display: none;
+    line-height: 1.5;
+}
+
+.success {
+    background: #174c35;
+    color: #c7ffdf;
+}
+
+.error {
+    background: #5a2525;
+    color: #ffe0e0;
+}
+
+.info-box {
+    background: #211038;
+    border: 1px solid #654580;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 20px 0;
+}
+
+.availability-item {
+    padding: 9px 0;
+    border-bottom: 1px solid #53366D;
+    color: #E7DBFF;
+}
+
+.availability-item:last-child {
+    border-bottom: none;
+}
+
+.back {
+    display: inline-block;
+    color: #C8A8FF;
+    margin-bottom: 20px;
+}
+
+.small-text {
+    font-size: 13px;
+    color: #BCA9D1;
+}
+
 </style>
 </head>
-<body><div class="container">
-<a class="back" href="find-tutors.html">← Back to tutors</a><h1>Book a Lesson</h1>
-<p>Send a lesson request to your chosen tutor. The tutor will review your request and respond.</p><div id="tutorInfo">Loading tutor information...</div><form id="bookingForm">
-<label for="subject">Subject</label>
-<input id="subject" type="text" required placeholder="e.g. English, Mathematics"><label for="lessonDate">Preferred date</label>
-<input id="lessonDate" type="date" required>
 
-<label for="startTime">Preferred start time</label>
-<input id="startTime" type="time" required>
+<body>
 
-<label for="duration">Lesson duration</label>
-<select id="duration" required>
+<div class="container">
 
-<option value="30">30 minutes</option>
-<option value="60">60 minutes</option>
-<option value="90">90 minutes</option>
-</select><label for="studentMessage">Message to tutor (optional)</label>
+<a class="back" href="find-tutors.html">
+← Back to tutors
+</a>
 
-<textarea id="studentMessage" placeholder="Tell the tutor what you would like to learn."></textarea><button type="submit" id="submitButton">Send Booking Request</button>
+<h1>Book a Lesson</h1>
 
-</form><div id="message" class="message"></div>
-</div><script type="module">
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+<p>
+Send a lesson request to your chosen tutor.
+Choose from the days and times the tutor has made available.
+The tutor will review your request and respond.
+</p>
 
-const SUPABASE_URL = "https://chmdsvfmlscrbqomqifp.supabase.co";
-const SUPABASE_KEY = "sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ";
+<div id="tutorInfo">
+Loading tutor information...
+</div>
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+<div class="info-box">
+    <h2>Available Teaching Hours</h2>
+    <div id="availabilityList">
+        Loading availability...
+    </div>
+</div>
+
+<form id="bookingForm">
+
+    <label for="subject">Subject</label>
+    <input
+        id="subject"
+        type="text"
+        required
+        placeholder="e.g. English, Mathematics"
+    >
+
+    <label for="timezone">Tutor's Time Zone</label>
+    <select id="timezone" required>
+        <option value="">Loading time zones...</option>
+    </select>
+
+    <p class="small-text">
+        All available lesson times are displayed in the tutor's selected time zone.
+    </p>
+
+    <label for="lessonDate">Preferred Date</label>
+    <input
+        id="lessonDate"
+        type="date"
+        required
+    >
+
+    <label for="duration">Lesson Duration</label>
+    <select id="duration" required>
+        <option value="30">30 minutes</option>
+        <option value="60">60 minutes</option>
+        <option value="90">90 minutes</option>
+    </select>
+
+    <label for="startTime">Available Start Time</label>
+    <select id="startTime" required disabled>
+        <option value="">Choose a date first</option>
+    </select>
+
+    <label for="studentMessage">Message to Tutor (Optional)</label>
+    <textarea
+        id="studentMessage"
+        placeholder="Tell the tutor what you would like to learn."
+    ></textarea>
+
+    <button type="submit" id="submitButton">
+        Send Booking Request
+    </button>
+
+</form>
+
+<div id="message" class="message"></div>
+
+</div>
+
+<script type="module">
+
+import { createClient } from
+"https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL =
+"https://chmdsvfmlscrbqomqifp.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ";
+
+const supabase = createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
 
 const tutorInfo = document.getElementById("tutorInfo");
 const form = document.getElementById("bookingForm");
 const messageBox = document.getElementById("message");
 const submitButton = document.getElementById("submitButton");
 
-const tutorId = new URLSearchParams(window.location.search).get("tutor");
+const lessonDateInput = document.getElementById("lessonDate");
+const durationInput = document.getElementById("duration");
+const startTimeInput = document.getElementById("startTime");
+const timezoneInput = document.getElementById("timezone");
+const availabilityList = document.getElementById("availabilityList");
+
+const tutorId =
+    new URLSearchParams(window.location.search).get("tutor");
+
+const dayNames = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday"
+];
+
 let currentUser = null;
 let selectedTutor = null;
+let tutorAvailability = [];
+let sendingBooking = false;
+
 
 function showMessage(text, type) {
     messageBox.textContent = text;
@@ -64,38 +262,360 @@ function showMessage(text, type) {
     messageBox.style.display = "block";
 }
 
-function getLocalDate() {
-    const now = new Date();
-    const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
-    return local.toISOString().split("T")[0];
+
+function getDateInTimezone(timezone) {
+
+    const parts = new Intl.DateTimeFormat(
+        "en-CA",
+        {
+            timeZone: timezone,
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit"
+        }
+    ).formatToParts(new Date());
+
+    const values = {};
+
+    parts.forEach(part => {
+        values[part.type] = part.value;
+    });
+
+    return `${values.year}-${values.month}-${values.day}`;
 }
 
-document.getElementById("lessonDate").min = getLocalDate();
 
-async function initializePage() {
-    if (!tutorId) {
-        tutorInfo.textContent = "No tutor was selected. Please return to Find Tutors.";
-        form.style.display = "none";
+function formatTime(time) {
+
+    const [hours, minutes] = time.split(":").map(Number);
+
+    const date = new Date();
+
+    date.setHours(hours, minutes, 0, 0);
+
+    return date.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true
+    });
+}
+
+
+function formatTimeRange(slot) {
+
+    return (
+        formatTime(slot.start_time) +
+        " – " +
+        formatTime(slot.end_time)
+    );
+}
+
+
+function getDayOfWeek(dateString) {
+
+    return new Date(dateString + "T12:00:00").getDay();
+}
+
+
+function getDurationMinutes() {
+
+    return Number(durationInput.value);
+}
+
+
+function getAvailableStartTimes(dateString, timezone, duration) {
+
+    const day = getDayOfWeek(dateString);
+
+    const matchingSlots = tutorAvailability.filter(slot =>
+        Number(slot.day_of_week) === day &&
+        slot.timezone === timezone &&
+        slot.is_available === true
+    );
+
+    const availableTimes = [];
+
+    matchingSlots.forEach(slot => {
+
+        const [startHour, startMinute] =
+            slot.start_time.split(":").map(Number);
+
+        const [endHour, endMinute] =
+            slot.end_time.split(":").map(Number);
+
+        const slotStart = startHour * 60 + startMinute;
+        const slotEnd = endHour * 60 + endMinute;
+
+        for (
+            let time = slotStart;
+            time + duration <= slotEnd;
+            time += 30
+        ) {
+
+            const hours = Math.floor(time / 60);
+            const minutes = time % 60;
+
+            const value =
+                String(hours).padStart(2, "0") +
+                ":" +
+                String(minutes).padStart(2, "0");
+
+            if (!availableTimes.includes(value)) {
+                availableTimes.push(value);
+            }
+        }
+
+    });
+
+    return availableTimes.sort();
+}
+
+
+function updateAvailableTimes() {
+
+    const date = lessonDateInput.value;
+    const timezone = timezoneInput.value;
+    const duration = getDurationMinutes();
+
+    startTimeInput.innerHTML = "";
+    startTimeInput.disabled = true;
+
+    if (!date || !timezone) {
+
+        startTimeInput.innerHTML =
+            '<option value="">Choose a date and time zone first</option>';
+
         return;
     }
 
-    const { data: authData, error: authError } = await supabase.auth.getUser();
+    const today = getDateInTimezone(timezone);
+
+    if (date < today) {
+
+        startTimeInput.innerHTML =
+            '<option value="">Choose today or a future date</option>';
+
+        return;
+    }
+
+    const times = getAvailableStartTimes(
+        date,
+        timezone,
+        duration
+    );
+
+    if (times.length === 0) {
+
+        startTimeInput.innerHTML =
+            '<option value="">No available times for this date and duration</option>';
+
+        return;
+    }
+
+    startTimeInput.innerHTML =
+        '<option value="">Select a start time</option>';
+
+    times.forEach(time => {
+
+        const option = document.createElement("option");
+
+        option.value = time;
+        option.textContent = formatTime(time);
+
+        startTimeInput.appendChild(option);
+
+    });
+
+    startTimeInput.disabled = false;
+}
+
+
+function displayAvailability() {
+
+    availabilityList.innerHTML = "";
+
+    if (tutorAvailability.length === 0) {
+
+        availabilityList.textContent =
+            "This tutor has not added any teaching availability yet.";
+
+        return;
+    }
+
+    const activeSlots = tutorAvailability.filter(
+        slot => slot.is_available
+    );
+
+    if (activeSlots.length === 0) {
+
+        availabilityList.textContent =
+            "This tutor currently has no available teaching hours.";
+
+        return;
+    }
+
+    const grouped = {};
+
+    activeSlots.forEach(slot => {
+
+        const key = slot.timezone;
+
+        if (!grouped[key]) {
+            grouped[key] = [];
+        }
+
+        grouped[key].push(slot);
+
+    });
+
+    Object.keys(grouped).forEach(timezone => {
+
+        const heading = document.createElement("p");
+
+        heading.style.fontWeight = "bold";
+        heading.style.color = "#C8A8FF";
+        heading.textContent = timezone;
+
+        availabilityList.appendChild(heading);
+
+        grouped[timezone]
+            .sort((a, b) =>
+                Number(a.day_of_week) - Number(b.day_of_week)
+            )
+            .forEach(slot => {
+
+                const item = document.createElement("div");
+
+                item.className = "availability-item";
+
+                item.textContent =
+                    dayNames[Number(slot.day_of_week)] +
+                    ": " +
+                    formatTimeRange(slot);
+
+                availabilityList.appendChild(item);
+
+            });
+
+    });
+
+}
+
+
+async function loadAvailability() {
+
+    const { data, error } = await supabase
+        .from("tutor_availability")
+        .select(
+            "day_of_week, start_time, end_time, timezone, is_available"
+        )
+        .eq("tutor_id", selectedTutor.id)
+        .eq("is_available", true)
+        .order("day_of_week")
+        .order("start_time");
+
+    if (error) {
+        throw error;
+    }
+
+    tutorAvailability = data || [];
+
+    displayAvailability();
+
+    const timezones = [
+        ...new Set(
+            tutorAvailability.map(slot => slot.timezone)
+        )
+    ];
+
+    timezoneInput.innerHTML = "";
+
+    if (timezones.length === 0) {
+
+        timezoneInput.innerHTML =
+            '<option value="">No time zone available</option>';
+
+        timezoneInput.disabled = true;
+
+        lessonDateInput.disabled = true;
+        durationInput.disabled = true;
+
+        return;
+    }
+
+    timezoneInput.disabled = false;
+
+    timezones.forEach(timezone => {
+
+        const option = document.createElement("option");
+
+        option.value = timezone;
+        option.textContent = timezone;
+
+        timezoneInput.appendChild(option);
+
+    });
+
+    updateDateMinimum();
+    updateAvailableTimes();
+
+}
+
+
+function updateDateMinimum() {
+
+    const timezone = timezoneInput.value;
+
+    if (!timezone) return;
+
+    lessonDateInput.min =
+        getDateInTimezone(timezone);
+
+}
+
+
+async function initializePage() {
+
+    if (!tutorId) {
+
+        tutorInfo.textContent =
+            "No tutor was selected. Please return to Find Tutors.";
+
+        form.style.display = "none";
+
+        return;
+    }
+
+    const { data: authData, error: authError } =
+        await supabase.auth.getUser();
 
     if (authError || !authData.user) {
-        tutorInfo.textContent = "Please log in with your student account to book a lesson.";
+
+        tutorInfo.textContent =
+            "Please log in with your student account to book a lesson.";
+
         form.style.display = "none";
+
         showMessage("Please log in first.", "error");
+
         setTimeout(() => {
             window.location.href = "student-login.html";
         }, 2000);
+
         return;
     }
 
     currentUser = authData.user;
 
-    if (currentUser.user_metadata?.account_type !== "student") {
-        tutorInfo.textContent = "Please use a student account to request lessons.";
+    if (
+        currentUser.user_metadata?.account_type !== "student"
+    ) {
+
+        tutorInfo.textContent =
+            "Please use a student account to request lessons.";
+
         form.style.display = "none";
+
         return;
     }
 
@@ -107,69 +627,209 @@ async function initializePage() {
         .maybeSingle();
 
     if (error || !tutor) {
-        tutorInfo.textContent = "This tutor could not be found or is not available for booking.";
+
+        tutorInfo.textContent =
+            "This tutor could not be found or is not available for booking.";
+
         form.style.display = "none";
+
         return;
     }
 
     selectedTutor = tutor;
 
     tutorInfo.innerHTML = "";
+
     const name = document.createElement("h2");
     name.textContent = tutor.full_name || "Tutor";
+
     const headline = document.createElement("p");
     headline.textContent = tutor.headline || "";
+
     const rate = document.createElement("p");
-    rate.textContent = "Rate: " + (tutor.currency || "USD") + " " + (tutor.hourly_rate ?? "Not listed") + " per hour";
+
+    rate.textContent =
+        "Rate: " +
+        (tutor.currency || "USD") +
+        " " +
+        (tutor.hourly_rate ?? "Not listed") +
+        " per hour";
+
     tutorInfo.append(name, headline, rate);
+
+    await loadAvailability();
+
 }
 
-form.addEventListener("submit", async (event) => {
+
+lessonDateInput.addEventListener(
+    "change",
+    updateAvailableTimes
+);
+
+durationInput.addEventListener(
+    "change",
+    updateAvailableTimes
+);
+
+timezoneInput.addEventListener(
+    "change",
+    function() {
+
+        updateDateMinimum();
+
+        updateAvailableTimes();
+
+    }
+);
+
+
+form.addEventListener("submit", async event => {
+
     event.preventDefault();
 
+    if (sendingBooking) return;
+
     if (!currentUser || !selectedTutor) {
-        showMessage("Please log in and select an available tutor.", "error");
+
+        showMessage(
+            "Please log in and select a tutor.",
+            "error"
+        );
+
         return;
     }
 
-    const lessonDate = document.getElementById("lessonDate").value;
-    const startTime = document.getElementById("startTime").value;
+    const lessonDate = lessonDateInput.value;
+    const startTime = startTimeInput.value;
+    const timezone = timezoneInput.value;
+    const duration = getDurationMinutes();
 
-    if (lessonDate < getLocalDate()) {
-        showMessage("Please choose today or a future date.", "error");
+    if (!lessonDate || !startTime || !timezone) {
+
+        showMessage(
+            "Please select a date, time zone and available start time.",
+            "error"
+        );
+
         return;
     }
+
+    if (lessonDate < getDateInTimezone(timezone)) {
+
+        showMessage(
+            "Please choose today or a future date in the tutor's time zone.",
+            "error"
+        );
+
+        return;
+    }
+
+    const validTimes = getAvailableStartTimes(
+        lessonDate,
+        timezone,
+        duration
+    );
+
+    if (!validTimes.includes(startTime)) {
+
+        showMessage(
+            "The selected time is no longer available. Please choose another time.",
+            "error"
+        );
+
+        updateAvailableTimes();
+
+        return;
+    }
+
+    sendingBooking = true;
 
     submitButton.disabled = true;
     submitButton.textContent = "Sending request...";
 
     const booking = {
+
         student_id: currentUser.id,
+
         tutor_id: selectedTutor.id,
-        subject: document.getElementById("subject").value.trim(),
+
+        subject:
+            document.getElementById("subject").value.trim(),
+
         lesson_date: lessonDate,
+
         start_time: startTime,
-        duration_minutes: Number(document.getElementById("duration").value),
-        student_message: document.getElementById("studentMessage").value.trim() || null,
+
+        duration_minutes: duration,
+
+        timezone: timezone,
+
+        student_message:
+            document.getElementById("studentMessage").value.trim() || null,
+
         status: "pending"
+
     };
 
-    const { error } = await supabase
-        .from("lesson_bookings")
-        .insert(booking);
+    try {
 
-    if (error) {
-        showMessage("Booking request could not be sent: " + error.message, "error");
+        const { error } = await supabase
+            .from("lesson_bookings")
+            .insert(booking);
+
+        if (error) {
+            throw error;
+        }
+
+        showMessage(
+            "Your booking request has been sent successfully! You can check its status from your student dashboard.",
+            "success"
+        );
+
+        form.reset();
+
+        updateAvailableTimes();
+
+        submitButton.textContent = "Request Sent";
+
+    } catch (error) {
+
+        showMessage(
+            "Booking request could not be sent: " +
+            (error.message || "Please try again."),
+            "error"
+        );
+
         submitButton.disabled = false;
-        submitButton.textContent = "Send Booking Request";
-        return;
+
+        submitButton.textContent =
+            "Send Booking Request";
+
+    } finally {
+
+        sendingBooking = false;
+
     }
 
-    showMessage("Your booking request has been sent successfully! You can check its status from your student dashboard.", "success");
-    form.reset();
-    submitButton.textContent = "Request Sent";
 });
- 
-initializePage();
-</script></body>
-  </html>
+
+
+initializePage().catch(error => {
+
+    console.error(error);
+
+    tutorInfo.textContent =
+        "Unable to load booking information. Please refresh the page.";
+
+    showMessage(
+        error.message || "Something went wrong while loading availability.",
+        "error"
+    );
+
+});
+
+</script>
+
+</body>
+</html>
