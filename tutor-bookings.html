@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Bookings | Tutor Pearl</title>
-
-<style>
+<title>My Bookings | Tutor Pearl</title><style>
 * {
     box-sizing: border-box;
 }
@@ -130,41 +127,102 @@ button:disabled {
     padding: 22px;
     border-radius: 10px;
 }
-</style>
-</head>
 
-<body>
+.reschedule-section {
+    margin-top: 22px;
+    padding: 17px;
+    background: #211038;
+    border: 1px solid #65458a;
+    border-radius: 10px;
+}
 
-<div class="container">
+.reschedule-section h4 {
+    color: #E7DBFF;
+    margin-top: 0;
+    font-size: 17px;
+}
 
-    <header>
-        <div>
-            <h1>My Bookings</h1>
-            <p>View and manage lesson requests from your students.</p>
-        </div>
+.request-card {
+    background: #3B2058;
+    padding: 15px;
+    border-radius: 9px;
+    margin-top: 13px;
+    border: 1px solid #65458a;
+}
 
-        <button class="refresh" id="refreshButton">
-            Refresh Bookings
-        </button>
-    </header>
+.request-card p {
+    margin: 8px 0;
+    overflow-wrap: anywhere;
+}
 
-    <p>
-        <a href="tutor-dashboard.html">
-            ← Back to Tutor Dashboard
-        </a>
-    </p>
+.request-status {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: capitalize;
+}
 
-    <div id="message" class="message"></div>
+.request-pending {
+    background: #fff0c2;
+    color: #765000;
+}
 
-    <div id="bookingList">
-        Loading your bookings...
+.request-approved {
+    background: #A6E8C1;
+    color: #173D2A;
+}
+
+.request-declined,
+.request-cancelled {
+    background: #F2A6A6;
+    color: #512020;
+}
+
+.request-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+@media(max-width: 600px) {
+    body {
+        padding: 14px;
+    }
+
+    .booking {
+        padding: 15px;
+    }
+}
+</style></head><body><div class="container"><header>
+    <div>
+        <h1>My Bookings</h1>
+        <p>View and manage lesson requests from your students.</p>
     </div>
 
+    <button class="refresh" id="refreshButton">
+        Refresh Bookings
+    </button>
+</header>
+
+<p>
+    <a href="tutor-dashboard.html">
+        ← Back to Tutor Dashboard
+    </a>
+</p>
+
+<div id="message" class="message"></div>
+
+<div id="bookingList">
+    Loading your bookings...
 </div>
 
-<script type="module">
+</div><script type="module">
 
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from
+"https://esm.sh/@supabase/supabase-js@2";
 
 const SUPABASE_URL =
 "https://chmdsvfmlscrbqomqifp.supabase.co";
@@ -187,6 +245,7 @@ const refreshButton =
 document.getElementById("refreshButton");
 
 let currentUser = null;
+let loading = false;
 
 function showMessage(text, type) {
     messageBox.textContent = text;
@@ -194,11 +253,18 @@ function showMessage(text, type) {
     messageBox.style.display = "block";
 }
 
+function hideMessage() {
+    messageBox.style.display = "none";
+}
+
 function addText(parent, tag, className, text) {
     const element = document.createElement(tag);
+
     element.className = className;
     element.textContent = text;
+
     parent.appendChild(element);
+
     return element;
 }
 
@@ -235,6 +301,7 @@ function formatTime(time) {
 }
 
 async function checkAccess() {
+
     const { data, error } =
         await supabase.auth.getUser();
 
@@ -257,147 +324,441 @@ async function checkAccess() {
     return true;
 }
 
-async function loadBookings() {
-    refreshButton.disabled = true;
-    refreshButton.textContent = "Loading...";
-    bookingList.textContent = "Loading your bookings...";
+function createRequestStatus(status) {
 
-    const { data, error } = await supabase.rpc(
-        "tutor_get_my_bookings"
+    const allowed = [
+        "pending",
+        "approved",
+        "declined",
+        "cancelled"
+    ];
+
+    const safeStatus = allowed.includes(
+        String(status).toLowerCase()
+    )
+        ? String(status).toLowerCase()
+        : "pending";
+
+    const badge = document.createElement("span");
+
+    badge.className =
+        "request-status request-" + safeStatus;
+
+    badge.textContent = safeStatus;
+
+    return badge;
+}
+
+async function reviewReschedule(
+    requestId,
+    decision,
+    approveButton,
+    declineButton
+) {
+
+    const actionText =
+        decision === "approved" ? "approve" : "decline";
+
+    const confirmed = window.confirm(
+        "Are you sure you want to " +
+        actionText +
+        " this rescheduling request?"
     );
 
-    refreshButton.disabled = false;
-    refreshButton.textContent = "Refresh Bookings";
+    if (!confirmed) return;
 
-    if (error) {
-        console.error(error);
+    approveButton.disabled = true;
+    declineButton.disabled = true;
 
-        bookingList.textContent =
-            "Unable to load bookings: " + error.message;
+    try {
 
-        return;
-    }
-
-    bookingList.innerHTML = "";
-
-    if (!data || data.length === 0) {
-        const empty = document.createElement("div");
-        empty.className = "empty";
-
-        addText(
-            empty,
-            "h3",
-            "",
-            "No booking requests yet"
+        const { data, error } = await supabase.rpc(
+            "tutor_review_reschedule",
+            {
+                p_request_id: requestId,
+                p_decision: decision
+            }
         );
 
-        addText(
-            empty,
-            "p",
-            "",
-            "New lesson requests from students will appear here."
+        if (error) throw error;
+
+        if (data !== true) {
+            throw new Error(
+                "The rescheduling request could not be updated."
+            );
+        }
+
+        showMessage(
+            decision === "approved"
+                ? "Rescheduling request approved. The original booking has been updated."
+                : "Rescheduling request declined. The original booking remains unchanged.",
+            "success"
         );
 
-        bookingList.appendChild(empty);
-        return;
-    }
+        await loadBookings();
 
-    data.forEach(booking => {
+    } catch (error) {
+
+        console.error(
+            "Rescheduling review error:",
+            error
+        );
+
+        showMessage(
+            error.message ||
+            "Unable to process the rescheduling request.",
+            "error"
+        );
+
+        approveButton.disabled = false;
+        declineButton.disabled = false;
+    }
+}
+
+function renderRescheduleRequests(
+    booking,
+    requests
+) {
+
+    const bookingRequests = requests.filter(
+        request =>
+            request.booking_id === booking.booking_id
+    );
+
+    if (!bookingRequests.length) return null;
+
+    const section = document.createElement("div");
+
+    section.className = "reschedule-section";
+
+    addText(
+        section,
+        "h4",
+        "",
+        "Student Rescheduling Requests"
+    );
+
+    bookingRequests.forEach(request => {
+
         const card = document.createElement("div");
-        card.className = "booking";
+
+        card.className = "request-card";
 
         addText(
             card,
-            "h3",
-            "",
-            booking.subject || "Lesson request"
+            "p",
+            "detail",
+            "Requested date: " +
+            formatDate(request.requested_date)
         );
 
         addText(
             card,
             "p",
             "detail",
-            "Student name: " +
-            (booking.student_name || "Student")
+            "Requested time: " +
+            formatTime(request.requested_start_time)
         );
 
-        addText(
-            card,
-            "p",
-            "detail",
-            "Date: " + formatDate(booking.lesson_date)
+        const statusLine = document.createElement("p");
+
+        const statusLabel = document.createElement("strong");
+
+        statusLabel.textContent = "Request status: ";
+
+        statusLine.appendChild(statusLabel);
+
+        statusLine.appendChild(
+            createRequestStatus(request.status)
         );
 
-        addText(
-            card,
-            "p",
-            "detail",
-            "Start time: " + formatTime(booking.start_time)
-        );
+        card.appendChild(statusLine);
 
-        addText(
-            card,
-            "p",
-            "detail",
-            "Duration: " +
-            booking.duration_minutes + " minutes"
-        );
+        if (request.student_message) {
 
-        addText(
-            card,
-            "p",
-            "detail",
-            "Message: " +
-            (booking.student_message || "No message provided.")
-        );
+            addText(
+                card,
+                "p",
+                "detail",
+                "Student's message: " +
+                request.student_message
+            );
+        }
 
-        addText(
-            card,
-            "span",
-            "status",
-            "Status: " + booking.booking_status
-        );
+        if (request.status === "pending") {
 
-        if (booking.booking_status === "pending") {
             const actions = document.createElement("div");
-            actions.className = "actions";
 
-            const acceptButton = document.createElement("button");
-            acceptButton.className = "accept";
-            acceptButton.textContent = "Accept Request";
+            actions.className = "request-actions";
 
-            const declineButton = document.createElement("button");
+            const approveButton =
+                document.createElement("button");
+
+            approveButton.className = "accept";
+
+            approveButton.textContent =
+                "Approve New Time";
+
+            const declineButton =
+                document.createElement("button");
+
             declineButton.className = "decline";
-            declineButton.textContent = "Decline Request";
 
-            acceptButton.addEventListener("click", () =>
-                respondToBooking(
-                    booking.booking_id,
-                    "accepted",
-                    acceptButton,
+            declineButton.textContent =
+                "Decline Request";
+
+            approveButton.addEventListener("click", () => {
+
+                reviewReschedule(
+                    request.id,
+                    "approved",
+                    approveButton,
                     declineButton
-                )
-            );
+                );
 
-            declineButton.addEventListener("click", () =>
-                respondToBooking(
-                    booking.booking_id,
+            });
+
+            declineButton.addEventListener("click", () => {
+
+                reviewReschedule(
+                    request.id,
                     "declined",
-                    acceptButton,
+                    approveButton,
                     declineButton
-                )
-            );
+                );
+
+            });
 
             actions.append(
-                acceptButton,
+                approveButton,
                 declineButton
             );
 
             card.appendChild(actions);
         }
 
-        bookingList.appendChild(card);
+        section.appendChild(card);
     });
+
+    return section;
+}
+
+async function loadBookings() {
+
+    if (loading) return;
+
+    loading = true;
+
+    refreshButton.disabled = true;
+
+    refreshButton.textContent = "Loading...";
+
+    bookingList.textContent =
+        "Loading your bookings...";
+
+    hideMessage();
+
+    try {
+
+        const allowed = await checkAccess();
+
+        if (!allowed) return;
+
+        const {
+            data: bookings,
+            error: bookingError
+        } = await supabase.rpc(
+            "tutor_get_my_bookings"
+        );
+
+        if (bookingError) throw bookingError;
+
+        const {
+            data: requests,
+            error: requestError
+        } = await supabase.rpc(
+            "get_my_reschedule_requests"
+        );
+
+        if (requestError) throw requestError;
+
+        const rescheduleRequests = requests || [];
+
+        bookingList.innerHTML = "";
+
+        if (!bookings || bookings.length === 0) {
+
+            const empty = document.createElement("div");
+
+            empty.className = "empty";
+
+            addText(
+                empty,
+                "h3",
+                "",
+                "No booking requests yet"
+            );
+
+            addText(
+                empty,
+                "p",
+                "",
+                "New lesson requests from students will appear here."
+            );
+
+            bookingList.appendChild(empty);
+
+            return;
+        }
+
+        bookings.forEach(booking => {
+
+            const card = document.createElement("div");
+
+            card.className = "booking";
+
+            addText(
+                card,
+                "h3",
+                "",
+                booking.subject || "Lesson request"
+            );
+
+            addText(
+                card,
+                "p",
+                "detail",
+                "Student name: " +
+                (booking.student_name || "Student")
+            );
+
+            addText(
+                card,
+                "p",
+                "detail",
+                "Date: " +
+                formatDate(booking.lesson_date)
+            );
+
+            addText(
+                card,
+                "p",
+                "detail",
+                "Start time: " +
+                formatTime(booking.start_time)
+            );
+
+            addText(
+                card,
+                "p",
+                "detail",
+                "Duration: " +
+                booking.duration_minutes +
+                " minutes"
+            );
+
+            addText(
+                card,
+                "p",
+                "detail",
+                "Message: " +
+                (booking.student_message ||
+                "No message provided.")
+            );
+
+            addText(
+                card,
+                "span",
+                "status",
+                "Status: " + booking.booking_status
+            );
+
+            if (
+                booking.booking_status === "pending"
+            ) {
+
+                const actions =
+                    document.createElement("div");
+
+                actions.className = "actions";
+
+                const acceptButton =
+                    document.createElement("button");
+
+                acceptButton.className = "accept";
+
+                acceptButton.textContent =
+                    "Accept Request";
+
+                const declineButton =
+                    document.createElement("button");
+
+                declineButton.className = "decline";
+
+                declineButton.textContent =
+                    "Decline Request";
+
+                acceptButton.addEventListener(
+                    "click",
+                    () => respondToBooking(
+                        booking.booking_id,
+                        "accepted",
+                        acceptButton,
+                        declineButton
+                    )
+                );
+
+                declineButton.addEventListener(
+                    "click",
+                    () => respondToBooking(
+                        booking.booking_id,
+                        "declined",
+                        acceptButton,
+                        declineButton
+                    )
+                );
+
+                actions.append(
+                    acceptButton,
+                    declineButton
+                );
+
+                card.appendChild(actions);
+            }
+
+            const rescheduleSection =
+                renderRescheduleRequests(
+                    booking,
+                    rescheduleRequests
+                );
+
+            if (rescheduleSection) {
+                card.appendChild(rescheduleSection);
+            }
+
+            bookingList.appendChild(card);
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Tutor bookings error:",
+            error
+        );
+
+        bookingList.textContent =
+            "Unable to load bookings: " +
+            error.message;
+
+    } finally {
+
+        loading = false;
+
+        refreshButton.disabled = false;
+
+        refreshButton.textContent =
+            "Refresh Bookings";
+    }
 }
 
 async function respondToBooking(
@@ -406,6 +767,7 @@ async function respondToBooking(
     acceptButton,
     declineButton
 ) {
+
     const confirmed = window.confirm(
         "Are you sure you want to " +
         decision +
@@ -417,41 +779,53 @@ async function respondToBooking(
     acceptButton.disabled = true;
     declineButton.disabled = true;
 
-    const { data, error } = await supabase.rpc(
-        "tutor_respond_to_booking",
-        {
-            booking_id: id,
-            decision: decision
-        }
-    );
+    try {
 
-    if (error) {
+        const { data, error } = await supabase.rpc(
+            "tutor_respond_to_booking",
+            {
+                booking_id: id,
+                decision: decision
+            }
+        );
+
+        if (error) throw error;
+
+        if (data !== true) {
+
+            showMessage(
+                "This booking could not be updated. It may no longer be pending.",
+                "error"
+            );
+
+            await loadBookings();
+
+            return;
+        }
+
         showMessage(
-            "Could not update booking: " + error.message,
+            "Booking successfully " + decision + ".",
+            "success"
+        );
+
+        await loadBookings();
+
+    } catch (error) {
+
+        console.error(
+            "Booking response error:",
+            error
+        );
+
+        showMessage(
+            "Could not update booking: " +
+            error.message,
             "error"
         );
 
         acceptButton.disabled = false;
         declineButton.disabled = false;
-        return;
     }
-
-    if (data !== true) {
-        showMessage(
-            "This booking could not be updated. It may no longer be pending.",
-            "error"
-        );
-
-        await loadBookings();
-        return;
-    }
-
-    showMessage(
-        "Booking successfully " + decision + ".",
-        "success"
-    );
-
-    await loadBookings();
 }
 
 refreshButton.addEventListener(
@@ -459,17 +833,7 @@ refreshButton.addEventListener(
     loadBookings
 );
 
-async function initialize() {
-    const allowed = await checkAccess();
+loadBookings();
 
-    if (allowed) {
-        await loadBookings();
-    }
-}
-
-initialize();
-
-</script>
-
-</body>
+</script></body>
 </html>
