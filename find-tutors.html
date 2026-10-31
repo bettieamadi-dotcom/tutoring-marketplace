@@ -174,6 +174,36 @@ button {
     background: #E7DBFF;
 }
 
+/* Favourite tutor button */
+
+.favorite-btn {
+    display: block;
+    width: 100%;
+    background: #3B2058;
+    color: #E7DBFF;
+    border: 1px solid #80649c;
+    padding: 13px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-top: 15px;
+    transition: background 0.2s ease;
+}
+
+.favorite-btn:hover {
+    background: #51366c;
+}
+
+.favorite-btn.saved {
+    color: #FFD6E0;
+    border-color: #C77A9A;
+    background: #512541;
+}
+
+.favorite-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 /* Public tutor reviews */
 
 .reviews-section {
@@ -320,7 +350,12 @@ let tutors = [];
 let reviewsByTutor = new Map();
 let reviewsAvailable = true;
 
+let currentUser = null;
+let isStudent = false;
+let favouriteTutorIds = new Set();
+
 function createTextElement(tag, className, text) {
+
     const element = document.createElement(tag);
 
     if (className) {
@@ -353,6 +388,167 @@ function getStars(rating) {
 
     return "★".repeat(roundedRating) +
            "☆".repeat(5 - roundedRating);
+}
+
+/* Load the logged-in student and their saved tutors */
+
+async function loadStudentFavourites() {
+
+    currentUser = null;
+    isStudent = false;
+    favouriteTutorIds = new Set();
+
+    const { data, error } = await supabase.auth.getUser();
+
+    if (error || !data.user) {
+        return;
+    }
+
+    currentUser = data.user;
+
+    isStudent =
+        currentUser.user_metadata?.account_type === "student";
+
+    if (!isStudent) {
+        return;
+    }
+
+    const { data: favourites, error: favouriteError } =
+        await supabase
+            .from("student_favourites")
+            .select("tutor_id")
+            .eq("student_id", currentUser.id);
+
+    if (favouriteError) {
+
+        console.error(
+            "Unable to load favourite tutors:",
+            favouriteError
+        );
+
+        throw new Error(
+            "Your saved tutors could not be loaded. Please refresh the page."
+        );
+    }
+
+    (favourites || []).forEach(favourite => {
+        favouriteTutorIds.add(favourite.tutor_id);
+    });
+}
+
+/* Add or remove a tutor from favourites */
+
+async function toggleFavourite(tutorId, button) {
+
+    if (!currentUser) {
+
+        alert("Please log in as a student to save your favourite tutors.");
+
+        window.location.href = "student-login.html";
+
+        return;
+    }
+
+    if (!isStudent) {
+
+        alert("Only student accounts can save favourite tutors.");
+
+        return;
+    }
+
+    button.disabled = true;
+
+    const isSaved = favouriteTutorIds.has(tutorId);
+
+    try {
+
+        if (isSaved) {
+
+            const { error } = await supabase
+                .from("student_favourites")
+                .delete()
+                .eq("student_id", currentUser.id)
+                .eq("tutor_id", tutorId);
+
+            if (error) {
+                throw error;
+            }
+
+            favouriteTutorIds.delete(tutorId);
+
+        } else {
+
+            const { error } = await supabase
+                .from("student_favourites")
+                .insert({
+                    student_id: currentUser.id,
+                    tutor_id: tutorId
+                });
+
+            if (error) {
+                throw error;
+            }
+
+            favouriteTutorIds.add(tutorId);
+        }
+
+        updateFavouriteButton(button, tutorId);
+
+    } catch (error) {
+
+        console.error("Favourite update error:", error);
+
+        alert(
+            "We couldn't update your favourites. Please try again."
+        );
+
+    } finally {
+
+        button.disabled = false;
+    }
+}
+
+/* Update the heart button appearance */
+
+function updateFavouriteButton(button, tutorId) {
+
+    const saved = favouriteTutorIds.has(tutorId);
+
+    button.classList.toggle("saved", saved);
+
+    button.textContent = saved
+        ? "♥ Remove from Favourites"
+        : "♡ Add to Favourites";
+
+    button.setAttribute(
+        "aria-pressed",
+        saved ? "true" : "false"
+    );
+
+    button.setAttribute(
+        "aria-label",
+        saved
+            ? "Remove this tutor from favourites"
+            : "Add this tutor to favourites"
+    );
+}
+
+/* Create the favourite button */
+
+function createFavouriteButton(tutor) {
+
+    const button = document.createElement("button");
+
+    button.type = "button";
+    button.className = "favorite-btn";
+
+    updateFavouriteButton(button, tutor.id);
+
+    button.addEventListener("click", () => {
+        toggleFavourite(tutor.id, button);
+    });
+
+    return button;
 }
 
 function addIntroductionVideo(card, tutor) {
@@ -590,19 +786,21 @@ function renderTutors(list) {
 
         const profileLink = document.createElement("a");
 
-profileLink.href =
-    "tutor-public-profile.html?id=" + encodeURIComponent(tutor.id);
+        profileLink.href =
+            "tutor-public-profile.html?id=" +
+            encodeURIComponent(tutor.id);
 
-profileLink.style.color = "#E7DBFF";
-profileLink.style.textDecoration = "none";
-profileLink.style.fontWeight = "bold";
-profileLink.style.fontSize = "20px";
-profileLink.textContent = tutor.full_name || "Tutor";
+        profileLink.style.color = "#E7DBFF";
+        profileLink.style.textDecoration = "none";
+        profileLink.style.fontWeight = "bold";
+        profileLink.style.fontSize = "20px";
+        profileLink.textContent = tutor.full_name || "Tutor";
 
-const tutorName = document.createElement("h3");
-tutorName.appendChild(profileLink);
+        const tutorName = document.createElement("h3");
 
-card.appendChild(tutorName);
+        tutorName.appendChild(profileLink);
+
+        card.appendChild(tutorName);
 
         card.appendChild(
             createTextElement(
@@ -650,11 +848,17 @@ card.appendChild(tutorName);
         addTutorReviews(card, tutor);
 
         const rate = tutor.hourly_rate != null
-            ? (tutor.currency || "USD") + " " + tutor.hourly_rate + " per hour"
+            ? (tutor.currency || "USD") + " " +
+              tutor.hourly_rate + " per hour"
             : "Rate not listed";
 
         card.appendChild(
             createTextElement("p", "rate", rate)
+        );
+
+        // Add the favourite button.
+        card.appendChild(
+            createFavouriteButton(tutor)
         );
 
         const bookButton = document.createElement("a");
@@ -662,7 +866,8 @@ card.appendChild(tutorName);
         bookButton.className = "book-btn";
         bookButton.textContent = "Book a Lesson";
         bookButton.href =
-            "book-lesson.html?tutor=" + encodeURIComponent(tutor.id);
+            "book-lesson.html?tutor=" +
+            encodeURIComponent(tutor.id);
 
         card.appendChild(bookButton);
 
@@ -702,6 +907,20 @@ async function loadReviews() {
 async function loadTutors() {
 
     statusText.textContent = "Loading approved tutors...";
+
+    try {
+
+        // Load the student's saved tutors before rendering cards.
+        await loadStudentFavourites();
+
+    } catch (error) {
+
+        console.error(error);
+
+        statusText.textContent = error.message;
+
+        return;
+    }
 
     const { data, error } = await supabase
         .from("tutor_profiles")
