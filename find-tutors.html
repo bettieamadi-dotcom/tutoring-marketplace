@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Find Tutors | Tutor Pearl</title>
-
-<style>
+<title>Find Tutors | Tutor Pearl</title><style>
 * {
     box-sizing: border-box;
 }
@@ -177,6 +174,89 @@ button {
     background: #E7DBFF;
 }
 
+/* Public tutor reviews */
+
+.reviews-section {
+    margin-top: 22px;
+    padding-top: 16px;
+    border-top: 1px solid #604779;
+}
+
+.reviews-heading {
+    color: #E7DBFF;
+    font-size: 17px;
+    margin: 0 0 12px;
+}
+
+.rating-summary {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin-bottom: 14px;
+}
+
+.average-rating {
+    color: #fff;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.stars {
+    color: #FFD166;
+    letter-spacing: 2px;
+    font-size: 17px;
+}
+
+.review-count {
+    color: #D8CDE5;
+    font-size: 13px;
+}
+
+.review-card {
+    background: #3B2058;
+    border: 1px solid #604779;
+    border-radius: 9px;
+    padding: 13px;
+    margin-bottom: 10px;
+}
+
+.review-card .review-stars {
+    color: #FFD166;
+    letter-spacing: 2px;
+    margin-bottom: 7px;
+}
+
+.review-text {
+    color: #F0E8FA;
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+    margin: 5px 0 9px;
+    white-space: pre-wrap;
+}
+
+.review-date {
+    color: #BDAACF;
+    font-size: 12px;
+}
+
+.no-reviews {
+    background: #3B2058;
+    border: 1px dashed #80649c;
+    border-radius: 9px;
+    padding: 13px;
+    color: #D8CDE5;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.reviews-error {
+    color: #FFD166;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
 #status {
     color: #D8CDE5;
     margin: 20px 0;
@@ -193,49 +273,37 @@ button {
         gap: 10px;
     }
 }
-</style>
-</head>
+</style></head><body><header>
+    <h2>Tutor Pearl</h2><nav>
+    <a href="index.html">Home</a>
+    <a href="student-dashboard.html">Dashboard</a>
+    <a href="tutor-login.html">Tutor Login</a>
+</nav>
 
-<body>
+</header><main class="container"><h1>Find Your Perfect Tutor</h1>
 
-<header>
-    <h2>Tutor Pearl</h2>
+<p class="intro">
+    Discover qualified tutors, explore their teaching experience
+    and request a lesson that suits your learning goals.
+</p>
 
-    <nav>
-        <a href="index.html">Home</a>
-        <a href="student-dashboard.html">Dashboard</a>
-        <a href="tutor-login.html">Tutor Login</a>
-    </nav>
-</header>
+<div class="search-box">
+    <input
+        type="search"
+        id="searchInput"
+        placeholder="Search by tutor, subject or language..."
+    >
 
-<main class="container">
+    <button class="search-btn" id="searchButton">
+        Search
+    </button>
+</div>
 
-    <h1>Find Your Perfect Tutor</h1>
+<p id="status">Loading approved tutors...</p>
 
-    <p class="intro">
-        Discover qualified tutors, explore their teaching experience
-        and request a lesson that suits your learning goals.
-    </p>
+<div class="tutor-grid" id="tutorGrid"></div>
 
-    <div class="search-box">
-        <input
-            type="search"
-            id="searchInput"
-            placeholder="Search by tutor, subject or language..."
-        >
-
-        <button class="search-btn" id="searchButton">
-            Search
-        </button>
-    </div>
-
-    <p id="status">Loading approved tutors...</p>
-
-    <div class="tutor-grid" id="tutorGrid"></div>
-
-</main>
-
-<script type="module">
+</main><script type="module">
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -249,6 +317,8 @@ const statusText = document.getElementById("status");
 const searchInput = document.getElementById("searchInput");
 
 let tutors = [];
+let reviewsByTutor = new Map();
+let reviewsAvailable = true;
 
 function createTextElement(tag, className, text) {
     const element = document.createElement(tag);
@@ -260,6 +330,29 @@ function createTextElement(tag, className, text) {
     element.textContent = text || "";
 
     return element;
+}
+
+function formatDate(dateString) {
+
+    const date = new Date(dateString);
+
+    if (Number.isNaN(date.getTime())) {
+        return "";
+    }
+
+    return date.toLocaleDateString("en", {
+        day: "numeric",
+        month: "short",
+        year: "numeric"
+    });
+}
+
+function getStars(rating) {
+
+    const roundedRating = Math.round(Number(rating) || 0);
+
+    return "★".repeat(roundedRating) +
+           "☆".repeat(5 - roundedRating);
 }
 
 function addIntroductionVideo(card, tutor) {
@@ -298,6 +391,7 @@ function addIntroductionVideo(card, tutor) {
         );
 
         video.addEventListener("error", () => {
+
             const message = createTextElement(
                 "p",
                 "no-video",
@@ -323,6 +417,137 @@ function addIntroductionVideo(card, tutor) {
         );
 
     }
+
+    card.appendChild(section);
+}
+
+function addTutorReviews(card, tutor) {
+
+    const section = document.createElement("section");
+    section.className = "reviews-section";
+
+    section.appendChild(
+        createTextElement(
+            "h4",
+            "reviews-heading",
+            "Student Reviews"
+        )
+    );
+
+    if (!reviewsAvailable) {
+
+        section.appendChild(
+            createTextElement(
+                "p",
+                "reviews-error",
+                "Student reviews are temporarily unavailable."
+            )
+        );
+
+        card.appendChild(section);
+        return;
+    }
+
+    const reviews = reviewsByTutor.get(tutor.id) || [];
+
+    if (reviews.length === 0) {
+
+        section.appendChild(
+            createTextElement(
+                "p",
+                "no-reviews",
+                "No student reviews yet. Be the first to share your learning experience after completing a lesson."
+            )
+        );
+
+        card.appendChild(section);
+        return;
+    }
+
+    const totalReviews = reviews.length;
+
+    const averageRating =
+        reviews.reduce(
+            (total, review) => total + Number(review.rating),
+            0
+        ) / totalReviews;
+
+    const summary = document.createElement("div");
+    summary.className = "rating-summary";
+
+    summary.appendChild(
+        createTextElement(
+            "span",
+            "average-rating",
+            averageRating.toFixed(1)
+        )
+    );
+
+    summary.appendChild(
+        createTextElement(
+            "span",
+            "stars",
+            getStars(averageRating)
+        )
+    );
+
+    summary.appendChild(
+        createTextElement(
+            "span",
+            "review-count",
+            "(" + totalReviews + " " +
+            (totalReviews === 1 ? "review" : "reviews") + ")"
+        )
+    );
+
+    section.appendChild(summary);
+
+    // Display the three most recent reviews.
+    reviews.slice(0, 3).forEach(review => {
+
+        const reviewCard = document.createElement("div");
+        reviewCard.className = "review-card";
+
+        reviewCard.appendChild(
+            createTextElement(
+                "div",
+                "review-stars",
+                getStars(review.rating)
+            )
+        );
+
+        if (review.review_text) {
+
+            reviewCard.appendChild(
+                createTextElement(
+                    "p",
+                    "review-text",
+                    review.review_text
+                )
+            );
+
+        } else {
+
+            reviewCard.appendChild(
+                createTextElement(
+                    "p",
+                    "review-text",
+                    "The student left a rating without written feedback."
+                )
+            );
+
+        }
+
+        reviewCard.appendChild(
+            createTextElement(
+                "span",
+                "review-date",
+                formatDate(review.created_at)
+            )
+        );
+
+        section.appendChild(reviewCard);
+    });
 
     card.appendChild(section);
 }
@@ -413,6 +638,9 @@ function renderTutors(list) {
 
         addIntroductionVideo(card, tutor);
 
+        // Display public tutor ratings and reviews.
+        addTutorReviews(card, tutor);
+
         const rate = tutor.hourly_rate != null
             ? (tutor.currency || "USD") + " " + tutor.hourly_rate + " per hour"
             : "Rate not listed";
@@ -431,6 +659,35 @@ function renderTutors(list) {
         card.appendChild(bookButton);
 
         tutorGrid.appendChild(card);
+    });
+}
+
+async function loadReviews() {
+
+    reviewsAvailable = true;
+    reviewsByTutor = new Map();
+
+    const { data, error } = await supabase
+        .from("tutor_reviews")
+        .select("tutor_id, rating, review_text, created_at")
+        .order("created_at", { ascending: false });
+
+    if (error) {
+
+        console.error("Unable to load tutor reviews:", error);
+
+        reviewsAvailable = false;
+
+        return;
+    }
+
+    (data || []).forEach(review => {
+
+        if (!reviewsByTutor.has(review.tutor_id)) {
+            reviewsByTutor.set(review.tutor_id, []);
+        }
+
+        reviewsByTutor.get(review.tutor_id).push(review);
     });
 }
 
@@ -458,7 +715,7 @@ async function loadTutors() {
 
     if (error) {
 
-        console.error(error);
+        console.error("Unable to load tutors:", error);
 
         statusText.textContent =
             "Unable to load tutors. Please refresh the page.";
@@ -467,6 +724,9 @@ async function loadTutors() {
     }
 
     tutors = data || [];
+
+    // Load reviews after retrieving approved tutors.
+    await loadReviews();
 
     renderTutors(tutors);
 }
@@ -506,7 +766,5 @@ searchInput.addEventListener("input", searchTutors);
 
 loadTutors();
 
-</script>
-
-</body>
+</script></body>
 </html>
