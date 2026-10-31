@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tutor Dashboard | Tutor Pearl</title>
-
-<style>
+<title>Tutor Dashboard | Tutor Pearl</title><style>
 * {
     box-sizing: border-box;
 }
@@ -133,6 +130,14 @@ main {
     background: #53366D;
 }
 
+.notification-card {
+    border-color: #C8A8FF;
+}
+
+.notification-card h3 {
+    color: #C8A8FF;
+}
+
 /* Student reviews */
 
 .reviews-section {
@@ -247,35 +252,18 @@ footer {
         gap: 18px;
     }
 }
-</style>
-</head>
-
-<body>
-
-<header>
+</style></head><body><header>
     <div class="logo">Tutor Pearl</div>
     <a href="find-tutors.html">View Marketplace</a>
-</header>
-
-<main>
-
-<section class="welcome">
+</header><main><section class="welcome">
     <h1 id="welcomeText">Welcome to Your Tutor Dashboard</h1>
     <p>
         Manage your teaching profile, respond to student
         lesson requests and keep track of your tutoring activities.
     </p>
-</section>
-
-<div class="notice" id="notice">
+</section><div class="notice" id="notice">
     Checking your tutor account...
-</div>
-
-<h2 class="section-title">Your Dashboard</h2>
-
-<div class="dashboard-grid">
-
-<section class="card">
+</div><h2 class="section-title">Your Dashboard</h2><div class="dashboard-grid"><section class="card">
     <h3>My Profile</h3>
     <p>
         Manage your teaching profile, qualifications,
@@ -284,9 +272,7 @@ footer {
     <a class="card-button" href="tutor-profile.html">
         Manage Profile
     </a>
-</section>
-
-<section class="card">
+</section><section class="card">
     <h3>My Lessons</h3>
     <p>
         View lesson requests from students, check booking
@@ -296,9 +282,7 @@ footer {
        href="https://tutor-pearl.pages.dev/tutor-bookings.html">
         View My Lessons
     </a>
-</section>
-
-<section class="card">
+</section><section class="card">
     <h3>My Availability</h3>
     <p>
         Set your teaching days, available hours and
@@ -309,17 +293,22 @@ footer {
        href="https://tutor-pearl.pages.dev/tutor-availability.html">
         Manage Availability
     </a>
-</section>
-
-<section class="card">
+</section><section class="card notification-card">
+    <h3>🔔 Notifications</h3>
+    <p>
+        Stay updated on new lesson requests, booking
+        decisions, cancellations and rescheduling requests.
+    </p>
+    <a class="card-button" href="notifications.html">
+        View Notifications
+    </a>
+</section><section class="card">
     <h3>My Earnings</h3>
     <p>
         Your earnings and payment information will
         appear here when payment processing is implemented.
     </p>
-</section>
-
-<section class="card">
+</section><section class="card">
     <h3>Teaching Opportunities</h3>
     <p>
         Visit the Tutor Pearl marketplace and see how
@@ -328,9 +317,7 @@ footer {
     <a class="card-button" href="find-tutors.html">
         View Marketplace
     </a>
-</section>
-
-<section class="card">
+</section><section class="card">
     <h3>Account Settings</h3>
     <p>
         Sign out of your tutor account securely.
@@ -338,33 +325,19 @@ footer {
     <button class="card-button secondary-button" id="logoutBtn">
         Log Out
     </button>
-</section>
+</section></div><!-- Student Reviews --><section class="reviews-section"><h2 class="section-title">My Student Reviews</h2>
 
+<div id="reviewsSummary"></div>
+
+<div id="reviewsContainer" class="review-list">
+    <div class="review-loading">
+        Loading your student reviews...
+    </div>
 </div>
 
-<!-- Student Reviews -->
-
-<section class="reviews-section">
-
-    <h2 class="section-title">My Student Reviews</h2>
-
-    <div id="reviewsSummary"></div>
-
-    <div id="reviewsContainer" class="review-list">
-        <div class="review-loading">
-            Loading your student reviews...
-        </div>
-    </div>
-
-</section>
-
-</main>
-
-<footer>
+</section></main><footer>
     © 2026 Tutor Pearl. Learn, Grow and Achieve.
-</footer>
-
-<script type="module">
+</footer><script type="module">
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -602,7 +575,5 @@ document.getElementById("logoutBtn").addEventListener(
 
 loadDashboard();
 
-</script>
-
-</body>
+</script></body>
 </html>
