@@ -1,0 +1,606 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tutor Profile | Tutor Pearl</title><style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #211038;
+    color: white;
+}
+
+header {
+    background: #30164A;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+header h2 {
+    color: #E7DBFF;
+    margin: 0;
+}
+
+nav a {
+    color: #D8CDE5;
+    text-decoration: none;
+    margin: 0 8px;
+}
+
+nav a:hover {
+    color: #C8A8FF;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 35px auto;
+    padding: 0 18px;
+}
+
+.card {
+    background: #30164A;
+    border: 1px solid #51366c;
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 22px;
+}
+
+.profile-top {
+    text-align: center;
+}
+
+.profile-photo {
+    width: 145px;
+    height: 145px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #51366c;
+    margin-bottom: 12px;
+}
+
+h1, h2, h3 {
+    color: #E7DBFF;
+}
+
+.profile-top h1 {
+    margin-bottom: 8px;
+}
+
+.headline {
+    color: #C8A8FF;
+    font-size: 17px;
+}
+
+.detail {
+    color: #D8CDE5;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+.rate {
+    color: #C8A8FF;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.book-btn {
+    display: inline-block;
+    background: #C8A8FF;
+    color: #211038;
+    text-decoration: none;
+    padding: 15px 25px;
+    border-radius: 8px;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+.book-btn:hover {
+    background: #E7DBFF;
+}
+
+.video {
+    width: 100%;
+    max-height: 420px;
+    border-radius: 10px;
+    background: #211038;
+}
+
+.no-video {
+    background: #3B2058;
+    border: 1px dashed #80649c;
+    padding: 18px;
+    border-radius: 10px;
+    color: #D8CDE5;
+}
+
+.availability-item {
+    background: #3B2058;
+    border: 1px solid #604779;
+    border-radius: 8px;
+    padding: 13px;
+    margin-bottom: 10px;
+    color: #D8CDE5;
+}
+
+.rating-summary {
+    margin: 15px 0;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.average-rating {
+    font-size: 26px;
+    font-weight: bold;
+}
+
+.stars {
+    color: #FFD166;
+    letter-spacing: 2px;
+}
+
+.review-card {
+    background: #3B2058;
+    border: 1px solid #604779;
+    border-radius: 9px;
+    padding: 15px;
+    margin-bottom: 12px;
+}
+
+.review-text {
+    color: #F0E8FA;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}
+
+.review-date {
+    color: #BDAACF;
+    font-size: 12px;
+}
+
+.status {
+    color: #D8CDE5;
+    text-align: center;
+    margin: 25px 0;
+}
+
+.error {
+    color: #FFD166;
+    text-align: center;
+    line-height: 1.6;
+}
+
+@media(max-width: 600px) {
+    header {
+        align-items: flex-start;
+    }
+
+    nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+}
+</style></head><body><header>
+    <h2>Tutor Pearl</h2><nav>
+    <a href="index.html">Home</a>
+    <a href="find-tutors.html">Find Tutors</a>
+    <a href="student-dashboard.html">Dashboard</a>
+</nav>
+
+</header><main class="container"><p id="status" class="status">
+    Loading tutor profile...
+</p>
+
+<div id="profileContent" hidden>
+
+    <section class="card profile-top">
+
+        <img
+            id="profilePhoto"
+            class="profile-photo"
+            alt="Tutor profile photo"
+            hidden
+        >
+
+        <h1 id="tutorName"></h1>
+
+        <p id="headline" class="headline"></p>
+
+        <p id="rate" class="rate"></p>
+
+        <a id="bookButton" class="book-btn">
+            Book a Lesson
+        </a>
+
+    </section>
+
+    <section class="card">
+
+        <h2>About the Tutor</h2>
+
+        <p id="biography" class="detail"></p>
+
+    </section>
+
+    <section class="card">
+
+        <h2>Teaching Subjects</h2>
+
+        <p id="subjects" class="detail"></p>
+
+        <h2>Teaching Languages</h2>
+
+        <p id="languages" class="detail"></p>
+
+        <h2>Qualifications</h2>
+
+        <p id="qualifications" class="detail"></p>
+
+    </section>
+
+    <section class="card">
+
+        <h2>Introduction Video</h2>
+
+        <div id="videoContainer"></div>
+
+    </section>
+
+    <section class="card">
+
+        <h2>Teaching Availability</h2>
+
+        <p id="timezone" class="detail"></p>
+
+        <div id="availabilityList"></div>
+
+    </section>
+
+    <section class="card">
+
+        <h2>Student Reviews</h2>
+
+        <div id="ratingSummary"></div>
+
+        <div id="reviewsList"></div>
+
+    </section>
+
+</div>
+
+</main><script type="module">
+
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL = "https://chmdsvfmlscrbqomqifp.supabase.co";
+const SUPABASE_KEY = "sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ";
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const statusText = document.getElementById("status");
+const profileContent = document.getElementById("profileContent");
+
+const params = new URLSearchParams(window.location.search);
+const tutorId = params.get("id");
+
+function setText(id, value, fallback = "Not provided") {
+
+    document.getElementById(id).textContent =
+        value || fallback;
+}
+
+function stars(rating) {
+
+    const rounded = Math.round(Number(rating) || 0);
+
+    return "★".repeat(rounded) +
+           "☆".repeat(5 - rounded);
+}
+
+function showVideo(url) {
+
+    const container = document.getElementById("videoContainer");
+
+    if (!url) {
+
+        const message = document.createElement("p");
+        message.className = "no-video";
+        message.textContent =
+            "This tutor has not uploaded an introduction video yet.";
+
+        container.appendChild(message);
+        return;
+    }
+
+    const video = document.createElement("video");
+    video.className = "video";
+    video.controls = true;
+    video.preload = "metadata";
+    video.playsInline = true;
+
+    const source = document.createElement("source");
+    source.src = url;
+    source.type = "video/mp4";
+
+    video.appendChild(source);
+
+    container.appendChild(video);
+}
+
+function showAvailability(slots) {
+
+    const container = document.getElementById("availabilityList");
+
+    if (!slots.length) {
+
+        const message = document.createElement("p");
+        message.className = "no-video";
+        message.textContent =
+            "This tutor has not added any teaching availability yet.";
+
+        container.appendChild(message);
+        return;
+    }
+
+    const days = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
+    ];
+
+    slots.forEach(slot => {
+
+        const item = document.createElement("div");
+        item.className = "availability-item";
+
+        const start = slot.start_time.slice(0, 5);
+        const end = slot.end_time.slice(0, 5);
+
+        item.textContent =
+            days[slot.day_of_week] +
+            " | " + start +
+            " – " + end;
+
+        container.appendChild(item);
+    });
+}
+
+function showReviews(reviews) {
+
+    const summary = document.getElementById("ratingSummary");
+    const list = document.getElementById("reviewsList");
+
+    if (!reviews.length) {
+
+        summary.textContent = "No ratings yet.";
+
+        const message = document.createElement("p");
+        message.className = "no-video";
+        message.textContent =
+            "This tutor has not received any student reviews yet.";
+
+        list.appendChild(message);
+        return;
+    }
+
+    const average =
+        reviews.reduce(
+            (total, review) => total + Number(review.rating),
+            0
+        ) / reviews.length;
+
+    const summaryLine = document.createElement("div");
+    summaryLine.className = "rating-summary";
+
+    const averageText = document.createElement("span");
+    averageText.className = "average-rating";
+    averageText.textContent = average.toFixed(1);
+
+    const starText = document.createElement("span");
+    starText.className = "stars";
+    starText.textContent = stars(average);
+
+    const countText = document.createElement("span");
+    countText.textContent =
+        "(" + reviews.length + " student " +
+        (reviews.length === 1 ? "review" : "reviews") + ")";
+
+    summaryLine.append(averageText, starText, countText);
+    summary.appendChild(summaryLine);
+
+    reviews.forEach(review => {
+
+        const card = document.createElement("div");
+        card.className = "review-card";
+
+        const star = document.createElement("div");
+        star.className = "stars";
+        star.textContent = stars(review.rating);
+
+        const text = document.createElement("p");
+        text.className = "review-text";
+        text.textContent =
+            review.review_text ||
+            "The student left a rating without written feedback.";
+
+        const date = document.createElement("p");
+        date.className = "review-date";
+
+        date.textContent = new Date(
+            review.created_at
+        ).toLocaleDateString("en", {
+            day: "numeric",
+            month: "short",
+            year: "numeric"
+        });
+
+        card.append(star, text, date);
+        list.appendChild(card);
+    });
+}
+
+async function loadProfile() {
+
+    if (!tutorId) {
+
+        statusText.textContent =
+            "No tutor was selected. Please return to Find Tutors.";
+
+        return;
+    }
+
+    const { data: tutor, error } = await supabase
+        .from("tutor_profiles")
+        .select(`
+            id,
+            full_name,
+            headline,
+            biography,
+            subjects,
+            hourly_rate,
+            currency,
+            profile_photo_url,
+            intro_video_url,
+            qualifications,
+            teaching_languages
+        `)
+        .eq("id", tutorId)
+        .eq("approval_status", "approved")
+        .maybeSingle();
+
+    if (error) {
+
+        console.error(error);
+
+        statusText.textContent =
+            "Unable to load this tutor profile. Please try again.";
+
+        return;
+    }
+
+    if (!tutor) {
+
+        statusText.textContent =
+            "This tutor profile is unavailable.";
+
+        return;
+    }
+
+    setText("tutorName", tutor.full_name, "Tutor");
+    setText("headline", tutor.headline, "Professional Tutor");
+    setText("biography", tutor.biography);
+    setText("subjects", tutor.subjects);
+    setText("languages", tutor.teaching_languages);
+    setText("qualifications", tutor.qualifications);
+
+    setText(
+        "rate",
+        tutor.hourly_rate != null
+            ? (tutor.currency || "USD") + " " +
+              tutor.hourly_rate + " per hour"
+            : "Rate not listed"
+    );
+
+    if (tutor.profile_photo_url) {
+
+        const photo = document.getElementById("profilePhoto");
+
+        photo.src = tutor.profile_photo_url;
+        photo.alt = "Photo of " + (tutor.full_name || "tutor");
+        photo.hidden = false;
+
+        photo.onerror = () => {
+            photo.hidden = true;
+        };
+    }
+
+    document.getElementById("bookButton").href =
+        "book-lesson.html?tutor=" + encodeURIComponent(tutor.id);
+
+    showVideo(tutor.intro_video_url);
+
+    await Promise.all([
+        loadAvailability(tutor.id),
+        loadReviews(tutor.id)
+    ]);
+
+    profileContent.hidden = false;
+    statusText.hidden = true;
+}
+
+async function loadAvailability(id) {
+
+    const { data, error } = await supabase
+        .from("tutor_availability")
+        .select("day_of_week, start_time, end_time, timezone")
+        .eq("tutor_id", id)
+        .eq("is_available", true)
+        .order("day_of_week");
+
+    if (error) {
+
+        console.error("Availability error:", error);
+
+        document.getElementById("availabilityList").textContent =
+            "Availability is temporarily unavailable.";
+
+        return;
+    }
+
+    const slots = data || [];
+
+    if (slots.length) {
+
+        setText(
+            "timezone",
+            "Times shown in " + slots[0].timezone
+        );
+
+    } else {
+
+        setText("timezone", "Tutor timezone not available.");
+    }
+
+    showAvailability(slots);
+}
+
+async function loadReviews(id) {
+
+    const { data, error } = await supabase
+        .from("tutor_reviews")
+        .select("rating, review_text, created_at")
+        .eq("tutor_id", id)
+        .order("created_at", { ascending: false });
+
+    if (error) {
+
+        console.error("Review error:", error);
+
+        document.getElementById("reviewsList").textContent =
+            "Student reviews are temporarily unavailable.";
+
+        return;
+    }
+
+    showReviews(data || []);
+}
+
+loadProfile();
+
+</script></body>
+</html>
