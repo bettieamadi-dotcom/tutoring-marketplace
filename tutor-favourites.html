@@ -1,0 +1,473 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Favourite Tutors | Tutor Pearl</title><style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #211038;
+    color: white;
+}
+
+header {
+    background: #30164A;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+header h2 {
+    color: #E7DBFF;
+    margin: 0;
+}
+
+nav a {
+    color: #D8CDE5;
+    text-decoration: none;
+    margin: 0 8px;
+}
+
+nav a:hover {
+    color: #C8A8FF;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 35px auto;
+    padding: 0 18px;
+}
+
+h1, h3 {
+    color: #E7DBFF;
+}
+
+.intro {
+    color: #D8CDE5;
+    line-height: 1.6;
+}
+
+.status {
+    color: #D8CDE5;
+    margin: 22px 0;
+    line-height: 1.6;
+}
+
+.tutor-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 22px;
+}
+
+.tutor-card {
+    background: #30164A;
+    border: 1px solid #51366c;
+    border-radius: 14px;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+}
+
+.tutor-photo {
+    width: 105px;
+    height: 105px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #51366c;
+    margin-bottom: 12px;
+}
+
+.tutor-card p {
+    color: #D8CDE5;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.rate {
+    color: #C8A8FF !important;
+    font-weight: bold;
+    margin-top: auto;
+    padding-top: 12px;
+}
+
+.profile-btn, .book-btn, .remove-btn {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    padding: 13px;
+    border-radius: 8px;
+    font-weight: bold;
+    margin-top: 12px;
+    cursor: pointer;
+}
+
+.profile-btn {
+    background: #C8A8FF;
+    color: #211038;
+}
+
+.book-btn {
+    background: #E7DBFF;
+    color: #211038;
+}
+
+.remove-btn {
+    background: #51366c;
+    color: #FFD6E0;
+    border: 1px solid #80649c;
+}
+
+.profile-btn:hover, .book-btn:hover {
+    opacity: 0.85;
+}
+
+.remove-btn:hover {
+    background: #684477;
+}
+
+.empty-state {
+    background: #30164A;
+    border: 1px dashed #80649c;
+    padding: 25px;
+    border-radius: 12px;
+    color: #D8CDE5;
+    line-height: 1.7;
+    text-align: center;
+}
+
+.browse-link {
+    display: inline-block;
+    background: #C8A8FF;
+    color: #211038;
+    padding: 13px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    margin-top: 12px;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+@media(max-width: 600px) {
+    header {
+        align-items: flex-start;
+    }
+
+    nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+}
+</style></head><body><header>
+    <h2>Tutor Pearl</h2><nav>
+    <a href="index.html">Home</a>
+    <a href="find-tutors.html">Find Tutors</a>
+    <a href="student-dashboard.html">Dashboard</a>
+</nav>
+
+</header><main class="container"><h1>❤️ My Favourite Tutors</h1>
+
+<p class="intro">
+    Keep your favourite tutors in one place.
+    You can revisit their profiles or book a lesson whenever you are ready.
+</p>
+
+<p id="status" class="status">
+    Loading your favourite tutors...
+</p>
+
+<div id="tutorGrid" class="tutor-grid"></div>
+
+</main><script type="module">
+
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL = "https://chmdsvfmlscrbqomqifp.supabase.co";
+const SUPABASE_KEY = "sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ";
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const statusText = document.getElementById("status");
+const tutorGrid = document.getElementById("tutorGrid");
+
+function createTextElement(tag, className, text) {
+
+    const element = document.createElement(tag);
+
+    if (className) {
+        element.className = className;
+    }
+
+    element.textContent = text || "";
+
+    return element;
+}
+
+async function loadFavourites() {
+
+    tutorGrid.innerHTML = "";
+    statusText.textContent = "Loading your favourite tutors...";
+
+    const { data: authData, error: authError } =
+        await supabase.auth.getUser();
+
+    if (authError || !authData.user) {
+
+        statusText.textContent =
+            "Please log in to view your favourite tutors.";
+
+        return;
+    }
+
+    const user = authData.user;
+
+    if (user.user_metadata?.account_type !== "student") {
+
+        statusText.textContent =
+            "This page is available to student accounts only.";
+
+        return;
+    }
+
+    const { data: favourites, error } = await supabase
+        .from("student_favourites")
+        .select("id, tutor_id, created_at")
+        .eq("student_id", user.id)
+        .order("created_at", { ascending: false });
+
+    if (error) {
+
+        console.error("Favourites error:", error);
+
+        statusText.textContent =
+            "Unable to load your favourites. Please refresh the page.";
+
+        return;
+    }
+
+    if (!favourites || favourites.length === 0) {
+
+        statusText.textContent = "";
+
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+
+        empty.appendChild(
+            createTextElement(
+                "h3",
+                "",
+                "You haven't saved any tutors yet."
+            )
+        );
+
+        empty.appendChild(
+            createTextElement(
+                "p",
+                "",
+                "Explore the marketplace and tap the heart button on tutors you want to save."
+            )
+        );
+
+        const browse = document.createElement("a");
+        browse.href = "find-tutors.html";
+        browse.className = "browse-link";
+        browse.textContent = "Find Tutors";
+
+        empty.appendChild(browse);
+        tutorGrid.appendChild(empty);
+
+        return;
+    }
+
+    const tutorIds = favourites.map(item => item.tutor_id);
+
+    const { data: tutors, error: tutorError } = await supabase
+        .from("tutor_profiles")
+        .select(`
+            id,
+            full_name,
+            headline,
+            subjects,
+            hourly_rate,
+            currency,
+            profile_photo_url,
+            approval_status
+        `)
+        .in("id", tutorIds)
+        .eq("approval_status", "approved");
+
+    if (tutorError) {
+
+        console.error("Tutor loading error:", tutorError);
+
+        statusText.textContent =
+            "Unable to load tutor details. Please try again.";
+
+        return;
+    }
+
+    const tutorMap = new Map(
+        (tutors || []).map(tutor => [tutor.id, tutor])
+    );
+
+    statusText.textContent =
+        (tutors || []).length + " favourite tutor(s) saved.";
+
+    // Preserve the order in which favourites were saved.
+    favourites.forEach(favourite => {
+
+        const tutor = tutorMap.get(favourite.tutor_id);
+
+        if (tutor) {
+            renderTutor(tutor, favourite.id);
+        }
+    });
+
+}
+
+function renderTutor(tutor, favouriteId) {
+
+    const card = document.createElement("article");
+    card.className = "tutor-card";
+
+    if (tutor.profile_photo_url) {
+
+        const photo = document.createElement("img");
+
+        photo.className = "tutor-photo";
+        photo.src = tutor.profile_photo_url;
+        photo.alt = "Photo of " + (tutor.full_name || "tutor");
+        photo.loading = "lazy";
+
+        photo.onerror = () => {
+            photo.style.display = "none";
+        };
+
+        card.appendChild(photo);
+    }
+
+    card.appendChild(
+        createTextElement(
+            "h3",
+            "",
+            tutor.full_name || "Tutor"
+        )
+    );
+
+    card.appendChild(
+        createTextElement(
+            "p",
+            "",
+            tutor.headline || "Professional Tutor"
+        )
+    );
+
+    card.appendChild(
+        createTextElement(
+            "p",
+            "",
+            "Subjects: " + (tutor.subjects || "Not listed")
+        )
+    );
+
+    const rate = tutor.hourly_rate != null
+        ? (tutor.currency || "USD") + " " +
+          tutor.hourly_rate + " per hour"
+        : "Rate not listed";
+
+    card.appendChild(
+        createTextElement("p", "rate", rate)
+    );
+
+    const profileButton = document.createElement("a");
+
+    profileButton.className = "profile-btn";
+    profileButton.textContent = "View Full Profile";
+    profileButton.href =
+        "tutor-public-profile.html?id=" +
+        encodeURIComponent(tutor.id);
+
+    card.appendChild(profileButton);
+
+    const bookButton = document.createElement("a");
+
+    bookButton.className = "book-btn";
+    bookButton.textContent = "Book a Lesson";
+    bookButton.href =
+        "book-lesson.html?tutor=" +
+        encodeURIComponent(tutor.id);
+
+    card.appendChild(bookButton);
+
+    const removeButton = document.createElement("button");
+
+    removeButton.className = "remove-btn";
+    removeButton.textContent = "♥ Remove from Favourites";
+
+    removeButton.addEventListener("click", async () => {
+
+        const confirmed = window.confirm(
+            "Remove this tutor from your favourites?"
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        removeButton.disabled = true;
+        removeButton.textContent = "Removing...";
+
+        const { error } = await supabase
+            .from("student_favourites")
+            .delete()
+            .eq("id", favouriteId);
+
+        if (error) {
+
+            console.error("Remove favourite error:", error);
+
+            alert("Unable to remove this tutor. Please try again.");
+
+            removeButton.disabled = false;
+            removeButton.textContent = "♥ Remove from Favourites";
+
+            return;
+        }
+
+        card.remove();
+
+        if (!tutorGrid.querySelector(".tutor-card")) {
+
+            loadFavourites();
+
+        } else {
+
+            const remaining =
+                tutorGrid.querySelectorAll(".tutor-card").length;
+
+            statusText.textContent =
+                remaining + " favourite tutor(s) saved.";
+        }
+
+    });
+
+    card.appendChild(removeButton);
+
+    tutorGrid.appendChild(card);
+}
+
+loadFavourites();
+
+</script></body>
+</html>
