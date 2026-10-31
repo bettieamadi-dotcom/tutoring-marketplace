@@ -1,0 +1,259 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifications | Tutor Pearl</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #211038;
+      color: #fff;
+    }
+    header {
+      padding: 22px 6%;
+      background: #30164A;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .brand { font-size: 23px; font-weight: bold; color: #E7DBFF; }
+    header a {
+      color: #E7DBFF;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    main {
+      max-width: 850px;
+      margin: 40px auto;
+      padding: 0 18px;
+    }
+    .heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 25px;
+    }
+    h1 { margin: 0 0 8px; font-size: 29px; }
+    .subtitle { color: #D8CDE5; margin: 0; }
+    button {
+      border: none;
+      border-radius: 8px;
+      padding: 11px 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .mark-all { background: #C8A8FF; color: #211038; }
+    .mark-read {
+      background: transparent;
+      color: #C8A8FF;
+      border: 1px solid #8D6AB8;
+      padding: 8px 12px;
+    }
+    .summary {
+      background: #3B2058;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      color: #E7DBFF;
+    }
+    .notification {
+      background: #30164A;
+      border: 1px solid #563675;
+      border-radius: 12px;
+      padding: 19px;
+      margin-bottom: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 15px;
+    }
+    .notification.unread {
+      border-left: 4px solid #C8A8FF;
+      background: #3B2058;
+    }
+    .notification h3 { margin: 0 0 8px; font-size: 17px; }
+    .notification p { margin: 0 0 10px; color: #D8CDE5; line-height: 1.5; }
+    .date { font-size: 12px; color: #B9A5D0; }
+    .empty, .loading, .error {
+      text-align: center;
+      padding: 35px 20px;
+      background: #30164A;
+      border-radius: 12px;
+      color: #D8CDE5;
+    }
+    .error { color: #ffb5b5; }
+    @media (max-width: 550px) {
+      .notification { flex-direction: column; }
+      .heading { align-items: flex-start; }
+      h1 { font-size: 25px; }
+    }
+  </style>
+</head>
+<body><header>
+  <div class="brand">Tutor Pearl</div>
+  <a id="dashboardLink" href="student-dashboard.html">← Back to Dashboard</a>
+</header><main>
+  <div class="heading">
+    <div>
+      <h1>Notifications</h1>
+      <p class="subtitle">Stay updated on your lessons and booking activities.</p>
+    </div>
+    <button class="mark-all" id="markAllBtn" hidden>Mark All as Read</button>
+  </div>  <div class="summary" id="summary">Loading your notifications...</div>
+  <div id="notificationList" class="loading">Please wait...</div>
+</main><script>
+  const SUPABASE_URL = "https://chmdsvfmlscrbqomqifp.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ";
+
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const summary = document.getElementById("summary");
+  const list = document.getElementById("notificationList");
+  const markAllBtn = document.getElementById("markAllBtn");
+
+  let currentUserId = null;
+  let notifications = [];
+
+  function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, character => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;"
+    })[character]);
+  }
+
+  function formatDate(value) {
+    return new Date(value).toLocaleString(undefined, {
+      dateStyle: "medium",
+      timeStyle: "short"
+    });
+  }
+
+  async function loadNotifications() {
+    const { data: authData, error: authError } = await db.auth.getUser();
+
+    if (authError || !authData.user) {
+      window.location.href = "student-login.html";
+      return;
+    }
+
+    const user = authData.user;
+    currentUserId = user.id;
+
+    const accountType = user.user_metadata?.account_type;
+
+    if (accountType === "tutor") {
+      document.getElementById("dashboardLink").href = "tutor-dashboard.html";
+    } else if (accountType !== "student") {
+      list.className = "error";
+      list.textContent = "Your account type could not be verified. Please sign in through the correct account.";
+      return;
+    }
+
+    const { data, error } = await db
+      .from("notifications")
+      .select("id, type, title, message, booking_id, is_read, created_at")
+      .eq("recipient_id", currentUserId)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      list.className = "error";
+      list.textContent = "We couldn't load your notifications. Please refresh the page and try again.";
+      console.error(error);
+      return;
+    }
+
+    notifications = data || [];
+    renderNotifications();
+  }
+
+  function renderNotifications() {
+    const unreadCount = notifications.filter(item => !item.is_read).length;
+
+    summary.textContent =
+      notifications.length + " notification(s) • " +
+      unreadCount + " unread";
+
+    markAllBtn.hidden = unreadCount === 0;
+
+    if (notifications.length === 0) {
+      list.className = "empty";
+      list.textContent = "You're all caught up! You don't have any notifications yet.";
+      return;
+    }
+
+    list.className = "";
+
+    list.innerHTML = notifications.map(item => `
+      <article class="notification ${item.is_read ? "" : "unread"}">
+        <div>
+          <h3>${escapeHTML(item.title)}</h3>
+          <p>${escapeHTML(item.message)}</p>
+          <span class="date">${escapeHTML(formatDate(item.created_at))}</span>
+          ${item.is_read ? "" : '<p class="date">● Unread</p>'}
+        </div>
+        ${item.is_read ? "" : `
+          <button class="mark-read" data-id="${escapeHTML(item.id)}">
+            Mark as Read
+          </button>
+        `}
+      </article>
+    `).join("");
+
+    list.querySelectorAll(".mark-read").forEach(button => {
+      button.addEventListener("click", () => markAsRead(button.dataset.id));
+    });
+  }
+
+  async function markAsRead(notificationId) {
+    const { error } = await db
+      .from("notifications")
+      .update({ is_read: true })
+      .eq("id", notificationId)
+      .eq("recipient_id", currentUserId);
+
+    if (error) {
+      alert("Could not update this notification. Please try again.");
+      console.error(error);
+      return;
+    }
+
+    const notification = notifications.find(item => item.id === notificationId);
+    if (notification) notification.is_read = true;
+
+    renderNotifications();
+  }
+
+  markAllBtn.addEventListener("click", async () => {
+    markAllBtn.disabled = true;
+
+    const { error } = await db
+      .from("notifications")
+      .update({ is_read: true })
+      .eq("recipient_id", currentUserId)
+      .eq("is_read", false);
+
+    markAllBtn.disabled = false;
+
+    if (error) {
+      alert("Could not mark all notifications as read. Please try again.");
+      console.error(error);
+      return;
+    }
+
+    notifications.forEach(item => item.is_read = true);
+    renderNotifications();
+  });
+
+  loadNotifications();
+</script></body>
+</html>
