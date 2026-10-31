@@ -588,13 +588,21 @@ function renderTutors(list) {
             card.appendChild(photo);
         }
 
-        card.appendChild(
-            createTextElement(
-                "h3",
-                "",
-                tutor.full_name || "Tutor"
-            )
-        );
+        const profileLink = document.createElement("a");
+
+profileLink.href =
+    "tutor-public-profile.html?id=" + encodeURIComponent(tutor.id);
+
+profileLink.style.color = "#E7DBFF";
+profileLink.style.textDecoration = "none";
+profileLink.style.fontWeight = "bold";
+profileLink.style.fontSize = "20px";
+profileLink.textContent = tutor.full_name || "Tutor";
+
+const tutorName = document.createElement("h3");
+tutorName.appendChild(profileLink);
+
+card.appendChild(tutorName);
 
         card.appendChild(
             createTextElement(
