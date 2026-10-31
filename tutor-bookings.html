@@ -1,8 +1,11 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Bookings | Tutor Pearl</title><style>
+<title>My Bookings | Tutor Pearl</title>
+
+<style>
 * {
     box-sizing: border-box;
 }
@@ -105,6 +108,11 @@ button:disabled {
     color: #512020;
 }
 
+.complete {
+    background: #C8A8FF;
+    color: #211038;
+}
+
 .message {
     padding: 13px;
     border-radius: 8px;
@@ -196,7 +204,14 @@ button:disabled {
         padding: 15px;
     }
 }
-</style></head><body><div class="container"><header>
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
     <div>
         <h1>My Bookings</h1>
         <p>View and manage lesson requests from your students.</p>
@@ -219,7 +234,9 @@ button:disabled {
     Loading your bookings...
 </div>
 
-</div><script type="module">
+</div>
+
+<script type="module">
 
 import { createClient } from
 "https://esm.sh/@supabase/supabase-js@2";
@@ -349,6 +366,9 @@ function createRequestStatus(status) {
     return badge;
 }
 
+
+/* RESCHEDULE REVIEW */
+
 async function reviewReschedule(
     requestId,
     decision,
@@ -414,6 +434,9 @@ async function reviewReschedule(
         declineButton.disabled = false;
     }
 }
+
+
+/* DISPLAY RESCHEDULE REQUESTS */
 
 function renderRescheduleRequests(
     booking,
@@ -542,6 +565,69 @@ function renderRescheduleRequests(
 
     return section;
 }
+
+
+/* MARK LESSON AS COMPLETED */
+
+async function completeLesson(
+    bookingId,
+    completeButton
+) {
+
+    const confirmed = window.confirm(
+        "Are you sure this lesson has been completed?"
+    );
+
+    if (!confirmed) return;
+
+    completeButton.disabled = true;
+    completeButton.textContent = "Processing...";
+
+    try {
+
+        const { data, error } = await supabase.rpc(
+            "tutor_complete_lesson",
+            {
+                p_booking_id: bookingId
+            }
+        );
+
+        if (error) throw error;
+
+        if (data !== true) {
+            throw new Error(
+                "The lesson could not be marked as completed."
+            );
+        }
+
+        showMessage(
+            "Lesson successfully marked as completed. The student can now submit a review.",
+            "success"
+        );
+
+        await loadBookings();
+
+    } catch (error) {
+
+        console.error(
+            "Lesson completion error:",
+            error
+        );
+
+        showMessage(
+            error.message ||
+            "Unable to complete this lesson.",
+            "error"
+        );
+
+        completeButton.disabled = false;
+        completeButton.textContent =
+            "Mark Lesson as Completed";
+    }
+}
+
+
+/* LOAD BOOKINGS */
 
 async function loadBookings() {
 
@@ -673,6 +759,9 @@ async function loadBookings() {
                 "Status: " + booking.booking_status
             );
 
+
+            /* ACCEPT OR DECLINE BOOKING */
+
             if (
                 booking.booking_status === "pending"
             ) {
@@ -726,6 +815,42 @@ async function loadBookings() {
                 card.appendChild(actions);
             }
 
+
+            /* MARK ACCEPTED LESSON AS COMPLETED */
+
+            if (
+                booking.booking_status === "accepted"
+            ) {
+
+                const actions =
+                    document.createElement("div");
+
+                actions.className = "actions";
+
+                const completeButton =
+                    document.createElement("button");
+
+                completeButton.className = "complete";
+
+                completeButton.textContent =
+                    "Mark Lesson as Completed";
+
+                completeButton.addEventListener(
+                    "click",
+                    () => completeLesson(
+                        booking.booking_id,
+                        completeButton
+                    )
+                );
+
+                actions.appendChild(completeButton);
+
+                card.appendChild(actions);
+            }
+
+
+            /* DISPLAY RESCHEDULING REQUESTS */
+
             const rescheduleSection =
                 renderRescheduleRequests(
                     booking,
@@ -760,6 +885,9 @@ async function loadBookings() {
             "Refresh Bookings";
     }
 }
+
+
+/* ACCEPT OR DECLINE BOOKING */
 
 async function respondToBooking(
     id,
@@ -828,6 +956,7 @@ async function respondToBooking(
     }
 }
 
+
 refreshButton.addEventListener(
     "click",
     loadBookings
@@ -835,5 +964,7 @@ refreshButton.addEventListener(
 
 loadBookings();
 
-</script></body>
+</script>
+
+</body>
 </html>
