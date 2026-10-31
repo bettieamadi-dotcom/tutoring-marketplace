@@ -3,98 +3,127 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Student Dashboard | Tutor Pearl</title><style>
-*{box-sizing:border-box}
-
-body{
-    margin:0;
-    font-family:Arial,sans-serif;
-    background:#f7f3fc;
-    color:#211038;
+* {
+    box-sizing: border-box;
 }
 
-header{
-    background:#211038;
-    color:white;
-    padding:20px 6%;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    flex-wrap:wrap;
-    gap:12px;
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f7f3fc;
+    color: #211038;
 }
 
-header h2{margin:0}
-
-header a{
-    color:white;
-    text-decoration:none;
+header {
+    background: #211038;
+    color: white;
+    padding: 20px 6%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
 }
 
-main{
-    max-width:1050px;
-    margin:35px auto;
-    padding:0 18px;
+header h2 {
+    margin: 0;
 }
 
-.welcome{margin-bottom:25px}
-
-.welcome p{color:#746780}
-
-.grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-    gap:20px;
+header a {
+    color: white;
+    text-decoration: none;
 }
 
-.card{
-    background:white;
-    padding:24px;
-    border-radius:14px;
-    box-shadow:0 4px 15px #21103812;
+main {
+    max-width: 1050px;
+    margin: 35px auto;
+    padding: 0 18px;
 }
 
-.card h3{margin-top:0}
-
-.card p{
-    color:#746780;
-    line-height:1.6;
+.welcome {
+    margin-bottom: 25px;
 }
 
-.button{
-    display:inline-block;
-    background:#6d42a5;
-    color:white;
-    border:0;
-    padding:12px 18px;
-    border-radius:8px;
-    text-decoration:none;
-    cursor:pointer;
-    font-size:14px;
-    font-weight:bold;
+.welcome p {
+    color: #746780;
 }
 
-.button:hover{background:#513078}
-
-.secondary{background:#211038}
-
-.notice{
-    background:white;
-    padding:18px;
-    border-radius:10px;
-    margin-bottom:20px;
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
 }
 
-.details p{margin:10px 0}
-
-footer{
-    text-align:center;
-    padding:30px;
-    color:#82758e;
+.card {
+    background: white;
+    padding: 24px;
+    border-radius: 14px;
+    box-shadow: 0 4px 15px #21103812;
 }
 
-@media(max-width:600px){
-    header{padding:18px}
-    main{margin:25px auto}
+.card h3 {
+    margin-top: 0;
+}
+
+.card p {
+    color: #746780;
+    line-height: 1.6;
+}
+
+.button {
+    display: inline-block;
+    background: #6d42a5;
+    color: white;
+    border: 0;
+    padding: 12px 18px;
+    border-radius: 8px;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.button:hover {
+    background: #513078;
+}
+
+.secondary {
+    background: #211038;
+}
+
+.favourite-card {
+    border: 1px solid #e5d5f5;
+}
+
+.favourite-card h3 {
+    color: #6d42a5;
+}
+
+.notice {
+    background: white;
+    padding: 18px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.details p {
+    margin: 10px 0;
+}
+
+footer {
+    text-align: center;
+    padding: 30px;
+    color: #82758e;
+}
+
+@media(max-width: 600px) {
+    header {
+        padding: 18px;
+    }
+
+    main {
+        margin: 25px auto;
+    }
 }
 </style></head><body><header>
     <h2>Tutor Pearl</h2>
@@ -112,6 +141,7 @@ footer{
 
     <section class="card">
         <h3>My Lessons</h3>
+
         <p>
             View your lesson requests, accepted bookings
             and upcoming classes.
@@ -125,6 +155,7 @@ footer{
 
     <section class="card">
         <h3>Find a Tutor</h3>
+
         <p>
             Explore approved tutors and find someone
             who matches your learning goals.
@@ -135,8 +166,22 @@ footer{
         </a>
     </section>
 
+    <section class="card favourite-card">
+        <h3>❤️ My Favourite Tutors</h3>
+
+        <p>
+            Revisit tutors you have saved, explore their
+            profiles and book lessons whenever you are ready.
+        </p>
+
+        <a class="button" href="tutor-favourites.html">
+            View My Favourites
+        </a>
+    </section>
+
     <section class="card">
         <h3>My Account</h3>
+
         <p>View your student registration information.</p>
 
         <div id="studentDetails" class="details">
@@ -146,6 +191,7 @@ footer{
 
     <section class="card">
         <h3>Account Settings</h3>
+
         <p>Sign out of your student account securely.</p>
 
         <button class="button secondary" id="logoutBtn">
@@ -158,6 +204,7 @@ footer{
 </main><footer>
     © 2026 Tutor Pearl. Learn, Grow and Achieve.
 </footer><script type="module">
+
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const SUPABASE_URL =
@@ -168,24 +215,32 @@ const SUPABASE_KEY =
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-async function loadDashboard(){
+async function loadDashboard() {
+
     const notice = document.getElementById("notice");
 
-    try{
-        const {data, error} = await supabase.auth.getUser();
+    try {
 
-        if(error) throw error;
+        const { data, error } = await supabase.auth.getUser();
 
-        if(!data.user){
+        if (error) {
+            throw error;
+        }
+
+        if (!data.user) {
+
             window.location.href = "student-login.html";
+
             return;
         }
 
         const user = data.user;
 
-        if(user.user_metadata?.account_type !== "student"){
+        if (user.user_metadata?.account_type !== "student") {
+
             notice.textContent =
                 "Please log in using your student account.";
+
             return;
         }
 
@@ -197,13 +252,15 @@ async function loadDashboard(){
         document.getElementById("welcomeText").textContent =
             "Welcome back, " + name + "!";
 
-        const {error: profileError} = await supabase
+        const { error: profileError } = await supabase
             .from("student_profiles")
             .select("id")
             .eq("id", user.id)
             .maybeSingle();
 
-        if(profileError) throw profileError;
+        if (profileError) {
+            throw profileError;
+        }
 
         document.getElementById("studentDetails").innerHTML = `
             <p><strong>Name:</strong> ${safe(name)}</p>
@@ -214,30 +271,37 @@ async function loadDashboard(){
         notice.textContent =
             "Your student dashboard is ready.";
 
-    }catch(error){
+    } catch (error) {
+
+        console.error("Dashboard error:", error);
+
         notice.textContent =
             "Unable to load your dashboard: " +
             (error.message || "Please try again.");
     }
 }
 
-function safe(value){
+function safe(value) {
+
     return String(value ?? "").replace(/[&<>"']/g, char => ({
-        "&":"&amp;",
-        "<":"&lt;",
-        ">":"&gt;",
-        '"':"&quot;",
-        "'":"&#39;"
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
     })[char]);
 }
 
 document.getElementById("logoutBtn").addEventListener(
     "click",
-    async function(){
-        const {error} = await supabase.auth.signOut();
+    async function() {
 
-        if(error){
+        const { error } = await supabase.auth.signOut();
+
+        if (error) {
+
             alert(error.message);
+
             return;
         }
 
@@ -246,5 +310,6 @@ document.getElementById("logoutBtn").addEventListener(
 );
 
 loadDashboard();
+
 </script></body>
 </html>
