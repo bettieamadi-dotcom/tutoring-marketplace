@@ -99,6 +99,14 @@ main {
     color: #6d42a5;
 }
 
+.notification-card {
+    border: 1px solid #e5d5f5;
+}
+
+.notification-card h3 {
+    color: #6d42a5;
+}
+
 .notice {
     background: white;
     padding: 18px;
@@ -131,77 +139,81 @@ footer {
 </header><main><div class="welcome">
     <h1>Student Dashboard</h1>
     <p id="welcomeText">Welcome! Loading your account...</p>
-</div>
-
-<div id="notice" class="notice">
+</div><div id="notice" class="notice">
     Loading your student dashboard...
-</div>
+</div><div class="grid"><section class="card">
+    <h3>My Lessons</h3>
 
-<div class="grid">
+    <p>
+        View your lesson requests, accepted bookings
+        and upcoming classes.
+    </p>
 
-    <section class="card">
-        <h3>My Lessons</h3>
+    <a class="button" href="https://tutor-pearl.pages.dev/student-bookings.html">
+        View My Bookings
+    </a>
+</section>
 
-        <p>
-            View your lesson requests, accepted bookings
-            and upcoming classes.
-        </p>
+<section class="card">
+    <h3>Find a Tutor</h3>
 
-        <a class="button"
-           href="https://tutor-pearl.pages.dev/student-bookings.html">
-            View My Bookings
-        </a>
-    </section>
+    <p>
+        Explore approved tutors and find someone
+        who matches your learning goals.
+    </p>
 
-    <section class="card">
-        <h3>Find a Tutor</h3>
+    <a class="button" href="find-tutors.html">
+        Browse Tutors
+    </a>
+</section>
 
-        <p>
-            Explore approved tutors and find someone
-            who matches your learning goals.
-        </p>
+<section class="card favourite-card">
+    <h3>❤️ My Favourite Tutors</h3>
 
-        <a class="button" href="find-tutors.html">
-            Browse Tutors
-        </a>
-    </section>
+    <p>
+        Revisit tutors you have saved, explore their
+        profiles and book lessons whenever you are ready.
+    </p>
 
-    <section class="card favourite-card">
-        <h3>❤️ My Favourite Tutors</h3>
+    <a class="button" href="tutor-favourites.html">
+        View My Favourites
+    </a>
+</section>
 
-        <p>
-            Revisit tutors you have saved, explore their
-            profiles and book lessons whenever you are ready.
-        </p>
+<section class="card notification-card">
+    <h3>🔔 Notifications</h3>
 
-        <a class="button" href="tutor-favourites.html">
-            View My Favourites
-        </a>
-    </section>
+    <p>
+        Stay updated on lesson requests, booking decisions,
+        cancellations and rescheduling activities.
+    </p>
 
-    <section class="card">
-        <h3>My Account</h3>
+    <a class="button" href="notifications.html">
+        View Notifications
+    </a>
+</section>
 
-        <p>View your student registration information.</p>
+<section class="card">
+    <h3>My Account</h3>
 
-        <div id="studentDetails" class="details">
-            Loading account information...
-        </div>
-    </section>
+    <p>View your student registration information.</p>
 
-    <section class="card">
-        <h3>Account Settings</h3>
+    <div id="studentDetails" class="details">
+        Loading account information...
+    </div>
+</section>
 
-        <p>Sign out of your student account securely.</p>
+<section class="card">
+    <h3>Account Settings</h3>
 
-        <button class="button secondary" id="logoutBtn">
-            Log Out
-        </button>
-    </section>
+    <p>Sign out of your student account securely.</p>
 
-</div>
+    <button class="button secondary" id="logoutBtn">
+        Log Out
+    </button>
+</section>
 
-</main><footer>
+</div></main><footer>
     © 2026 Tutor Pearl. Learn, Grow and Achieve.
 </footer><script type="module">
 
@@ -228,9 +240,7 @@ async function loadDashboard() {
         }
 
         if (!data.user) {
-
             window.location.href = "student-login.html";
-
             return;
         }
 
@@ -299,9 +309,7 @@ document.getElementById("logoutBtn").addEventListener(
         const { error } = await supabase.auth.signOut();
 
         if (error) {
-
             alert(error.message);
-
             return;
         }
 
