@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,7 +28,6 @@ header {
 }
 
 header h2 { margin: 0; }
-
 header a {
     color: white;
     text-decoration: none;
@@ -56,10 +56,7 @@ h1 { margin-bottom: 8px; }
     box-shadow: 0 4px 15px #21103812;
 }
 
-.booking h3 {
-    margin-top: 0;
-    color: #211038;
-}
+.booking h3 { margin-top: 0; color: #211038; }
 
 .tutor-profile {
     display: flex;
@@ -123,21 +120,9 @@ h1 { margin-bottom: 8px; }
 }
 
 .pending { background: #fff2cf; color: #805600; }
-
-.accepted, .approved {
-    background: #dff7e8;
-    color: #17643b;
-}
-
-.declined, .cancelled {
-    background: #ffe2e2;
-    color: #a32626;
-}
-
-.completed {
-    background: #e8e1ff;
-    color: #51329b;
-}
+.accepted, .approved { background: #dff7e8; color: #17643b; }
+.declined, .cancelled { background: #ffe2e2; color: #a32626; }
+.completed { background: #e8e1ff; color: #51329b; }
 
 .message {
     background: #f7f3fc;
@@ -159,11 +144,7 @@ button {
 }
 
 button:hover { background: #513078; }
-
-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
+button:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .cancel-button {
     background: #b42318;
@@ -180,24 +161,23 @@ button:disabled {
     margin-top: 20px;
 }
 
-.reschedule-section h4 {
-    margin-top: 0;
-    color: #513078;
-}
+.reschedule-section h4 { margin-top: 0; color: #513078; }
 
-.reschedule-form {
+.reschedule-form, .review-form {
     display: grid;
     gap: 13px;
     margin-top: 15px;
 }
 
-.reschedule-form label {
+.reschedule-form label, .review-form label {
     font-size: 13px;
     font-weight: bold;
 }
 
 .reschedule-form input,
-.reschedule-form textarea {
+.reschedule-form textarea,
+.review-form select,
+.review-form textarea {
     width: 100%;
     padding: 12px;
     margin-top: 6px;
@@ -208,12 +188,13 @@ button:disabled {
     font-family: Arial, sans-serif;
 }
 
-.reschedule-form textarea {
+.reschedule-form textarea,
+.review-form textarea {
     min-height: 85px;
     resize: vertical;
 }
 
-.reschedule-note {
+.reschedule-note, .review-note {
     color: #6c6079;
     font-size: 13px;
     line-height: 1.6;
@@ -227,12 +208,7 @@ button:disabled {
     border: 1px solid #e7dbff;
 }
 
-.request-card p {
-    margin: 7px 0;
-    font-size: 14px;
-}
-
-/* STUDENT REVIEW STYLES */
+.request-card p { margin: 7px 0; font-size: 14px; }
 
 .review-section {
     background: #faf7ff;
@@ -246,46 +222,6 @@ button:disabled {
     color: #513078;
     margin-top: 0;
     margin-bottom: 10px;
-}
-
-.review-note {
-    color: #6c6079;
-    font-size: 13px;
-    line-height: 1.6;
-}
-
-.review-form {
-    display: grid;
-    gap: 14px;
-    margin-top: 15px;
-}
-
-.review-form label {
-    font-size: 13px;
-    font-weight: bold;
-}
-
-.review-form select,
-.review-form textarea {
-    width: 100%;
-    padding: 12px;
-    margin-top: 7px;
-    border: 1px solid #d8cde5;
-    border-radius: 8px;
-    background: white;
-    color: #211038;
-    font-family: Arial, sans-serif;
-}
-
-.review-form textarea {
-    min-height: 100px;
-    resize: vertical;
-}
-
-.review-form select:focus,
-.review-form textarea:focus {
-    outline: 2px solid #c8a8ff;
-    border-color: #6d42a5;
 }
 
 .review-stars {
@@ -303,10 +239,7 @@ button:disabled {
     margin-top: 15px;
 }
 
-.review-success h4 {
-    color: #17643b;
-    margin: 0 0 8px;
-}
+.review-success h4 { color: #17643b; margin: 0 0 8px; }
 
 .review-text {
     color: #51435f;
@@ -314,14 +247,8 @@ button:disabled {
     overflow-wrap: anywhere;
 }
 
-.review-submit {
-    background: #6d42a5;
-    width: fit-content;
-}
-
+.review-submit { background: #6d42a5; width: fit-content; }
 .review-submit:hover { background: #513078; }
-
-/* PAYMENT STYLES */
 
 .payment-section {
     background: #faf7ff;
@@ -331,10 +258,7 @@ button:disabled {
     margin-top: 20px;
 }
 
-.payment-section h4 {
-    color: #513078;
-    margin-top: 0;
-}
+.payment-section h4 { color: #513078; margin-top: 0; }
 
 .payment-note {
     color: #6c6079;
@@ -358,15 +282,14 @@ button:disabled {
     color: #17643b;
 }
 
-.payment-button {
-    margin-top: 12px;
-    background: #6d42a5;
-}
+.payment-button { margin-top: 12px; background: #6d42a5; }
 
 .payment-error {
     color: #b42318;
     font-size: 13px;
     margin-top: 10px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
 }
 
 .empty, .notice {
@@ -381,16 +304,9 @@ button:disabled {
 
 @media(max-width: 600px) {
     header { padding: 18px; }
-
     header a { margin-left: 8px; }
-
     main { margin: 25px auto; }
-
-    .tutor-photo {
-        width: 65px;
-        height: 65px;
-    }
-
+    .tutor-photo { width: 65px; height: 65px; }
     .booking { padding: 16px; }
 }
 </style>
@@ -407,7 +323,6 @@ button:disabled {
 </header>
 
 <main>
-
 <h1>My Lesson Bookings</h1>
 
 <p class="intro">
@@ -415,20 +330,16 @@ button:disabled {
     updates and request a new lesson time when necessary.
 </p>
 
-<button id="refreshBtn" type="button">
-    Refresh Bookings
-</button>
+<button id="refreshBtn" type="button">Refresh Bookings</button>
 
 <p id="notice" class="notice" style="display:none"></p>
 
 <div id="bookings" style="margin-top:22px">
     <div class="notice">Loading your bookings...</div>
 </div>
-
 </main>
 
 <script type="module">
-
 import { createClient } from
 "https://esm.sh/@supabase/supabase-js@2";
 
@@ -437,19 +348,12 @@ const SUPABASE_URL =
 
 const SUPABASE_KEY =
 "sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ";
-const supabase = createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
 
-const bookingsContainer =
-document.getElementById("bookings");
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const notice =
-document.getElementById("notice");
-
-const refreshBtn =
-document.getElementById("refreshBtn");
+const bookingsContainer = document.getElementById("bookings");
+const notice = document.getElementById("notice");
+const refreshBtn = document.getElementById("refreshBtn");
 
 let loading = false;
 let currentRequests = [];
@@ -459,10 +363,7 @@ let currentPayments = {};
 function showNotice(text, isError = false) {
     notice.textContent = text;
     notice.style.display = "block";
-
-    notice.className = isError
-        ? "notice error"
-        : "notice";
+    notice.className = isError ? "notice error" : "notice";
 }
 
 function hideNotice() {
@@ -497,12 +398,7 @@ function formatTime(value) {
     const parts = value.split(":");
     const date = new Date();
 
-    date.setHours(
-        Number(parts[0]),
-        Number(parts[1]),
-        0,
-        0
-    );
+    date.setHours(Number(parts[0]), Number(parts[1]), 0, 0);
 
     return date.toLocaleTimeString([], {
         hour: "numeric",
@@ -512,7 +408,6 @@ function formatTime(value) {
 
 function getLocalDate() {
     const now = new Date();
-
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, "0");
     const day = String(now.getDate()).padStart(2, "0");
@@ -545,14 +440,12 @@ function createTutorPhoto(tutor) {
         fallback.style.justifyContent = "center";
         fallback.style.fontWeight = "bold";
         fallback.style.color = "#513078";
-
         fallback.textContent = getInitials(tutor?.full_name);
+
         photo.replaceWith(fallback);
     };
 
-    if (!tutor?.profile_photo_url) {
-        photo.onerror();
-    }
+    if (!tutor?.profile_photo_url) photo.onerror();
 
     return photo;
 }
@@ -571,27 +464,19 @@ function createDetail(label, value) {
         valueElement.textContent =
             value.length ? value.join(", ") : "Not specified";
     } else {
-        valueElement.textContent =
-            value || "Not specified";
+        valueElement.textContent = value || "Not specified";
     }
 
     wrapper.append(labelElement, valueElement);
-
     return wrapper;
 }
 
 function createStatus(statusValue) {
     const allowedStatuses = [
-        "pending",
-        "accepted",
-        "declined",
-        "cancelled",
-        "completed"
+        "pending", "accepted", "declined", "cancelled", "completed"
     ];
 
-    const status = String(
-        statusValue || "pending"
-    ).toLowerCase();
+    const status = String(statusValue || "pending").toLowerCase();
 
     const safeStatus = allowedStatuses.includes(status)
         ? status
@@ -608,8 +493,35 @@ function createStatus(statusValue) {
     badge.textContent = safeStatus;
 
     wrapper.append(label, badge);
-
     return wrapper;
+}
+
+/* PAYMENT ERROR DETAILS */
+
+async function getPaymentError(error, data) {
+    if (data?.error) return data.error;
+    if (data?.message) return data.message;
+
+    if (error?.context) {
+        try {
+            let response;
+
+            if (typeof error.context.json === "function") {
+                response = await error.context.clone().json();
+            } else if (typeof error.context.text === "function") {
+                const body = await error.context.text();
+                response = JSON.parse(body);
+            }
+
+            if (response?.error) return response.error;
+            if (response?.message) return response.message;
+        } catch (readError) {
+            console.warn("Could not read payment error response:", readError);
+        }
+    }
+
+    return error?.message ||
+        "Payment could not be processed. Please try again.";
 }
 
 /* PAYMENT FUNCTIONS */
@@ -646,10 +558,7 @@ async function loadPaymentStatuses(userId, bookingIds) {
     }
 
     (data || []).forEach(payment => {
-        if (
-            payment.status === "successful" &&
-            payment.booking_id
-        ) {
+        if (payment.status === "successful" && payment.booking_id) {
             currentPayments[payment.booking_id] = payment;
         }
     });
@@ -661,7 +570,6 @@ function createPaymentSection(booking) {
 
     const heading = document.createElement("h4");
     heading.textContent = "Lesson Payment";
-
     section.appendChild(heading);
 
     const existingPayment = currentPayments[booking.id];
@@ -675,10 +583,7 @@ function createPaymentSection(booking) {
         amount.className = "payment-note";
         amount.textContent =
             "Paid amount: " +
-            formatMoney(
-                existingPayment.amount,
-                existingPayment.currency
-            );
+            formatMoney(existingPayment.amount, existingPayment.currency);
 
         const note = document.createElement("p");
         note.className = "payment-note";
@@ -712,40 +617,45 @@ function createPaymentSection(booking) {
             const { data, error } = await supabase.functions.invoke(
                 "initialize-paystack-payment",
                 {
-                    body: {
-                        booking_id: booking.id
-                    }
+                    body: { booking_id: booking.id }
                 }
             );
 
-            if (error) throw error;
+            if (error || data?.error) {
+                throw new Error(await getPaymentError(error, data));
+            }
 
             if (!data?.authorization_url) {
                 throw new Error(
-                    data?.error ||
                     data?.message ||
                     "Paystack did not return a payment link. Please try again."
                 );
             }
 
-            window.location.href = data.authorization_url;
+            const paymentUrl = new URL(data.authorization_url);
+
+            if (
+                paymentUrl.protocol !== "https:" ||
+                paymentUrl.hostname !== "checkout.paystack.com"
+            ) {
+                throw new Error("The payment link returned by Paystack is invalid.");
+            }
+
+            window.location.assign(paymentUrl.href);
 
         } catch (error) {
             console.error("Payment initialization error:", error);
 
             errorMessage.textContent =
-                error.message ||
-                "Unable to start payment. Please try again.";
+                error.message || "Unable to start payment. Please try again.";
 
             errorMessage.style.display = "block";
-
             button.disabled = false;
             button.textContent = "Pay for Lesson";
         }
     });
 
     section.append(note, button, errorMessage);
-
     return section;
 }
 
@@ -760,6 +670,8 @@ async function verifyPaystackReturn() {
 
     showNotice("Verifying your Paystack payment. Please wait...");
 
+    let verificationSucceeded = false;
+
     try {
         const { data, error } = await supabase.functions.invoke(
             "verify-paystack-payment",
@@ -768,21 +680,21 @@ async function verifyPaystackReturn() {
             }
         );
 
-        if (error) throw error;
+        if (error || data?.error) {
+            throw new Error(await getPaymentError(error, data));
+        }
 
         if (
             data?.success === true ||
             data?.status === "successful" ||
             data?.payment?.status === "successful"
         ) {
-            showNotice(
-                "Your payment was verified successfully."
-            );
+            verificationSucceeded = true;
+            showNotice("Your payment was verified successfully.");
         } else {
             throw new Error(
-                data?.error ||
                 data?.message ||
-                "We could not confirm the payment yet. Please refresh your bookings."
+                "We could not confirm the payment yet. Please contact support if you were charged."
             );
         }
 
@@ -791,19 +703,25 @@ async function verifyPaystackReturn() {
 
         showNotice(
             error.message ||
-            "Payment verification could not be completed. Please contact Tutor Pearl support if you were charged.",
+            "Payment verification could not be completed. Please contact support if you were charged.",
             true
         );
 
     } finally {
-        url.searchParams.delete("reference");
-        url.searchParams.delete("trxref");
+        /*
+         * Keep the reference in the URL if verification fails.
+         * This allows the verification to be retried after refreshing.
+         */
+        if (verificationSucceeded) {
+            url.searchParams.delete("reference");
+            url.searchParams.delete("trxref");
 
-        window.history.replaceState(
-            {},
-            document.title,
-            url.pathname + url.search + url.hash
-        );
+            window.history.replaceState(
+                {},
+                document.title,
+                url.pathname + url.search + url.hash
+            );
+        }
     }
 }
 
@@ -822,9 +740,7 @@ async function cancelBooking(booking, button) {
     try {
         const { data, error } = await supabase.rpc(
             "student_cancel_booking",
-            {
-                booking_id: booking.id
-            }
+            { booking_id: booking.id }
         );
 
         if (error) throw error;
@@ -836,17 +752,13 @@ async function cancelBooking(booking, button) {
         }
 
         await loadBookings();
-
-        showNotice(
-            "Your lesson booking has been cancelled successfully."
-        );
+        showNotice("Your lesson booking has been cancelled successfully.");
 
     } catch (error) {
         console.error("Booking cancellation error:", error);
 
         showNotice(
-            error.message ||
-            "Unable to cancel this booking. Please try again.",
+            error.message || "Unable to cancel this booking. Please try again.",
             true
         );
 
@@ -863,7 +775,6 @@ function createReviewSection(booking) {
 
     const heading = document.createElement("h4");
     heading.textContent = "Review Your Tutor";
-
     section.appendChild(heading);
 
     const existingReview = currentReviews[booking.id];
@@ -882,8 +793,7 @@ function createReviewSection(booking) {
             "☆".repeat(5 - existingReview.rating);
 
         const ratingText = document.createElement("p");
-        ratingText.textContent =
-            existingReview.rating + " out of 5 stars";
+        ratingText.textContent = existingReview.rating + " out of 5 stars";
 
         success.append(title, stars, ratingText);
 
@@ -898,13 +808,10 @@ function createReviewSection(booking) {
         date.className = "review-note";
         date.textContent =
             "Submitted on " +
-            formatDate(
-                String(existingReview.created_at).substring(0, 10)
-            );
+            formatDate(String(existingReview.created_at).substring(0, 10));
 
         success.appendChild(date);
         section.appendChild(success);
-
         return section;
     }
 
@@ -922,7 +829,6 @@ function createReviewSection(booking) {
     const ratingSelect = document.createElement("select");
     ratingSelect.name = "rating";
     ratingSelect.required = true;
-
     ratingSelect.innerHTML = `
         <option value="">Select a rating</option>
         <option value="5">★★★★★ - Excellent</option>
@@ -959,10 +865,7 @@ function createReviewSection(booking) {
         const reviewText = reviewTextarea.value.trim();
 
         if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
-            showNotice(
-                "Please select a rating between 1 and 5 stars.",
-                true
-            );
+            showNotice("Please select a rating between 1 and 5 stars.", true);
             return;
         }
 
@@ -988,23 +891,17 @@ function createReviewSection(booking) {
             if (error) throw error;
 
             if (!data) {
-                throw new Error(
-                    "Your review could not be submitted."
-                );
+                throw new Error("Your review could not be submitted.");
             }
 
             await loadBookings();
-
-            showNotice(
-                "Thank you! Your tutor review has been submitted successfully."
-            );
+            showNotice("Thank you! Your tutor review has been submitted successfully.");
 
         } catch (error) {
             console.error("Review submission error:", error);
 
             showNotice(
-                error.message ||
-                "Unable to submit your review. Please try again.",
+                error.message || "Unable to submit your review. Please try again.",
                 true
             );
 
@@ -1014,7 +911,6 @@ function createReviewSection(booking) {
     });
 
     section.append(note, form);
-
     return section;
 }
 
@@ -1032,7 +928,6 @@ function renderRescheduleRequests(booking) {
 
     const heading = document.createElement("h4");
     heading.textContent = "Rescheduling requests";
-
     wrapper.appendChild(heading);
 
     requests.forEach(request => {
@@ -1050,17 +945,9 @@ function renderRescheduleRequests(booking) {
             escapeHTML(formatTime(request.requested_start_time));
 
         const status = document.createElement("p");
+        const statusValue = String(request.status || "pending").toLowerCase();
 
-        const statusValue = String(
-            request.status || "pending"
-        ).toLowerCase();
-
-        const allowed = [
-            "pending",
-            "approved",
-            "declined",
-            "cancelled"
-        ];
+        const allowed = ["pending", "approved", "declined", "cancelled"];
 
         const safeStatus = allowed.includes(statusValue)
             ? statusValue
@@ -1071,14 +958,13 @@ function renderRescheduleRequests(booking) {
         const badge = document.createElement("span");
         badge.className = "status " + safeStatus;
         badge.textContent = safeStatus;
-
         status.appendChild(badge);
+
         card.append(date, time, status);
 
         if (request.student_message) {
             const message = document.createElement("p");
-            message.textContent =
-                "Your message: " + request.student_message;
+            message.textContent = "Your message: " + request.student_message;
             card.appendChild(message);
         }
 
@@ -1089,26 +975,15 @@ function renderRescheduleRequests(booking) {
 }
 
 async function submitReschedule(booking, form, button) {
-    const dateInput = form.querySelector(
-        '[name="requested_date"]'
-    );
-
-    const timeInput = form.querySelector(
-        '[name="requested_start_time"]'
-    );
-
-    const messageInput = form.querySelector(
-        '[name="student_message"]'
-    );
+    const dateInput = form.querySelector('[name="requested_date"]');
+    const timeInput = form.querySelector('[name="requested_start_time"]');
+    const messageInput = form.querySelector('[name="student_message"]');
 
     const requestedDate = dateInput.value;
     const requestedTime = timeInput.value;
 
     if (!requestedDate || !requestedTime) {
-        showNotice(
-            "Please select both a new date and time.",
-            true
-        );
+        showNotice("Please select both a new date and time.", true);
         return;
     }
 
@@ -1121,10 +996,7 @@ async function submitReschedule(booking, form, button) {
         requestedDate === booking.lesson_date &&
         requestedTime === String(booking.start_time || "").substring(0, 5)
     ) {
-        showNotice(
-            "Please choose a different date or time.",
-            true
-        );
+        showNotice("Please choose a different date or time.", true);
         return;
     }
 
@@ -1151,23 +1023,17 @@ async function submitReschedule(booking, form, button) {
         if (error) throw error;
 
         if (!data) {
-            throw new Error(
-                "Your rescheduling request could not be submitted."
-            );
+            throw new Error("Your rescheduling request could not be submitted.");
         }
 
         await loadBookings();
-
-        showNotice(
-            "Your rescheduling request has been sent to your tutor."
-        );
+        showNotice("Your rescheduling request has been sent to your tutor.");
 
     } catch (error) {
         console.error("Rescheduling request error:", error);
 
         showNotice(
-            error.message ||
-            "Unable to send your rescheduling request.",
+            error.message || "Unable to send your rescheduling request.",
             true
         );
 
@@ -1199,7 +1065,6 @@ function createRescheduleForm(booking) {
     dateInput.name = "requested_date";
     dateInput.required = true;
     dateInput.min = getLocalDate();
-
     dateLabel.appendChild(dateInput);
 
     const timeLabel = document.createElement("label");
@@ -1210,7 +1075,6 @@ function createRescheduleForm(booking) {
     timeInput.name = "requested_start_time";
     timeInput.step = "1800";
     timeInput.required = true;
-
     timeLabel.appendChild(timeInput);
 
     const messageLabel = document.createElement("label");
@@ -1221,32 +1085,20 @@ function createRescheduleForm(booking) {
     messageInput.maxLength = 1000;
     messageInput.placeholder =
         "Let your tutor know why you need to reschedule.";
-
     messageLabel.appendChild(messageInput);
 
     const submitButton = document.createElement("button");
     submitButton.type = "submit";
     submitButton.textContent = "Send Rescheduling Request";
 
-    form.append(
-        dateLabel,
-        timeLabel,
-        messageLabel,
-        submitButton
-    );
+    form.append(dateLabel, timeLabel, messageLabel, submitButton);
 
     form.addEventListener("submit", event => {
         event.preventDefault();
-
-        submitReschedule(
-            booking,
-            form,
-            submitButton
-        );
+        submitReschedule(booking, form, submitButton);
     });
 
     section.append(heading, note, form);
-
     return section;
 }
 
@@ -1257,12 +1109,10 @@ function renderBooking(booking, tutor) {
     card.className = "booking";
 
     const subject = document.createElement("h3");
-    subject.textContent =
-        booking.subject || "Lesson request";
+    subject.textContent = booking.subject || "Lesson request";
 
     const profile = document.createElement("div");
     profile.className = "tutor-profile";
-
     profile.appendChild(createTutorPhoto(tutor));
 
     const info = document.createElement("div");
@@ -1274,8 +1124,7 @@ function renderBooking(booking, tutor) {
 
     const headline = document.createElement("div");
     headline.className = "tutor-headline";
-    headline.textContent =
-        tutor?.headline || "Tutor Pearl tutor";
+    headline.textContent = tutor?.headline || "Tutor Pearl tutor";
 
     info.append(name, headline);
     profile.appendChild(info);
@@ -1293,10 +1142,9 @@ function renderBooking(booking, tutor) {
             booking.duration_minutes
                 ? booking.duration_minutes + " minutes"
                 : "Not specified"
-        )
+        ),
+        createStatus(booking.status)
     );
-
-    details.appendChild(createStatus(booking.status));
 
     card.append(subject, profile, details);
 
@@ -1314,37 +1162,23 @@ function renderBooking(booking, tutor) {
         card.appendChild(message);
     }
 
-    const status = String(
-        booking.status || ""
-    ).toLowerCase();
-
-    /* PAYMENT SECTION FOR ACCEPTED LESSONS */
+    const status = String(booking.status || "").toLowerCase();
 
     if (status === "accepted") {
-        card.appendChild(
-            createPaymentSection(booking)
-        );
+        card.appendChild(createPaymentSection(booking));
     }
-
-    /* REVIEW SECTION FOR COMPLETED LESSONS */
 
     if (status === "completed") {
-        card.appendChild(
-            createReviewSection(booking)
-        );
+        card.appendChild(createReviewSection(booking));
     }
 
-    const rescheduleRequests =
-        renderRescheduleRequests(booking);
+    const rescheduleRequests = renderRescheduleRequests(booking);
 
     if (rescheduleRequests) {
         card.appendChild(rescheduleRequests);
     }
 
-    if (
-        status === "pending" ||
-        status === "accepted"
-    ) {
+    if (status === "pending" || status === "accepted") {
         const cancelButton = document.createElement("button");
 
         cancelButton.type = "button";
@@ -1363,13 +1197,8 @@ function renderBooking(booking, tutor) {
         request.status === "pending"
     );
 
-    if (
-        status === "accepted" &&
-        !hasPendingRequest
-    ) {
-        card.appendChild(
-            createRescheduleForm(booking)
-        );
+    if (status === "accepted" && !hasPendingRequest) {
+        card.appendChild(createRescheduleForm(booking));
     }
 
     return card;
@@ -1381,20 +1210,16 @@ async function loadBookings() {
     if (loading) return;
 
     loading = true;
-
     refreshBtn.disabled = true;
     refreshBtn.textContent = "Loading...";
-
     bookingsContainer.innerHTML =
         '<div class="notice">Loading your bookings...</div>';
 
     hideNotice();
 
     try {
-        const {
-            data: authData,
-            error: authError
-        } = await supabase.auth.getUser();
+        const { data: authData, error: authError } =
+            await supabase.auth.getUser();
 
         if (authError) throw authError;
 
@@ -1405,28 +1230,17 @@ async function loadBookings() {
 
         const user = authData.user;
 
-        if (
-            user.user_metadata?.account_type !== "student"
-        ) {
-            showNotice(
-                "Please log in with your student account.",
-                true
-            );
-
+        if (user.user_metadata?.account_type !== "student") {
+            showNotice("Please log in with your student account.", true);
             bookingsContainer.innerHTML = "";
             return;
         }
 
-        const {
-            data: bookings,
-            error
-        } = await supabase
+        const { data: bookings, error } = await supabase
             .from("lesson_bookings")
             .select("*")
             .eq("student_id", user.id)
-            .order("created_at", {
-                ascending: false
-            });
+            .order("created_at", { ascending: false });
 
         if (error) throw error;
 
@@ -1443,20 +1257,14 @@ async function loadBookings() {
                     </a>
                 </div>
             `;
-
             return;
         }
 
         const tutorIds = [
-            ...new Set(
-                bookings.map(item => item.tutor_id)
-            )
+            ...new Set(bookings.map(item => item.tutor_id))
         ];
 
-        const {
-            data: tutors,
-            error: tutorError
-        } = await supabase
+        const { data: tutors, error: tutorError } = await supabase
             .from("tutor_profiles")
             .select(`
                 id,
@@ -1470,36 +1278,20 @@ async function loadBookings() {
 
         if (tutorError) throw tutorError;
 
-        const {
-            data: requests,
-            error: requestError
-        } = await supabase.rpc(
-            "get_my_reschedule_requests"
-        );
+        const { data: requests, error: requestError } =
+            await supabase.rpc("get_my_reschedule_requests");
 
         if (requestError) throw requestError;
 
         currentRequests = requests || [];
 
-        /* LOAD EXISTING STUDENT REVIEWS */
-
         currentReviews = {};
 
-        const bookingIds = bookings.map(
-            booking => booking.id
-        );
+        const bookingIds = bookings.map(booking => booking.id);
 
-        const {
-            data: reviews,
-            error: reviewError
-        } = await supabase
+        const { data: reviews, error: reviewError } = await supabase
             .from("tutor_reviews")
-            .select(`
-                booking_id,
-                rating,
-                review_text,
-                created_at
-            `)
+            .select("booking_id, rating, review_text, created_at")
             .eq("student_id", user.id)
             .in("booking_id", bookingIds);
 
@@ -1508,8 +1300,6 @@ async function loadBookings() {
         (reviews || []).forEach(review => {
             currentReviews[review.booking_id] = review;
         });
-
-        /* LOAD PAYMENT STATUS */
 
         await loadPaymentStatuses(user.id, bookingIds);
 
@@ -1523,29 +1313,20 @@ async function loadBookings() {
 
         bookings.forEach(booking => {
             const tutor = tutorMap[booking.tutor_id];
-
-            bookingsContainer.appendChild(
-                renderBooking(booking, tutor)
-            );
+            bookingsContainer.appendChild(renderBooking(booking, tutor));
         });
 
     } catch (error) {
-        console.error(
-            "Student bookings error:",
-            error
-        );
-
+        console.error("Student bookings error:", error);
         bookingsContainer.innerHTML = "";
 
         showNotice(
-            error.message ||
-            "Unable to load your bookings. Please try again.",
+            error.message || "Unable to load your bookings. Please try again.",
             true
         );
 
     } finally {
         loading = false;
-
         refreshBtn.disabled = false;
         refreshBtn.textContent = "Refresh Bookings";
     }
@@ -1553,10 +1334,7 @@ async function loadBookings() {
 
 /* PAGE STARTUP */
 
-refreshBtn.addEventListener(
-    "click",
-    loadBookings
-);
+refreshBtn.addEventListener("click", loadBookings);
 
 async function startPage() {
     await verifyPaystackReturn();
@@ -1566,6 +1344,5 @@ async function startPage() {
 startPage();
 
 </script>
-
 </body>
 </html>
