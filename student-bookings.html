@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -281,6 +280,13 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
     color: #6c6079;
     font-size: 13px;
     line-height: 1.6;
+}
+
+.payment-price {
+    font-size: 26px;
+    font-weight: bold;
+    color: #513078;
+    margin: 10px 0;
 }
 
 .payment-status {
@@ -725,8 +731,6 @@ async function verifyPaymentReference(reference) {
             data?.payment_status || ""
         ).toLowerCase();
 
-        // The Edge Function returns retry_allowed, not retryable.
-        // Accept retryable as well for compatibility with older responses.
         const retryAllowed =
             data?.retry_allowed === true ||
             data?.retryable === true;
@@ -829,7 +833,6 @@ function createPaymentSection(booking) {
         return section;
     }
 
-    // A completed lesson must not offer another payment.
     if (String(booking.status).toLowerCase() === "completed") {
         const warning = document.createElement("div");
         warning.className = "payment-warning";
@@ -839,6 +842,51 @@ function createPaymentSection(booking) {
         section.appendChild(warning);
         return section;
     }
+
+    const lockedAmount = Number(booking.locked_amount);
+    const lockedCurrency = String(
+        booking.locked_currency || ""
+    ).toUpperCase();
+
+    const priceIsValid =
+        booking.locked_amount !== null &&
+        booking.locked_amount !== undefined &&
+        Number.isFinite(lockedAmount) &&
+        lockedAmount > 0 &&
+        lockedCurrency === "NGN" &&
+        Boolean(booking.price_locked_at);
+
+    if (!priceIsValid) {
+        const warning = document.createElement("div");
+        warning.className = "payment-warning";
+        warning.textContent =
+            "This lesson's price has not yet been confirmed. Payment is unavailable until the booking has a valid locked NGN price. Please contact Tutor Pearl support if you need assistance.";
+
+        section.appendChild(warning);
+        return section;
+    }
+
+    const priceLabel = document.createElement("p");
+    priceLabel.className = "payment-note";
+    priceLabel.textContent = "Confirmed lesson price";
+
+    const price = document.createElement("p");
+    price.className = "payment-price";
+    price.textContent = formatMoney(lockedAmount, lockedCurrency);
+
+    const duration = document.createElement("p");
+    duration.className = "payment-note";
+    duration.textContent =
+        "Lesson duration: " +
+        (booking.duration_minutes || "Not specified") +
+        (booking.duration_minutes ? " minutes" : "");
+
+    const lockedNote = document.createElement("p");
+    lockedNote.className = "payment-note";
+    lockedNote.textContent =
+        "This price is saved and locked for this booking. It will not change if your tutor later updates their hourly rate.";
+
+    section.append(priceLabel, price, duration, lockedNote);
 
     const pending = getPendingPayment(booking.id);
 
@@ -857,7 +905,7 @@ function createPaymentSection(booking) {
             "Do not start another payment while this transaction is being checked. If you were charged, the payment must be verified before another attempt.";
     } else {
         note.textContent =
-            "Your tutor has accepted this lesson. You can proceed to secure payment through Paystack. Your payment will be verified before it is recorded.";
+            "Proceed to secure payment through Paystack. Your payment will be verified before it is recorded.";
     }
 
     const button = document.createElement("button");
@@ -917,6 +965,16 @@ function createPaymentSection(booking) {
                 );
             }
 
+            // Check that Paystack returned the exact locked booking price.
+            if (
+                Number(data.amount) !== lockedAmount ||
+                String(data.currency || "").toUpperCase() !== lockedCurrency
+            ) {
+                throw new Error(
+                    "The payment amount does not match your confirmed lesson price. Please contact support. Do not continue."
+                );
+            }
+
             const paymentUrl = new URL(data.authorization_url);
 
             if (
@@ -937,7 +995,6 @@ function createPaymentSection(booking) {
                 );
             }
 
-            // Save the reference before redirecting to Paystack.
             savePendingPayment(
                 booking.id,
                 data.reference,
@@ -1225,21 +1282,20 @@ function renderRescheduleRequests(booking) {
         card.className = "request-card";
 
         const date = document.createElement("p");
-        date.textContent =
-            "Requested date: " + formatDate(request.requested_date);
-
         const dateStrong = document.createElement("strong");
         dateStrong.textContent = "Requested date: ";
-        date.replaceChildren(dateStrong, document.createTextNode(
-            formatDate(request.requested_date)
-        ));
+        date.replaceChildren(
+            dateStrong,
+            document.createTextNode(formatDate(request.requested_date))
+        );
 
         const time = document.createElement("p");
         const timeStrong = document.createElement("strong");
         timeStrong.textContent = "Requested time: ";
-        time.append(timeStrong, document.createTextNode(
-            formatTime(request.requested_start_time)
-        ));
+        time.append(
+            timeStrong,
+            document.createTextNode(formatTime(request.requested_start_time))
+        );
 
         const status = document.createElement("p");
         const statusValue = String(
@@ -1474,7 +1530,6 @@ function renderBooking(booking, tutor) {
 
     const status = String(booking.status || "").toLowerCase();
 
-    // Show payment status for accepted and completed bookings.
     if (status === "accepted" || status === "completed") {
         card.appendChild(createPaymentSection(booking));
     }
