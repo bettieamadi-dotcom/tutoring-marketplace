@@ -1,0 +1,366 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Earnings | Tutor Pearl</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f7f5fc;
+      color: #25213a;
+    }
+
+    header {
+      background: #35145f;
+      color: white;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    header h2 {
+      margin: 0;
+      font-size: 21px;
+    }
+
+    header a {
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    main {
+      max-width: 1000px;
+      margin: 35px auto;
+      padding: 0 18px;
+    }
+
+    h1 {
+      font-size: 27px;
+      margin-bottom: 8px;
+    }
+
+    .intro {
+      color: #777;
+      margin-bottom: 25px;
+      line-height: 1.5;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+
+    .summary-card {
+      background: white;
+      padding: 24px;
+      border-radius: 14px;
+      box-shadow: 0 3px 15px rgba(30, 15, 60, 0.06);
+    }
+
+    .summary-card p {
+      color: #777;
+      font-size: 14px;
+      margin: 0 0 12px;
+    }
+
+    .summary-card h2 {
+      margin: 0;
+      color: #35145f;
+      font-size: 25px;
+      overflow-wrap: anywhere;
+    }
+
+    .section-title {
+      margin-bottom: 16px;
+      font-size: 20px;
+    }
+
+    .earnings-list {
+      display: grid;
+      gap: 13px;
+    }
+
+    .earning-item {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      box-shadow: 0 2px 12px rgba(30, 15, 60, 0.04);
+    }
+
+    .earning-item h3 {
+      margin: 0 0 7px;
+      font-size: 16px;
+    }
+
+    .earning-item p {
+      margin: 4px 0;
+      color: #777;
+      font-size: 13px;
+    }
+
+    .earning-amount {
+      font-size: 19px;
+      font-weight: bold;
+      color: #35145f;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 6px 11px;
+      border-radius: 20px;
+      font-size: 12px;
+      text-transform: capitalize;
+      background: #eee9f7;
+      color: #54327d;
+    }
+
+    .status.available {
+      background: #e5f7eb;
+      color: #18743a;
+    }
+
+    .status.paid {
+      background: #e5f0ff;
+      color: #2057a0;
+    }
+
+    .status.pending {
+      background: #fff3d8;
+      color: #8a5a00;
+    }
+
+    .message {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      text-align: center;
+      color: #777;
+      line-height: 1.6;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 25px;
+      color: #54258a;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    @media (max-width: 500px) {
+      main {
+        margin-top: 25px;
+      }
+
+      h1 {
+        font-size: 23px;
+      }
+
+      .earning-item {
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h2>Tutor Pearl</h2>
+  <a href="tutor-dashboard.html">← Back to Dashboard</a>
+</header>
+
+<main>
+  <h1>My Earnings</h1>
+  <p class="intro">
+    Track your lesson earnings and payment records.
+    All earnings are displayed in Nigerian Naira (NGN).
+  </p>
+
+  <section class="summary">
+    <div class="summary-card">
+      <p>Total Recorded Earnings</p>
+      <h2 id="totalEarnings">₦0.00</h2>
+    </div>
+
+    <div class="summary-card">
+      <p>Available Earnings</p>
+      <h2 id="availableEarnings">₦0.00</h2>
+    </div>
+
+    <div class="summary-card">
+      <p>Paid Earnings</p>
+      <h2 id="paidEarnings">₦0.00</h2>
+    </div>
+  </section>
+
+  <h2 class="section-title">Earning History</h2>
+
+  <div id="earningsList" class="earnings-list">
+    <div class="message">Loading your earnings...</div>
+  </div>
+
+  <a class="back-link" href="tutor-dashboard.html">
+    ← Return to Tutor Dashboard
+  </a>
+</main>
+
+<script>
+  const SUPABASE_URL = "https://chmdsvfmlscrbqomqifp.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_A1NbTHmXm8gqCDsj-EKFw_Q3Sv6QnPZ";
+
+  const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+  const formatNaira = (amount) =>
+    new Intl.NumberFormat("en-NG", {
+      style: "currency",
+      currency: "NGN"
+    }).format(Number(amount) || 0);
+
+  const escapeHTML = (value) =>
+    String(value ?? "").replace(/[&<>"']/g, character => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    })[character]);
+
+  async function loadEarnings() {
+    const list = document.getElementById("earningsList");
+
+    try {
+      const { data: authData, error: authError } =
+        await supabaseClient.auth.getUser();
+
+      if (authError || !authData.user) {
+        window.location.href = "tutor-login.html";
+        return;
+      }
+
+      const user = authData.user;
+
+      if (user.user_metadata?.account_type !== "tutor") {
+        list.innerHTML =
+          '<div class="message">This page is for tutor accounts only.</div>';
+        return;
+      }
+
+      const { data: earnings, error } = await supabaseClient
+        .from("tutor_earnings")
+        .select("id, amount, currency, status, created_at, booking_id")
+        .eq("tutor_id", user.id)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        throw error;
+      }
+
+      const records = earnings || [];
+
+      let total = 0;
+      let available = 0;
+      let paid = 0;
+
+      records.forEach(record => {
+        const amount = Number(record.amount) || 0;
+
+        total += amount;
+
+        if (String(record.status).toLowerCase() === "available") {
+          available += amount;
+        }
+
+        if (String(record.status).toLowerCase() === "paid") {
+          paid += amount;
+        }
+      });
+
+      document.getElementById("totalEarnings").textContent =
+        formatNaira(total);
+
+      document.getElementById("availableEarnings").textContent =
+        formatNaira(available);
+
+      document.getElementById("paidEarnings").textContent =
+        formatNaira(paid);
+
+      if (records.length === 0) {
+        list.innerHTML = `
+          <div class="message">
+            You don't have any recorded earnings yet.
+            Earnings will appear here after a lesson is completed
+            and its payment has been successfully recorded.
+          </div>
+        `;
+        return;
+      }
+
+      list.innerHTML = records.map(record => {
+        const status = String(record.status || "unknown").toLowerCase();
+        const date = record.created_at
+          ? new Date(record.created_at).toLocaleDateString("en-NG", {
+              day: "numeric",
+              month: "short",
+              year: "numeric"
+            })
+          : "Date unavailable";
+
+        return `
+          <div class="earning-item">
+            <div>
+              <h3>Lesson earning</h3>
+              <p>Date recorded: ${escapeHTML(date)}</p>
+              <p>Currency: ${escapeHTML(record.currency || "NGN")}</p>
+              <span class="status ${escapeHTML(status)}">
+                ${escapeHTML(status)}
+              </span>
+            </div>
+
+            <div class="earning-amount">
+              ${formatNaira(record.amount)}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+    } catch (error) {
+      console.error("Earnings loading error:", error);
+
+      list.innerHTML = `
+        <div class="message">
+          We couldn't load your earnings right now.
+          Please refresh the page and try again.
+        </div>
+      `;
+    }
+  }
+
+  loadEarnings();
+</script>
+
+</body>
+</html>
