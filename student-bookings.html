@@ -57,10 +57,7 @@ h1 { margin-bottom: 8px; }
     box-shadow: 0 4px 15px #21103812;
 }
 
-.booking h3 {
-    margin-top: 0;
-    color: #211038;
-}
+.booking h3 { margin-top: 0; color: #211038; }
 
 .tutor-profile {
     display: flex;
@@ -395,6 +392,7 @@ let currentRequests = [];
 let currentReviews = {};
 let currentPayments = {};
 let currentUserId = null;
+let paymentVerificationRunning = false;
 
 /* GENERAL HELPERS */
 
@@ -576,6 +574,8 @@ function savePendingPayment(bookingId, reference, userId) {
 }
 
 function clearPendingPayment(bookingId, reference) {
+    if (!bookingId || !reference) return;
+
     const payments = getPendingPayments();
     const existing = payments[bookingId];
 
@@ -679,8 +679,9 @@ async function loadPaymentStatuses(userId, bookingIds) {
 /* VERIFY A PAYSTACK TRANSACTION */
 
 async function verifyPaymentReference(reference) {
-    if (!reference) return "unknown";
+    if (!reference || paymentVerificationRunning) return "unknown";
 
+    paymentVerificationRunning = true;
     showNotice("Checking your Paystack payment. Please wait...");
 
     try {
@@ -720,11 +721,19 @@ async function verifyPaymentReference(reference) {
             return "success";
         }
 
+        const returnedStatus = String(
+            data?.payment_status || ""
+        ).toLowerCase();
+
+        // The Edge Function returns retry_allowed, not retryable.
+        // Accept retryable as well for compatibility with older responses.
+        const retryAllowed =
+            data?.retry_allowed === true ||
+            data?.retryable === true;
+
         if (
-            data?.retryable === true &&
-            ["failed", "abandoned"].includes(
-                String(data.payment_status || "").toLowerCase()
-            )
+            retryAllowed &&
+            ["failed", "abandoned"].includes(returnedStatus)
         ) {
             if (bookingId) {
                 clearPendingPayment(bookingId, reference);
@@ -739,10 +748,31 @@ async function verifyPaymentReference(reference) {
             return "failed";
         }
 
+        if (returnedStatus === "reversed") {
+            showNotice(
+                data.message ||
+                "This transaction was reversed. Please contact Tutor Pearl support. Do not make another payment for this booking.",
+                true
+            );
+
+            return "reversed";
+        }
+
+        if (
+            ["pending", "ongoing", "processing"].includes(returnedStatus)
+        ) {
+            showNotice(
+                data.message ||
+                "Your payment is still processing. Please check again shortly."
+            );
+
+            return "pending";
+        }
+
         throw new Error(
             data?.message ||
             data?.error ||
-            "The payment has not been confirmed yet. Please check again before starting another payment."
+            "The payment has not been confirmed. Please check again before starting another payment."
         );
 
     } catch (error) {
@@ -755,6 +785,9 @@ async function verifyPaymentReference(reference) {
         );
 
         return "unknown";
+
+    } finally {
+        paymentVerificationRunning = false;
     }
 }
 
@@ -771,10 +804,11 @@ function createPaymentSection(booking) {
     const existingPayment = currentPayments[booking.id];
 
     if (existingPayment) {
-        clearPendingPayment(
-            booking.id,
-            getPendingPayment(booking.id)?.reference
-        );
+        const savedAttempt = getPendingPayment(booking.id);
+
+        if (savedAttempt) {
+            clearPendingPayment(booking.id, savedAttempt.reference);
+        }
 
         const status = document.createElement("span");
         status.className = "payment-status successful";
@@ -795,6 +829,17 @@ function createPaymentSection(booking) {
         return section;
     }
 
+    // A completed lesson must not offer another payment.
+    if (String(booking.status).toLowerCase() === "completed") {
+        const warning = document.createElement("div");
+        warning.className = "payment-warning";
+        warning.textContent =
+            "This lesson is marked completed, but no successful payment record is visible. Please contact Tutor Pearl support before making another payment.";
+
+        section.appendChild(warning);
+        return section;
+    }
+
     const pending = getPendingPayment(booking.id);
 
     const note = document.createElement("p");
@@ -810,7 +855,6 @@ function createPaymentSection(booking) {
 
         warning.textContent =
             "Do not start another payment while this transaction is being checked. If you were charged, the payment must be verified before another attempt.";
-
     } else {
         note.textContent =
             "Your tutor has accepted this lesson. You can proceed to secure payment through Paystack. Your payment will be verified before it is recorded.";
@@ -828,6 +872,8 @@ function createPaymentSection(booking) {
     errorMessage.style.display = "none";
 
     button.addEventListener("click", async () => {
+        if (button.disabled) return;
+
         button.disabled = true;
         errorMessage.style.display = "none";
 
@@ -1179,14 +1225,21 @@ function renderRescheduleRequests(booking) {
         card.className = "request-card";
 
         const date = document.createElement("p");
-        date.innerHTML =
-            "<strong>Requested date:</strong> " +
-            escapeHTML(formatDate(request.requested_date));
+        date.textContent =
+            "Requested date: " + formatDate(request.requested_date);
+
+        const dateStrong = document.createElement("strong");
+        dateStrong.textContent = "Requested date: ";
+        date.replaceChildren(dateStrong, document.createTextNode(
+            formatDate(request.requested_date)
+        ));
 
         const time = document.createElement("p");
-        time.innerHTML =
-            "<strong>Requested time:</strong> " +
-            escapeHTML(formatTime(request.requested_start_time));
+        const timeStrong = document.createElement("strong");
+        timeStrong.textContent = "Requested time: ";
+        time.append(timeStrong, document.createTextNode(
+            formatTime(request.requested_start_time)
+        ));
 
         const status = document.createElement("p");
         const statusValue = String(
@@ -1201,13 +1254,14 @@ function renderRescheduleRequests(booking) {
             ? statusValue
             : "pending";
 
-        status.innerHTML = "<strong>Request status:</strong> ";
+        const statusStrong = document.createElement("strong");
+        statusStrong.textContent = "Request status: ";
 
         const badge = document.createElement("span");
         badge.className = "status " + safeStatus;
         badge.textContent = safeStatus;
-        status.appendChild(badge);
 
+        status.append(statusStrong, badge);
         card.append(date, time, status);
 
         if (request.student_message) {
@@ -1420,7 +1474,8 @@ function renderBooking(booking, tutor) {
 
     const status = String(booking.status || "").toLowerCase();
 
-    if (status === "accepted") {
+    // Show payment status for accepted and completed bookings.
+    if (status === "accepted" || status === "completed") {
         card.appendChild(createPaymentSection(booking));
     }
 
@@ -1470,8 +1525,6 @@ async function loadBookings() {
     refreshBtn.textContent = "Loading...";
     bookingsContainer.innerHTML =
         '<div class="notice">Loading your bookings...</div>';
-
-    hideNotice();
 
     try {
         const { data: authData, error: authError } =
@@ -1544,7 +1597,6 @@ async function loadBookings() {
         if (requestError) throw requestError;
 
         currentRequests = requests || [];
-
         currentReviews = {};
 
         const bookingIds = bookings.map(booking => booking.id);
@@ -1573,6 +1625,7 @@ async function loadBookings() {
 
         bookings.forEach(booking => {
             const tutor = tutorMap[booking.tutor_id];
+
             bookingsContainer.appendChild(
                 renderBooking(booking, tutor)
             );
@@ -1601,7 +1654,6 @@ async function loadBookings() {
 refreshBtn.addEventListener("click", loadBookings);
 
 async function startPage() {
-    // Authenticate before checking any saved payment references.
     const { data: authData, error: authError } =
         await supabase.auth.getUser();
 
