@@ -28,6 +28,7 @@ header {
 }
 
 header h2 { margin: 0; }
+
 header a {
     color: white;
     text-decoration: none;
@@ -56,7 +57,10 @@ h1 { margin-bottom: 8px; }
     box-shadow: 0 4px 15px #21103812;
 }
 
-.booking h3 { margin-top: 0; color: #211038; }
+.booking h3 {
+    margin-top: 0;
+    color: #211038;
+}
 
 .tutor-profile {
     display: flex;
@@ -161,7 +165,10 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
     margin-top: 20px;
 }
 
-.reschedule-section h4 { margin-top: 0; color: #513078; }
+.reschedule-section h4 {
+    margin-top: 0;
+    color: #513078;
+}
 
 .reschedule-form, .review-form {
     display: grid;
@@ -208,7 +215,10 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
     border: 1px solid #e7dbff;
 }
 
-.request-card p { margin: 7px 0; font-size: 14px; }
+.request-card p {
+    margin: 7px 0;
+    font-size: 14px;
+}
 
 .review-section {
     background: #faf7ff;
@@ -239,7 +249,10 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
     margin-top: 15px;
 }
 
-.review-success h4 { color: #17643b; margin: 0 0 8px; }
+.review-success h4 {
+    color: #17643b;
+    margin: 0 0 8px;
+}
 
 .review-text {
     color: #51435f;
@@ -247,7 +260,11 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
     overflow-wrap: anywhere;
 }
 
-.review-submit { background: #6d42a5; width: fit-content; }
+.review-submit {
+    background: #6d42a5;
+    width: fit-content;
+}
+
 .review-submit:hover { background: #513078; }
 
 .payment-section {
@@ -258,7 +275,10 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
     margin-top: 20px;
 }
 
-.payment-section h4 { color: #513078; margin-top: 0; }
+.payment-section h4 {
+    color: #513078;
+    margin-top: 0;
+}
 
 .payment-note {
     color: #6c6079;
@@ -282,7 +302,10 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
     color: #17643b;
 }
 
-.payment-button { margin-top: 12px; background: #6d42a5; }
+.payment-button {
+    margin-top: 12px;
+    background: #6d42a5;
+}
 
 .payment-error {
     color: #b42318;
@@ -290,6 +313,16 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
     margin-top: 10px;
     line-height: 1.5;
     overflow-wrap: anywhere;
+}
+
+.payment-warning {
+    background: #fff2cf;
+    color: #805600;
+    padding: 12px;
+    border-radius: 9px;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-top: 12px;
 }
 
 .empty, .notice {
@@ -355,10 +388,15 @@ const bookingsContainer = document.getElementById("bookings");
 const notice = document.getElementById("notice");
 const refreshBtn = document.getElementById("refreshBtn");
 
+const PENDING_PAYMENTS_KEY = "tutor_pearl_pending_payments";
+
 let loading = false;
 let currentRequests = [];
 let currentReviews = {};
 let currentPayments = {};
+let currentUserId = null;
+
+/* GENERAL HELPERS */
 
 function showNotice(text, isError = false) {
     notice.textContent = text;
@@ -496,6 +534,80 @@ function createStatus(statusValue) {
     return wrapper;
 }
 
+/* SAVED PAYMENT REFERENCES */
+
+function getPendingPayments() {
+    try {
+        const saved = JSON.parse(
+            localStorage.getItem(PENDING_PAYMENTS_KEY) || "{}"
+        );
+
+        return saved && typeof saved === "object" ? saved : {};
+    } catch {
+        return {};
+    }
+}
+
+function getPendingPayment(bookingId) {
+    const attempt = getPendingPayments()[bookingId];
+
+    if (!attempt || !attempt.reference) return null;
+
+    if (currentUserId && attempt.user_id !== currentUserId) {
+        return null;
+    }
+
+    return attempt;
+}
+
+function savePendingPayment(bookingId, reference, userId) {
+    const payments = getPendingPayments();
+
+    payments[bookingId] = {
+        reference,
+        user_id: userId,
+        created_at: new Date().toISOString()
+    };
+
+    localStorage.setItem(
+        PENDING_PAYMENTS_KEY,
+        JSON.stringify(payments)
+    );
+}
+
+function clearPendingPayment(bookingId, reference) {
+    const payments = getPendingPayments();
+    const existing = payments[bookingId];
+
+    if (
+        existing &&
+        existing.reference === reference &&
+        (!currentUserId || existing.user_id === currentUserId)
+    ) {
+        delete payments[bookingId];
+
+        localStorage.setItem(
+            PENDING_PAYMENTS_KEY,
+            JSON.stringify(payments)
+        );
+    }
+}
+
+function findPendingPaymentByReference(reference) {
+    const payments = getPendingPayments();
+
+    for (const [bookingId, attempt] of Object.entries(payments)) {
+        if (
+            attempt?.reference === reference &&
+            attempt?.user_id === currentUserId
+        ) {
+            return bookingId;
+        }
+    }
+
+    return null;
+}
+
 /* PAYMENT ERROR DETAILS */
 
 async function getPaymentError(error, data) {
@@ -524,7 +636,7 @@ async function getPaymentError(error, data) {
         "Payment could not be processed. Please try again.";
 }
 
-/* PAYMENT FUNCTIONS */
+/* PAYMENT DISPLAY HELPERS */
 
 function formatMoney(amount, currency) {
     const value = Number(amount);
@@ -564,6 +676,90 @@ async function loadPaymentStatuses(userId, bookingIds) {
     });
 }
 
+/* VERIFY A PAYSTACK TRANSACTION */
+
+async function verifyPaymentReference(reference) {
+    if (!reference) return "unknown";
+
+    showNotice("Checking your Paystack payment. Please wait...");
+
+    try {
+        const { data: authData, error: authError } =
+            await supabase.auth.getUser();
+
+        if (authError || !authData.user) {
+            throw new Error(
+                "Please sign in again to verify your payment."
+            );
+        }
+
+        currentUserId = authData.user.id;
+
+        const bookingId = findPendingPaymentByReference(reference);
+
+        const { data, error } = await supabase.functions.invoke(
+            "verify-paystack-payment",
+            {
+                body: { reference }
+            }
+        );
+
+        if (error) {
+            throw new Error(await getPaymentError(error, data));
+        }
+
+        if (data?.success === true) {
+            if (bookingId) {
+                clearPendingPayment(bookingId, reference);
+            }
+
+            showNotice(
+                data.message || "Your payment was verified successfully."
+            );
+
+            return "success";
+        }
+
+        if (
+            data?.retryable === true &&
+            ["failed", "abandoned"].includes(
+                String(data.payment_status || "").toLowerCase()
+            )
+        ) {
+            if (bookingId) {
+                clearPendingPayment(bookingId, reference);
+            }
+
+            showNotice(
+                data.message ||
+                "Paystack confirmed that the payment was unsuccessful. You can try again.",
+                true
+            );
+
+            return "failed";
+        }
+
+        throw new Error(
+            data?.message ||
+            data?.error ||
+            "The payment has not been confirmed yet. Please check again before starting another payment."
+        );
+
+    } catch (error) {
+        console.error("Payment verification error:", error);
+
+        showNotice(
+            error.message ||
+            "Payment verification could not be completed. Please try again.",
+            true
+        );
+
+        return "unknown";
+    }
+}
+
+/* PAYMENT INITIALIZATION AND DISPLAY */
+
 function createPaymentSection(booking) {
     const section = document.createElement("div");
     section.className = "payment-section";
@@ -575,6 +771,11 @@ function createPaymentSection(booking) {
     const existingPayment = currentPayments[booking.id];
 
     if (existingPayment) {
+        clearPendingPayment(
+            booking.id,
+            getPendingPayment(booking.id)?.reference
+        );
+
         const status = document.createElement("span");
         status.className = "payment-status successful";
         status.textContent = "Payment successful";
@@ -594,15 +795,33 @@ function createPaymentSection(booking) {
         return section;
     }
 
+    const pending = getPendingPayment(booking.id);
+
     const note = document.createElement("p");
     note.className = "payment-note";
-    note.textContent =
-        "Your tutor has accepted this lesson. You can proceed to secure payment through Paystack. Your payment will be verified before it is recorded.";
+
+    const warning = document.createElement("div");
+    warning.className = "payment-warning";
+    warning.style.display = pending ? "block" : "none";
+
+    if (pending) {
+        note.textContent =
+            "A previous payment attempt has not yet been resolved.";
+
+        warning.textContent =
+            "Do not start another payment while this transaction is being checked. If you were charged, the payment must be verified before another attempt.";
+
+    } else {
+        note.textContent =
+            "Your tutor has accepted this lesson. You can proceed to secure payment through Paystack. Your payment will be verified before it is recorded.";
+    }
 
     const button = document.createElement("button");
     button.type = "button";
     button.className = "payment-button";
-    button.textContent = "Pay for Lesson";
+    button.textContent = pending
+        ? "Check Payment Status"
+        : "Pay for Lesson";
 
     const errorMessage = document.createElement("p");
     errorMessage.className = "payment-error";
@@ -610,8 +829,28 @@ function createPaymentSection(booking) {
 
     button.addEventListener("click", async () => {
         button.disabled = true;
-        button.textContent = "Preparing payment...";
         errorMessage.style.display = "none";
+
+        const savedAttempt = getPendingPayment(booking.id);
+
+        if (savedAttempt) {
+            button.textContent = "Checking payment...";
+
+            const result = await verifyPaymentReference(
+                savedAttempt.reference
+            );
+
+            if (result === "success" || result === "failed") {
+                await loadBookings();
+            } else {
+                button.disabled = false;
+                button.textContent = "Check Payment Status";
+            }
+
+            return;
+        }
+
+        button.textContent = "Preparing payment...";
 
         try {
             const { data, error } = await supabase.functions.invoke(
@@ -625,10 +864,10 @@ function createPaymentSection(booking) {
                 throw new Error(await getPaymentError(error, data));
             }
 
-            if (!data?.authorization_url) {
+            if (!data?.authorization_url || !data?.reference) {
                 throw new Error(
                     data?.message ||
-                    "Paystack did not return a payment link. Please try again."
+                    "Paystack did not return a complete payment link. Please try again."
                 );
             }
 
@@ -638,8 +877,26 @@ function createPaymentSection(booking) {
                 paymentUrl.protocol !== "https:" ||
                 paymentUrl.hostname !== "checkout.paystack.com"
             ) {
-                throw new Error("The payment link returned by Paystack is invalid.");
+                throw new Error(
+                    "The payment link returned by Paystack is invalid."
+                );
             }
+
+            const { data: authData, error: authError } =
+                await supabase.auth.getUser();
+
+            if (authError || !authData.user) {
+                throw new Error(
+                    "Please sign in again before making payment."
+                );
+            }
+
+            // Save the reference before redirecting to Paystack.
+            savePendingPayment(
+                booking.id,
+                data.reference,
+                authData.user.id
+            );
 
             window.location.assign(paymentUrl.href);
 
@@ -647,7 +904,8 @@ function createPaymentSection(booking) {
             console.error("Payment initialization error:", error);
 
             errorMessage.textContent =
-                error.message || "Unable to start payment. Please try again.";
+                error.message ||
+                "Unable to start payment. Please try again.";
 
             errorMessage.style.display = "block";
             button.disabled = false;
@@ -655,9 +913,11 @@ function createPaymentSection(booking) {
         }
     });
 
-    section.append(note, button, errorMessage);
+    section.append(note, warning, button, errorMessage);
     return section;
 }
+
+/* CHECK PAYMENT WHEN STUDENT RETURNS */
 
 async function verifyPaystackReturn() {
     const url = new URL(window.location.href);
@@ -666,62 +926,35 @@ async function verifyPaystackReturn() {
         url.searchParams.get("reference") ||
         url.searchParams.get("trxref");
 
-    if (!reference) return;
+    let referenceToCheck = reference;
 
-    showNotice("Verifying your Paystack payment. Please wait...");
+    if (!referenceToCheck) {
+        const payments = getPendingPayments();
 
-    let verificationSucceeded = false;
-
-    try {
-        const { data, error } = await supabase.functions.invoke(
-            "verify-paystack-payment",
-            {
-                body: { reference }
-            }
+        const savedAttempt = Object.values(payments).find(
+            attempt =>
+                attempt?.reference &&
+                attempt?.user_id === currentUserId
         );
 
-        if (error || data?.error) {
-            throw new Error(await getPaymentError(error, data));
+        if (savedAttempt) {
+            referenceToCheck = savedAttempt.reference;
         }
+    }
 
-        if (
-            data?.success === true ||
-            data?.status === "successful" ||
-            data?.payment?.status === "successful"
-        ) {
-            verificationSucceeded = true;
-            showNotice("Your payment was verified successfully.");
-        } else {
-            throw new Error(
-                data?.message ||
-                "We could not confirm the payment yet. Please contact support if you were charged."
-            );
-        }
+    if (!referenceToCheck) return;
 
-    } catch (error) {
-        console.error("Payment verification error:", error);
+    const result = await verifyPaymentReference(referenceToCheck);
 
-        showNotice(
-            error.message ||
-            "Payment verification could not be completed. Please contact support if you were charged.",
-            true
+    if (result === "success" || result === "failed") {
+        url.searchParams.delete("reference");
+        url.searchParams.delete("trxref");
+
+        window.history.replaceState(
+            {},
+            document.title,
+            url.pathname + url.search + url.hash
         );
-
-    } finally {
-        /*
-         * Keep the reference in the URL if verification fails.
-         * This allows the verification to be retried after refreshing.
-         */
-        if (verificationSucceeded) {
-            url.searchParams.delete("reference");
-            url.searchParams.delete("trxref");
-
-            window.history.replaceState(
-                {},
-                document.title,
-                url.pathname + url.search + url.hash
-            );
-        }
     }
 }
 
@@ -758,7 +991,8 @@ async function cancelBooking(booking, button) {
         console.error("Booking cancellation error:", error);
 
         showNotice(
-            error.message || "Unable to cancel this booking. Please try again.",
+            error.message ||
+            "Unable to cancel this booking. Please try again.",
             true
         );
 
@@ -793,7 +1027,8 @@ function createReviewSection(booking) {
             "☆".repeat(5 - existingReview.rating);
 
         const ratingText = document.createElement("p");
-        ratingText.textContent = existingReview.rating + " out of 5 stars";
+        ratingText.textContent =
+            existingReview.rating + " out of 5 stars";
 
         success.append(title, stars, ratingText);
 
@@ -865,7 +1100,10 @@ function createReviewSection(booking) {
         const reviewText = reviewTextarea.value.trim();
 
         if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
-            showNotice("Please select a rating between 1 and 5 stars.", true);
+            showNotice(
+                "Please select a rating between 1 and 5 stars.",
+                true
+            );
             return;
         }
 
@@ -891,17 +1129,23 @@ function createReviewSection(booking) {
             if (error) throw error;
 
             if (!data) {
-                throw new Error("Your review could not be submitted.");
+                throw new Error(
+                    "Your review could not be submitted."
+                );
             }
 
             await loadBookings();
-            showNotice("Thank you! Your tutor review has been submitted successfully.");
+
+            showNotice(
+                "Thank you! Your tutor review has been submitted successfully."
+            );
 
         } catch (error) {
             console.error("Review submission error:", error);
 
             showNotice(
-                error.message || "Unable to submit your review. Please try again.",
+                error.message ||
+                "Unable to submit your review. Please try again.",
                 true
             );
 
@@ -945,9 +1189,13 @@ function renderRescheduleRequests(booking) {
             escapeHTML(formatTime(request.requested_start_time));
 
         const status = document.createElement("p");
-        const statusValue = String(request.status || "pending").toLowerCase();
+        const statusValue = String(
+            request.status || "pending"
+        ).toLowerCase();
 
-        const allowed = ["pending", "approved", "declined", "cancelled"];
+        const allowed = [
+            "pending", "approved", "declined", "cancelled"
+        ];
 
         const safeStatus = allowed.includes(statusValue)
             ? statusValue
@@ -964,7 +1212,8 @@ function renderRescheduleRequests(booking) {
 
         if (request.student_message) {
             const message = document.createElement("p");
-            message.textContent = "Your message: " + request.student_message;
+            message.textContent =
+                "Your message: " + request.student_message;
             card.appendChild(message);
         }
 
@@ -1023,17 +1272,23 @@ async function submitReschedule(booking, form, button) {
         if (error) throw error;
 
         if (!data) {
-            throw new Error("Your rescheduling request could not be submitted.");
+            throw new Error(
+                "Your rescheduling request could not be submitted."
+            );
         }
 
         await loadBookings();
-        showNotice("Your rescheduling request has been sent to your tutor.");
+
+        showNotice(
+            "Your rescheduling request has been sent to your tutor."
+        );
 
     } catch (error) {
         console.error("Rescheduling request error:", error);
 
         showNotice(
-            error.message || "Unable to send your rescheduling request.",
+            error.message ||
+            "Unable to send your rescheduling request.",
             true
         );
 
@@ -1124,7 +1379,8 @@ function renderBooking(booking, tutor) {
 
     const headline = document.createElement("div");
     headline.className = "tutor-headline";
-    headline.textContent = tutor?.headline || "Tutor Pearl tutor";
+    headline.textContent =
+        tutor?.headline || "Tutor Pearl tutor";
 
     info.append(name, headline);
     profile.appendChild(info);
@@ -1229,9 +1485,13 @@ async function loadBookings() {
         }
 
         const user = authData.user;
+        currentUserId = user.id;
 
         if (user.user_metadata?.account_type !== "student") {
-            showNotice("Please log in with your student account.", true);
+            showNotice(
+                "Please log in with your student account.",
+                true
+            );
             bookingsContainer.innerHTML = "";
             return;
         }
@@ -1313,15 +1573,19 @@ async function loadBookings() {
 
         bookings.forEach(booking => {
             const tutor = tutorMap[booking.tutor_id];
-            bookingsContainer.appendChild(renderBooking(booking, tutor));
+            bookingsContainer.appendChild(
+                renderBooking(booking, tutor)
+            );
         });
 
     } catch (error) {
         console.error("Student bookings error:", error);
+
         bookingsContainer.innerHTML = "";
 
         showNotice(
-            error.message || "Unable to load your bookings. Please try again.",
+            error.message ||
+            "Unable to load your bookings. Please try again.",
             true
         );
 
@@ -1337,6 +1601,28 @@ async function loadBookings() {
 refreshBtn.addEventListener("click", loadBookings);
 
 async function startPage() {
+    // Authenticate before checking any saved payment references.
+    const { data: authData, error: authError } =
+        await supabase.auth.getUser();
+
+    if (authError || !authData.user) {
+        window.location.href = "student-login.html";
+        return;
+    }
+
+    currentUserId = authData.user.id;
+
+    if (
+        authData.user.user_metadata?.account_type !== "student"
+    ) {
+        showNotice(
+            "Please log in with your student account.",
+            true
+        );
+        bookingsContainer.innerHTML = "";
+        return;
+    }
+
     await verifyPaystackReturn();
     await loadBookings();
 }
