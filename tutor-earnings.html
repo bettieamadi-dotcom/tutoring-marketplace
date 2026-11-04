@@ -6,10 +6,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Earnings | Tutor Pearl</title>
 
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
 <style>
-* {
-    box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
     margin: 0;
@@ -20,118 +20,183 @@ body {
 
 header {
     background: #30164A;
-    padding: 22px 6%;
+    padding: 18px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
     gap: 12px;
+    flex-wrap: wrap;
 }
 
 header h2 {
     margin: 0;
+    font-size: 21px;
 }
 
 header a {
-    color: #C8A8FF;
+    color: white;
     text-decoration: none;
+    background: #512477;
+    padding: 10px 15px;
+    border-radius: 7px;
 }
 
-main {
-    max-width: 1000px;
-    margin: 40px auto;
-    padding: 0 20px;
+.container {
+    width: 94%;
+    max-width: 1050px;
+    margin: 25px auto;
 }
 
-.intro {
-    color: #D8CDE5;
-    line-height: 1.7;
+.card {
+    background: #30164A;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #51316c;
+}
+
+h3 {
+    margin-top: 0;
+    color: #e5c7ff;
 }
 
 .summary {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 18px;
-    margin: 28px 0;
-}
-
-.summary-card {
-    background: #3B2058;
-    border: 1px solid #654580;
-    padding: 25px;
-    border-radius: 14px;
-}
-
-.summary-card p {
-    color: #D8CDE5;
-    font-size: 14px;
-}
-
-.summary-card h2 {
-    color: #E7DBFF;
-    overflow-wrap: anywhere;
-}
-
-.section-title {
-    color: #C8A8FF;
-    margin-top: 35px;
-}
-
-.earning-item {
-    background: #3B2058;
-    border: 1px solid #654580;
-    padding: 20px;
-    border-radius: 12px;
-    margin-bottom: 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
     gap: 15px;
 }
 
-.earning-item p {
-    color: #D8CDE5;
-    font-size: 13px;
+.summary .card {
+    margin-bottom: 0;
 }
 
-.earning-amount {
-    color: #E7DBFF;
-    font-size: 19px;
+.amount {
+    font-size: 25px;
     font-weight: bold;
+    margin-top: 12px;
+    color: #ffffff;
+    overflow-wrap: anywhere;
+}
+
+input, select {
+    width: 100%;
+    padding: 13px;
+    border-radius: 7px;
+    border: 1px solid #72518b;
+    background: #211038;
+    color: white;
+    margin: 8px 0 15px;
+    font-size: 15px;
+}
+
+button {
+    background: #9b59d0;
+    color: white;
+    border: none;
+    padding: 13px 18px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+button:hover {
+    background: #8142b5;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.message {
+    margin-top: 12px;
+    padding: 12px;
+    border-radius: 7px;
+    display: none;
+    overflow-wrap: anywhere;
+}
+
+.success {
+    display: block;
+    background: #174d36;
+    color: #b9f6d3;
+}
+
+.error {
+    display: block;
+    background: #5b202d;
+    color: #ffd0d7;
+}
+
+.info {
+    display: block;
+    background: #46315d;
+    color: #ead9ff;
+}
+
+.table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+}
+
+th, td {
+    padding: 13px;
+    border-bottom: 1px solid #56376e;
+    text-align: left;
+    font-size: 14px;
+}
+
+th {
+    color: #e5c7ff;
 }
 
 .status {
     display: inline-block;
-    padding: 6px 10px;
+    padding: 5px 9px;
     border-radius: 20px;
-    background: #53366D;
-    color: white;
+    background: #59406d;
     font-size: 12px;
     text-transform: capitalize;
 }
 
-.message {
-    background: #30164A;
-    border: 1px solid #654580;
-    border-radius: 12px;
-    padding: 24px;
-    color: #E7DBFF;
-    line-height: 1.7;
+.status.paid {
+    background: #17633e;
 }
 
-.back-link {
-    display: inline-block;
-    margin-top: 25px;
-    color: #C8A8FF;
-    text-decoration: none;
+.status.failed {
+    background: #742c3b;
 }
 
-footer {
-    text-align: center;
-    padding: 30px;
-    color: #BCA9D1;
+.status.pending {
+    background: #74521e;
+}
+
+.status.processing {
+    background: #344e83;
+}
+
+.muted {
+    color: #c5b4d4;
     font-size: 13px;
+    line-height: 1.6;
+}
+
+.empty {
+    color: #c5b4d4;
+    padding: 15px 0;
+}
+
+@media(max-width:600px) {
+    header h2 { font-size: 18px; }
+    .container { width: 92%; }
+    .amount { font-size: 22px; }
 }
 </style>
 </head>
@@ -139,211 +204,460 @@ footer {
 <body>
 
 <header>
-    <h2>Tutor Pearl</h2>
-    <a href="tutor-dashboard.html">← Back to Dashboard</a>
+    <h2>Tutor Pearl | My Earnings</h2>
+    <a href="tutor-dashboard.html">Back to Dashboard</a>
 </header>
 
-<main>
+<div class="container">
 
-<h1>My Earnings</h1>
-
-<p class="intro">
-    Track your lesson earnings and payment records.
-    All amounts are displayed in Nigerian Naira.
-</p>
-
-<div class="summary">
-
-    <div class="summary-card">
-        <p>Total Recorded Earnings</p>
-        <h2 id="totalEarnings">₦0.00</h2>
+    <div class="card">
+        <h3>Earnings Overview</h3>
+        <p class="muted">View your lesson earnings and manage your payout requests.</p>
+        <div id="pageMessage" class="message"></div>
     </div>
 
-    <div class="summary-card">
-        <p>Available Earnings</p>
-        <h2 id="availableEarnings">₦0.00</h2>
+    <div class="summary">
+        <div class="card">
+            <h3>Total Recorded Earnings</h3>
+            <div class="amount" id="totalEarnings">₦0.00</div>
+        </div>
+
+        <div class="card">
+            <h3>Available for Payout</h3>
+            <div class="amount" id="availableEarnings">₦0.00</div>
+        </div>
+
+        <div class="card">
+            <h3>Paid Earnings</h3>
+            <div class="amount" id="paidEarnings">₦0.00</div>
+        </div>
     </div>
 
-    <div class="summary-card">
-        <p>Paid Earnings</p>
-        <h2 id="paidEarnings">₦0.00</h2>
+    <div class="card" style="margin-top:20px;">
+        <h3>Request a Payout</h3>
+
+        <p class="muted">
+            Select one of your verified bank accounts. Your payout request
+            will be sent to the Tutor Pearl administration team for processing.
+        </p>
+
+        <label for="bankAccount">Verified Bank Account</label>
+        <select id="bankAccount">
+            <option value="">Loading verified accounts...</option>
+        </select>
+
+        <p class="muted" id="payoutAmount">
+            Available payout amount: ₦0.00
+        </p>
+
+        <button id="requestButton" disabled>
+            Request Payout
+        </button>
+
+        <div id="payoutMessage" class="message"></div>
+    </div>
+
+    <div class="card">
+        <h3>Earning History</h3>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Booking ID</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="earningsTable">
+                    <tr>
+                        <td colspan="4">Loading earnings...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Payout Request History</h3>
+        <p class="muted">
+            Track the progress of your payout requests and view transfer
+            references when available.
+        </p>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date Requested</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Transfer Reference</th>
+                    </tr>
+                </thead>
+                <tbody id="payoutTable">
+                    <tr>
+                        <td colspan="4">Loading payout requests...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
 </div>
 
-<h2 class="section-title">Earning History</h2>
+<script>
+const SUPABASE_URL = "https://chmdsvfmlscrbqomqifp.supabase.co";
+const SUPABASE_KEY = "sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ";
 
-<div id="earningsList">
-    <div class="message">Checking your login session...</div>
-</div>
-
-<a class="back-link" href="tutor-dashboard.html">
-    ← Return to Tutor Dashboard
-</a>
-
-</main>
-
-<footer>
-    © 2026 Tutor Pearl. Learn, Grow and Achieve.
-</footer>
-
-<script type="module">
-
-import { createClient } from
-    "https://esm.sh/@supabase/supabase-js@2";
-
-const supabase = createClient(
-    "https://chmdsvfmlscrbqomqifp.supabase.co",
-    "sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ"
+const supabase = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
 );
 
-const list = document.getElementById("earningsList");
+let currentUser = null;
+let earningsRecords = [];
+let payoutRequests = [];
+let verifiedAccounts = [];
+let withdrawableBalance = 0;
 
-function formatNaira(amount) {
-    return new Intl.NumberFormat("en-NG", {
-        style: "currency",
-        currency: "NGN"
-    }).format(Number(amount) || 0);
+const naira = new Intl.NumberFormat("en-NG", {
+    style: "currency",
+    currency: "NGN"
+});
+
+function money(amount) {
+    return naira.format(Number(amount) || 0);
 }
 
-async function loadEarnings() {
+function safe(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    })[char]);
+}
+
+function formatDate(value) {
+    if (!value) return "—";
+
+    const date = new Date(value);
+
+    if (isNaN(date.getTime())) return "—";
+
+    return date.toLocaleDateString("en-NG", {
+        day: "numeric",
+        month: "short",
+        year: "numeric"
+    });
+}
+
+function showMessage(elementId, message, type) {
+    const element = document.getElementById(elementId);
+    element.textContent = message;
+    element.className = "message " + type;
+}
+
+function clearMessage(elementId) {
+    const element = document.getElementById(elementId);
+    element.textContent = "";
+    element.className = "message";
+}
+
+async function loadPage() {
+    const pageMessage = document.getElementById("pageMessage");
 
     try {
+        const { data: authData, error: authError } =
+            await supabase.auth.getUser();
 
-        const { data, error } = await supabase.auth.getUser();
+        if (authError) throw authError;
 
-        if (error) {
-            throw error;
-        }
+        currentUser = authData.user;
 
-        if (!data.user) {
-            list.innerHTML = `
-                <div class="message">
-                    Your login session could not be found.
-                    <a href="tutor-login.html">Log in again</a>.
-                </div>
-            `;
+        if (!currentUser) {
+            window.location.href = "tutor-login.html";
             return;
         }
 
-        const user = data.user;
-
-        if (user.user_metadata?.account_type !== "tutor") {
-            list.innerHTML = `
-                <div class="message">
-                    This page is only available to tutor accounts.
-                    <a href="tutor-login.html">Go to tutor login</a>.
-                </div>
-            `;
+        if (currentUser.user_metadata?.account_type !== "tutor") {
+            showMessage(
+                "pageMessage",
+                "Access denied. This page is for tutors only.",
+                "error"
+            );
             return;
         }
 
-        list.innerHTML = `
-            <div class="message">Loading your earnings...</div>
-        `;
-
-        const { data: earnings, error: earningsError } =
-            await supabase
-                .from("tutor_earnings")
-                .select("id, amount, currency, status, created_at, booking_id")
-                .eq("tutor_id", user.id)
-                .order("created_at", { ascending: false });
-
-        if (earningsError) {
-            throw earningsError;
-        }
-
-        const records = earnings || [];
-
-        let total = 0;
-        let available = 0;
-        let paid = 0;
-
-        records.forEach(record => {
-
-            const amount = Number(record.amount) || 0;
-
-            total += amount;
-
-            if (String(record.status).toLowerCase() === "available") {
-                available += amount;
-            }
-
-            if (String(record.status).toLowerCase() === "paid") {
-                paid += amount;
-            }
-
-        });
-
-        document.getElementById("totalEarnings").textContent =
-            formatNaira(total);
-
-        document.getElementById("availableEarnings").textContent =
-            formatNaira(available);
-
-        document.getElementById("paidEarnings").textContent =
-            formatNaira(paid);
-
-        if (records.length === 0) {
-
-            list.innerHTML = `
-                <div class="message">
-                    <h3>No earnings recorded yet.</h3>
-                    <p>
-                        Your earnings will appear here after a lesson
-                        is completed and its payment is successfully recorded.
-                    </p>
-                    <p>You can return to your dashboard without logging out.</p>
-                </div>
-            `;
-
-            return;
-        }
-
-        list.innerHTML = records.map(record => {
-
-            const date = record.created_at
-                ? new Date(record.created_at).toLocaleDateString("en-NG", {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric"
-                })
-                : "Date unavailable";
-
-            const status = String(record.status || "unknown");
-
-            return `
-                <div class="earning-item">
-                    <div>
-                        <h3>Lesson earning</h3>
-                        <p>Date recorded: ${date}</p>
-                        <p>Status: <span class="status">${status}</span></p>
-                    </div>
-
-                    <div class="earning-amount">
-                        ${formatNaira(record.amount)}
-                    </div>
-                </div>
-            `;
-
-        }).join("");
+        await loadAllData();
 
     } catch (error) {
-
-        console.error("Tutor earnings error:", error);
-
-        list.innerHTML = `
-            <div class="message">
-                We couldn't load your earnings.
-                <p>${String(error.message || "Please try again.")}</p>
-                Your login session has not been deliberately cleared.
-            </div>
-        `;
+        showMessage(
+            "pageMessage",
+            error.message || "Unable to load your earnings.",
+            "error"
+        );
     }
 }
 
-loadEarnings();
+async function loadAllData() {
+    document.getElementById("requestButton").disabled = true;
 
+    const results = await Promise.all([
+        supabase
+            .from("tutor_earnings")
+            .select("id, amount, currency, status, created_at, booking_id")
+            .eq("tutor_id", currentUser.id)
+            .order("created_at", { ascending: false }),
+
+        supabase
+            .from("payout_accounts")
+            .select("id, bank_name, account_holder_name, account_number, currency, verification_status, is_default")
+            .eq("tutor_id", currentUser.id)
+            .eq("verification_status", "verified"),
+
+        supabase
+            .from("payout_requests")
+            .select("id, amount, currency, status, created_at, processed_at, provider_transfer_id, payout_account_id")
+            .eq("tutor_id", currentUser.id)
+            .order("created_at", { ascending: false })
+    ]);
+
+    const earningsResult = results[0];
+    const accountsResult = results[1];
+    const payoutsResult = results[2];
+
+    if (earningsResult.error) throw earningsResult.error;
+    if (accountsResult.error) throw accountsResult.error;
+    if (payoutsResult.error) throw payoutsResult.error;
+
+    earningsRecords = earningsResult.data || [];
+    verifiedAccounts = accountsResult.data || [];
+    payoutRequests = payoutsResult.data || [];
+
+    renderEarnings();
+    renderAccounts();
+    renderPayoutRequests();
+}
+
+function renderEarnings() {
+    const total = earningsRecords
+        .filter(item => item.currency === "NGN")
+        .reduce((sum, item) => sum + Number(item.amount || 0), 0);
+
+    const available = earningsRecords
+        .filter(item =>
+            item.currency === "NGN" &&
+            item.status === "available"
+        )
+        .reduce((sum, item) => sum + Number(item.amount || 0), 0);
+
+    const paid = earningsRecords
+        .filter(item =>
+            item.currency === "NGN" &&
+            item.status === "paid"
+        )
+        .reduce((sum, item) => sum + Number(item.amount || 0), 0);
+
+    const reserved = payoutRequests
+        .filter(item =>
+            item.currency === "NGN" &&
+            ["pending", "processing", "paid"].includes(item.status)
+        )
+        .reduce((sum, item) => sum + Number(item.amount || 0), 0);
+
+    withdrawableBalance = Math.max(0, available - reserved);
+
+    document.getElementById("totalEarnings").textContent = money(total);
+    document.getElementById("availableEarnings").textContent =
+        money(withdrawableBalance);
+    document.getElementById("paidEarnings").textContent = money(paid);
+
+    document.getElementById("payoutAmount").textContent =
+        "Available payout amount: " + money(withdrawableBalance);
+
+    const table = document.getElementById("earningsTable");
+
+    if (!earningsRecords.length) {
+        table.innerHTML = `
+            <tr>
+                <td colspan="4" class="empty">
+                    No earnings recorded yet. You can return to your dashboard without logging out.
+                </td>
+            </tr>`;
+        return;
+    }
+
+    table.innerHTML = earningsRecords.map(item => `
+        <tr>
+            <td>${safe(formatDate(item.created_at))}</td>
+            <td>${safe(item.booking_id || "—")}</td>
+            <td>${safe(money(item.amount))}</td>
+            <td>
+                <span class="status ${safe(item.status)}">
+                    ${safe(item.status)}
+                </span>
+            </td>
+        </tr>
+    `).join("");
+}
+
+function renderAccounts() {
+    const select = document.getElementById("bankAccount");
+    const button = document.getElementById("requestButton");
+
+    if (!verifiedAccounts.length) {
+        select.innerHTML = `<option value="">No verified bank account found</option>`;
+        button.disabled = true;
+
+        showMessage(
+            "payoutMessage",
+            "You need a verified bank account before you can request a payout. Add your bank account through your tutor profile settings and have it verified by an administrator.",
+            "info"
+        );
+        return;
+    }
+
+    select.innerHTML = `
+        <option value="">Select a verified bank account</option>
+        ${verifiedAccounts.map(account => {
+            const lastFour = account.account_number
+                ? String(account.account_number).slice(-4)
+                : "Not available";
+
+            const label = [
+                account.bank_name || "Bank account",
+                account.account_holder_name || "",
+                "Account ending " + lastFour
+            ].filter(Boolean).join(" — ");
+
+            return `
+                <option value="${safe(account.id)}">
+                    ${safe(label)}
+                </option>
+            `;
+        }).join("")}
+    `;
+
+    const defaultAccount = verifiedAccounts.find(item => item.is_default);
+
+    if (defaultAccount) {
+        select.value = defaultAccount.id;
+    }
+
+    updateRequestButton();
+}
+
+function renderPayoutRequests() {
+    const table = document.getElementById("payoutTable");
+
+    if (!payoutRequests.length) {
+        table.innerHTML = `
+            <tr>
+                <td colspan="4" class="empty">
+                    You have not submitted any payout requests yet.
+                </td>
+            </tr>`;
+        return;
+    }
+
+    table.innerHTML = payoutRequests.map(item => `
+        <tr>
+            <td>${safe(formatDate(item.created_at))}</td>
+            <td>${safe(money(item.amount))}</td>
+            <td>
+                <span class="status ${safe(item.status)}">
+                    ${safe(item.status)}
+                </span>
+            </td>
+            <td>${safe(item.provider_transfer_id || "Not available yet")}</td>
+        </tr>
+    `).join("");
+}
+
+function updateRequestButton() {
+    const selectedAccount = document.getElementById("bankAccount").value;
+
+    document.getElementById("requestButton").disabled =
+        !selectedAccount ||
+        withdrawableBalance <= 0 ||
+        !verifiedAccounts.length;
+}
+
+document.getElementById("bankAccount").addEventListener("change", () => {
+    clearMessage("payoutMessage");
+    updateRequestButton();
+});
+
+document.getElementById("requestButton").addEventListener("click", async () => {
+    const accountId = document.getElementById("bankAccount").value;
+    const button = document.getElementById("requestButton");
+
+    if (!accountId) {
+        showMessage(
+            "payoutMessage",
+            "Please select a verified bank account.",
+            "error"
+        );
+        return;
+    }
+
+    if (withdrawableBalance <= 0) {
+        showMessage(
+            "payoutMessage",
+            "You do not have an available balance to request.",
+            "error"
+        );
+        return;
+    }
+
+    const confirmed = window.confirm(
+        "You are requesting a payout of " +
+        money(withdrawableBalance) +
+        ". Do you want to continue?"
+    );
+
+    if (!confirmed) return;
+
+    button.disabled = true;
+    button.textContent = "Submitting...";
+
+    clearMessage("payoutMessage");
+
+    try {
+        const { data, error } = await supabase.rpc(
+            "tutor_request_payout",
+            {
+                p_payout_account_id: accountId
+            }
+        );
+
+        if (error) throw error;
+
+        showMessage(
+            "payoutMessage",
+            "Your payout request has been submitted successfully. You can track its status in your payout request history.",
+            "success"
+        );
+
+        await loadAllData();
+
+    } catch (error) {
+        showMessage(
+            "payoutMessage",
+            error.message || "Unable to submit your payout request. Please try again.",
+            "error"
+        );
+
+    } finally {
+        button.textContent = "Request Payout";
+        updateRequestButton();
+    }
+});
+
+loadPage();
 </script>
 
 </body>
