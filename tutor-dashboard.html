@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -124,6 +123,11 @@ main {
     background: #E7DBFF;
 }
 
+.card-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 .secondary-button {
     background: transparent;
     color: #E7DBFF;
@@ -140,6 +144,34 @@ main {
 
 .notification-card h3 {
     color: #C8A8FF;
+}
+
+/* Google Calendar card */
+
+.google-card {
+    border-color: #C8A8FF;
+}
+
+.google-status {
+    background: #30164A;
+    border: 1px solid #654580;
+    border-radius: 8px;
+    padding: 12px;
+    color: #E7DBFF;
+    font-size: 13px;
+    line-height: 1.6;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.google-status.connected {
+    border-color: #65C995;
+    color: #A8F0C7;
+}
+
+.google-status.error {
+    border-color: #B76B83;
+    color: #FFD5DF;
 }
 
 /* Student reviews */
@@ -320,6 +352,29 @@ footer {
     </a>
 </section>
 
+<section class="card google-card">
+    <h3>Google Calendar & Meet</h3>
+    <p>
+        Connect your Google Calendar to Tutor Pearl.
+        Generate Google Meet links for accepted and
+        successfully paid lessons.
+    </p>
+
+    <div id="googleCalendarStatus" class="google-status">
+        Checking Google Calendar connection...
+    </div>
+
+    <button class="card-button" id="connectGoogleBtn">
+        Connect Google Calendar
+    </button>
+
+    <button class="card-button secondary-button"
+            id="disconnectGoogleBtn"
+            style="display:none;">
+        Disconnect Google Calendar
+    </button>
+</section>
+
 <section class="card notification-card">
     <h3>🔔 Notifications</h3>
     <p>
@@ -398,6 +453,13 @@ const SUPABASE_KEY =
     "sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ";
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const GOOGLE_MEET_FUNCTION =
+    SUPABASE_URL + "/functions/v1/google-meet";
+
+/* ----------------------------------
+   STUDENT REVIEWS
+---------------------------------- */
 
 async function loadTutorReviews(tutorId) {
 
@@ -540,6 +602,191 @@ async function loadTutorReviews(tutorId) {
     }
 }
 
+/* ----------------------------------
+   GOOGLE CALENDAR CONNECTION
+---------------------------------- */
+
+const googleStatus =
+    document.getElementById("googleCalendarStatus");
+
+const connectGoogleBtn =
+    document.getElementById("connectGoogleBtn");
+
+const disconnectGoogleBtn =
+    document.getElementById("disconnectGoogleBtn");
+
+async function callGoogleMeet(action, method = "GET") {
+
+    const { data: sessionData, error: sessionError } =
+        await supabase.auth.getSession();
+
+    if (sessionError) throw sessionError;
+
+    const session = sessionData.session;
+
+    if (!session || !session.access_token) {
+        throw new Error("Your login session has expired. Please sign in again.");
+    }
+
+    const response = await fetch(
+        GOOGLE_MEET_FUNCTION + "?action=" + encodeURIComponent(action),
+        {
+            method: method,
+            headers: {
+                "apikey": SUPABASE_KEY,
+                "Authorization": "Bearer " + session.access_token,
+                "Content-Type": "application/json"
+            }
+        }
+    );
+
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok || result.success === false) {
+        throw new Error(
+            result.error || "Google Calendar request failed."
+        );
+    }
+
+    return result;
+}
+
+async function checkGoogleCalendarStatus() {
+
+    try {
+
+        googleStatus.className = "google-status";
+        googleStatus.textContent =
+            "Checking Google Calendar connection...";
+
+        const result = await callGoogleMeet("status");
+
+        if (result.connected) {
+
+            googleStatus.className = "google-status connected";
+
+            googleStatus.textContent =
+                "Google Calendar is connected successfully.";
+
+            connectGoogleBtn.style.display = "none";
+            disconnectGoogleBtn.style.display = "inline-block";
+
+        } else {
+
+            googleStatus.className = "google-status";
+
+            googleStatus.textContent =
+                "Google Calendar is not connected yet.";
+
+            connectGoogleBtn.style.display = "inline-block";
+            disconnectGoogleBtn.style.display = "none";
+        }
+
+    } catch (error) {
+
+        googleStatus.className = "google-status error";
+        googleStatus.textContent = error.message;
+
+        console.error("Google Calendar status error:", error);
+    }
+}
+
+connectGoogleBtn.addEventListener("click", async function() {
+
+    try {
+
+        connectGoogleBtn.disabled = true;
+        connectGoogleBtn.textContent = "Connecting...";
+
+        const result = await callGoogleMeet("connect", "POST");
+
+        if (!result.authorization_url) {
+            throw new Error(
+                "Google authorization link was not returned."
+            );
+        }
+
+        window.location.assign(result.authorization_url);
+
+    } catch (error) {
+
+        alert(error.message);
+
+        connectGoogleBtn.disabled = false;
+        connectGoogleBtn.textContent = "Connect Google Calendar";
+    }
+
+});
+
+disconnectGoogleBtn.addEventListener("click", async function() {
+
+    const confirmed = confirm(
+        "Are you sure you want to disconnect Google Calendar?"
+    );
+
+    if (!confirmed) return;
+
+    try {
+
+        disconnectGoogleBtn.disabled = true;
+        disconnectGoogleBtn.textContent = "Disconnecting...";
+
+        await callGoogleMeet("disconnect", "POST");
+
+        alert("Google Calendar disconnected successfully.");
+
+        await checkGoogleCalendarStatus();
+
+    } catch (error) {
+
+        alert(error.message);
+
+    } finally {
+
+        disconnectGoogleBtn.disabled = false;
+        disconnectGoogleBtn.textContent = "Disconnect Google Calendar";
+    }
+
+});
+
+/* ----------------------------------
+   GOOGLE OAUTH RETURN MESSAGE
+---------------------------------- */
+
+function handleGoogleCalendarReturn() {
+
+    const params = new URLSearchParams(window.location.search);
+    const googleResult = params.get("google_calendar");
+
+    if (googleResult === "connected") {
+
+        googleStatus.className = "google-status connected";
+
+        googleStatus.textContent =
+            "Google Calendar authorization completed. Checking connection...";
+
+    } else if (googleResult === "error") {
+
+        googleStatus.className = "google-status error";
+
+        googleStatus.textContent =
+            "Google Calendar connection failed. Please try connecting again.";
+
+    }
+
+    if (googleResult) {
+
+        const cleanUrl =
+            window.location.origin + window.location.pathname;
+
+        window.history.replaceState({}, document.title, cleanUrl);
+    }
+}
+
+/* ----------------------------------
+   DASHBOARD AUTHENTICATION
+---------------------------------- */
+
 async function loadDashboard() {
 
     const notice = document.getElementById("notice");
@@ -594,6 +841,10 @@ async function loadDashboard() {
 
         await loadTutorReviews(user.id);
 
+        handleGoogleCalendarReturn();
+
+        await checkGoogleCalendarStatus();
+
     } catch (error) {
 
         notice.textContent =
@@ -605,8 +856,14 @@ async function loadDashboard() {
                 Your dashboard could not load the review information.
             </div>
         `;
+
+        console.error("Dashboard loading error:", error);
     }
 }
+
+/* ----------------------------------
+   LOG OUT
+---------------------------------- */
 
 document.getElementById("logoutBtn").addEventListener(
     "click",
@@ -622,6 +879,10 @@ document.getElementById("logoutBtn").addEventListener(
         window.location.href = "tutor-login.html";
     }
 );
+
+/* ----------------------------------
+   START DASHBOARD
+---------------------------------- */
 
 loadDashboard();
 
