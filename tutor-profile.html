@@ -1,8 +1,12 @@
-<!DOCTYPE html><html lang="en">
+
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tutor Pearl | Manage My Profile</title><style>
+<title>Tutor Pearl | Manage My Profile</title>
+
+<style>
 * {
   box-sizing: border-box;
 }
@@ -126,7 +130,8 @@ button:disabled {
   margin-top: 8px;
 }
 
-#message {
+#message,
+#bankMessage {
   padding: 12px;
   border-radius: 8px;
   margin-top: 18px;
@@ -162,161 +167,271 @@ hr {
 [hidden] {
   display: none !important;
 }
-</style></head><body><header>
+</style>
+</head>
+
+<body>
+
+<header>
   <h1>Tutor Pearl</h1>
   <a href="tutor-dashboard.html">← Back to Dashboard</a>
-</header><main class="container">  <section class="card">
-    <h2>My Tutor Profile</h2><p>
-  Keep your profile updated so students and parents can
-  learn more about you and your teaching services.
-</p>
+</header>
 
-<p>
-  Application status:
-  <span id="approvalStatus" class="status">Loading...</span>
-</p>
+<main class="container">
 
-<p id="message" hidden></p>
+  <!-- PROFILE STATUS -->
+  <section class="card">
+    <h2>My Tutor Profile</h2>
 
-  </section>  <section class="card"><h2>Profile Photograph</h2>
+    <p>
+      Keep your profile updated so students and parents can
+      learn more about you and your teaching services.
+    </p>
 
-<p>Upload a clear photograph so students can recognise you.</p>
+    <p>
+      Application status:
+      <span id="approvalStatus" class="status">Loading...</span>
+    </p>
 
-<img
-  id="photoPreview"
-  class="preview"
-  src=""
-  alt="Tutor profile photograph"
-  hidden
->
+    <p id="message" hidden></p>
+  </section>
 
-<label for="photoInput">Choose Profile Photograph</label>
+  <!-- PROFILE PHOTOGRAPH -->
+  <section class="card">
+    <h2>Profile Photograph</h2>
 
-<input
-  type="file"
-  id="photoInput"
-  accept="image/jpeg,image/png,image/webp"
->
+    <p>Upload a clear photograph so students can recognise you.</p>
 
-<small class="help">
-  Accepted formats: JPG, PNG and WebP.
-  Maximum file size: 5 MB.
-</small>
+    <img
+      id="photoPreview"
+      class="preview"
+      src=""
+      alt="Tutor profile photograph"
+      hidden
+    >
 
-<button type="button" id="uploadPhotoBtn">
-  Upload Profile Photograph
-</button>
+    <label for="photoInput">Choose Profile Photograph</label>
 
-  </section>  <section class="card"><h2>Introduction Video</h2>
+    <input
+      type="file"
+      id="photoInput"
+      accept="image/jpeg,image/png,image/webp"
+    >
 
-<p>
-  Introduce yourself to students and parents.
-  Talk about your teaching experience, subjects
-  and teaching style.
-</p>
+    <small class="help">
+      Accepted formats: JPG, PNG and WebP.
+      Maximum file size: 5 MB.
+    </small>
 
-<video
-  id="videoPreview"
-  class="preview"
-  controls
-  playsinline
-  preload="metadata"
-  hidden
-></video>
+    <button type="button" id="uploadPhotoBtn">
+      Upload Profile Photograph
+    </button>
+  </section>
 
-<label for="videoInput">Choose Introduction Video</label>
+  <!-- INTRODUCTION VIDEO -->
+  <section class="card">
+    <h2>Introduction Video</h2>
 
-<input
-  type="file"
-  id="videoInput"
-  accept="video/mp4,video/webm,video/quicktime"
->
+    <p>
+      Introduce yourself to students and parents.
+      Talk about your teaching experience, subjects
+      and teaching style.
+    </p>
 
-<small class="help">
-  Accepted formats: MP4, WebM and MOV.
-  Maximum file size: 50 MB.
-</small>
+    <video
+      id="videoPreview"
+      class="preview"
+      controls
+      playsinline
+      preload="metadata"
+      hidden
+    ></video>
 
-<button type="button" id="uploadVideoBtn">
-  Upload Introduction Video
-</button>
+    <label for="videoInput">Choose Introduction Video</label>
 
-  </section>  <section class="card"><h2>Edit Professional Information</h2>
+    <input
+      type="file"
+      id="videoInput"
+      accept="video/mp4,video/webm,video/quicktime"
+    >
 
-<form id="profileForm" hidden>
+    <small class="help">
+      Accepted formats: MP4, WebM and MOV.
+      Maximum file size: 50 MB.
+    </small>
 
-  <label for="fullName">Full Name</label>
-  <input type="text" id="fullName" required>
+    <button type="button" id="uploadVideoBtn">
+      Upload Introduction Video
+    </button>
+  </section>
 
-  <label for="headline">Professional Headline</label>
-  <input
-    type="text"
-    id="headline"
-    placeholder="Example: Experienced English Tutor"
-    required
-  >
+  <!-- PROFESSIONAL INFORMATION -->
+  <section class="card">
+    <h2>Edit Professional Information</h2>
 
-  <label for="subjects">Subjects You Teach</label>
-  <textarea
-    id="subjects"
-    placeholder="Example: English, Mathematics, Igbo"
-    required
-  ></textarea>
+    <form id="profileForm" hidden>
 
-  <small class="help">
-    Separate multiple subjects with commas.
-  </small>
+      <label for="fullName">Full Name</label>
+      <input type="text" id="fullName" required>
 
-  <label for="hourlyRate">Hourly Rate</label>
-  <input
-    type="number"
-    id="hourlyRate"
-    min="0"
-    step="0.01"
-    required
-  >
+      <label for="headline">Professional Headline</label>
+      <input
+        type="text"
+        id="headline"
+        placeholder="Example: Experienced English Tutor"
+        required
+      >
 
-  <label for="currency">Currency</label>
-  <select id="currency" required>
-    <option value="USD">USD - US Dollar</option>
-    <option value="NGN">NGN - Nigerian Naira</option>
-  </select>
+      <label for="subjects">Subjects You Teach</label>
+      <textarea
+        id="subjects"
+        placeholder="Example: English, Mathematics, Igbo"
+        required
+      ></textarea>
 
-  <label for="languages">Teaching Languages</label>
-  <input
-    type="text"
-    id="languages"
-    placeholder="Example: English, Igbo"
-    required
-  >
+      <small class="help">
+        Separate multiple subjects with commas.
+      </small>
 
-  <label for="qualifications">Qualifications</label>
-  <textarea
-    id="qualifications"
-    placeholder="Your educational qualifications and certifications"
-  ></textarea>
+      <label for="hourlyRate">Hourly Rate</label>
+      <input
+        type="number"
+        id="hourlyRate"
+        min="0"
+        step="0.01"
+        required
+      >
 
-  <label for="biography">Professional Biography</label>
-  <textarea
-    id="biography"
-    placeholder="Tell students about yourself and your teaching experience."
-    required
-  ></textarea>
+      <label for="currency">Currency</label>
+      <select id="currency" required>
+        <option value="USD">USD - US Dollar</option>
+        <option value="NGN">NGN - Nigerian Naira</option>
+      </select>
 
-  <button type="submit" id="saveButton">
-    Save Profile Changes
-  </button>
+      <label for="languages">Teaching Languages</label>
+      <input
+        type="text"
+        id="languages"
+        placeholder="Example: English, Igbo"
+        required
+      >
 
-</form>
+      <label for="qualifications">Qualifications</label>
+      <textarea
+        id="qualifications"
+        placeholder="Your educational qualifications and certifications"
+      ></textarea>
 
-<p id="loadingMessage">Loading your profile...</p>
+      <label for="biography">Professional Biography</label>
+      <textarea
+        id="biography"
+        placeholder="Tell students about yourself and your teaching experience."
+        required
+      ></textarea>
 
-  </section>  <section class="card">
+      <button type="submit" id="saveButton">
+        Save Profile Changes
+      </button>
+
+    </form>
+
+    <p id="loadingMessage">Loading your profile...</p>
+  </section>
+
+  <!-- BANK DETAILS -->
+  <section class="card">
+    <h2>Bank Details for Tutor Payouts</h2>
+
+    <p>
+      Add your Nigerian bank account details so Tutor Pearl
+      can process your eligible lesson earnings.
+    </p>
+
+    <p>
+      Verification status:
+      <span id="bankVerificationStatus" class="status">
+        Loading...
+      </span>
+    </p>
+
+    <form id="bankForm" hidden>
+
+      <label for="accountHolderName">
+        Account Holder Name
+      </label>
+
+      <input
+        type="text"
+        id="accountHolderName"
+        autocomplete="name"
+        required
+      >
+
+      <label for="bankName">Bank Name</label>
+
+      <input
+        type="text"
+        id="bankName"
+        placeholder="Example: Access Bank"
+        required
+      >
+
+      <label for="accountNumber">Account Number</label>
+
+      <input
+        type="text"
+        id="accountNumber"
+        inputmode="numeric"
+        maxlength="10"
+        pattern="[0-9]{10}"
+        placeholder="Enter your 10-digit account number"
+        required
+      >
+
+      <label for="bankCode">Bank Code</label>
+
+      <input
+        type="text"
+        id="bankCode"
+        placeholder="Enter your bank code"
+        required
+      >
+
+      <button type="submit" id="saveBankButton">
+        Save Bank Details
+      </button>
+
+    </form>
+
+    <p id="bankLoadingMessage" class="help">
+      Loading bank details...
+    </p>
+
+    <p id="bankMessage" hidden></p>
+
+    <small class="help">
+      Your bank details will be used for tutor payouts.
+      Saving changes will set your verification status
+      to pending until it is reviewed.
+    </small>
+  </section>
+
+  <!-- ACCOUNT -->
+  <section class="card">
     <h2>Account</h2>
-    <button type="button" class="secondary" id="logoutBtn">
+
+    <button
+      type="button"
+      class="secondary"
+      id="logoutBtn"
+    >
       Log Out
     </button>
-  </section></main><script type="module">
+  </section>
+
+</main>
+
+<script type="module">
 
 import { createClient } from
   "https://esm.sh/@supabase/supabase-js@2";
@@ -325,12 +440,16 @@ const SUPABASE_URL =
   "https://chmdsvfmlscrbqomqifp.supabase.co";
 
 const SUPABASE_KEY =
-  "sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ";
+  "sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3Sv6QnPZ";
 
 const supabase = createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
+
+// ======================================
+// PAGE ELEMENTS
+// ======================================
 
 const profileForm =
   document.getElementById("profileForm");
@@ -365,15 +484,45 @@ const uploadVideoBtn =
 const saveButton =
   document.getElementById("saveButton");
 
+const bankForm =
+  document.getElementById("bankForm");
+
+const bankMessage =
+  document.getElementById("bankMessage");
+
+const bankLoadingMessage =
+  document.getElementById("bankLoadingMessage");
+
+const bankVerificationStatus =
+  document.getElementById("bankVerificationStatus");
+
+const saveBankButton =
+  document.getElementById("saveBankButton");
+
 let currentUser = null;
 let currentPhotoUrl = "";
 let currentVideoUrl = "";
+let existingPayoutAccount = null;
+
+// ======================================
+// MESSAGE HELPERS
+// ======================================
 
 function showMessage(text, type = "success") {
   message.textContent = text;
   message.className = type;
   message.hidden = false;
 }
+
+function showBankMessage(text, type = "success") {
+  bankMessage.textContent = text;
+  bankMessage.className = type;
+  bankMessage.hidden = false;
+}
+
+// ======================================
+// TUTOR ACCESS
+// ======================================
 
 async function checkTutorAccess() {
 
@@ -400,6 +549,10 @@ async function checkTutorAccess() {
   return true;
 }
 
+// ======================================
+// LOAD TUTOR PROFILE
+// ======================================
+
 async function loadProfile() {
 
   loadingMessage.textContent = "Loading your profile...";
@@ -411,6 +564,7 @@ async function loadProfile() {
     .single();
 
   if (error) {
+
     loadingMessage.textContent =
       "Unable to load your profile: " + error.message;
 
@@ -468,6 +622,10 @@ async function loadProfile() {
   profileForm.hidden = false;
   loadingMessage.hidden = true;
 }
+
+// ======================================
+// SAVE PROFESSIONAL INFORMATION
+// ======================================
 
 profileForm.addEventListener("submit", async (event) => {
 
@@ -550,6 +708,10 @@ profileForm.addEventListener("submit", async (event) => {
   saveButton.textContent = "Save Profile Changes";
 
 });
+
+// ======================================
+// PROFILE PHOTOGRAPH
+// ======================================
 
 photoInput.addEventListener("change", () => {
 
@@ -682,6 +844,10 @@ uploadPhotoBtn.addEventListener("click", async () => {
   uploadPhotoBtn.textContent = "Upload Profile Photograph";
 
 });
+
+// ======================================
+// INTRODUCTION VIDEO
+// ======================================
 
 videoInput.addEventListener("change", () => {
 
@@ -841,6 +1007,179 @@ uploadVideoBtn.addEventListener("click", async () => {
 
 });
 
+// ======================================
+// LOAD EXISTING BANK DETAILS
+// ======================================
+
+async function loadBankDetails() {
+
+  bankLoadingMessage.textContent =
+    "Loading bank details...";
+
+  const { data, error } = await supabase
+    .from("payout_accounts")
+    .select(`
+      id,
+      account_holder_name,
+      bank_name,
+      bank_code,
+      account_number,
+      verification_status
+    `)
+    .eq("tutor_id", currentUser.id)
+    .maybeSingle();
+
+  if (error) {
+
+    bankLoadingMessage.textContent =
+      "Unable to load bank details: " + error.message;
+
+    bankVerificationStatus.textContent =
+      "Unavailable";
+
+    return;
+  }
+
+  if (!data) {
+
+    existingPayoutAccount = null;
+
+    bankLoadingMessage.textContent =
+      "No payout account record exists yet. Bank details cannot be saved until the payout account is initialized.";
+
+    bankVerificationStatus.textContent =
+      "Not set up";
+
+    return;
+  }
+
+  existingPayoutAccount = data;
+
+  document.getElementById("accountHolderName").value =
+    data.account_holder_name || "";
+
+  document.getElementById("bankName").value =
+    data.bank_name || "";
+
+  document.getElementById("accountNumber").value =
+    data.account_number || "";
+
+  document.getElementById("bankCode").value =
+    data.bank_code || "";
+
+  bankVerificationStatus.textContent =
+    data.verification_status || "pending";
+
+  bankForm.hidden = false;
+  bankLoadingMessage.hidden = true;
+}
+
+// ======================================
+// SAVE BANK DETAILS
+// ======================================
+
+bankForm.addEventListener("submit", async (event) => {
+
+  event.preventDefault();
+
+  if (!existingPayoutAccount) {
+
+    showBankMessage(
+      "A payout account has not been initialized for your tutor account. Please contact support.",
+      "error"
+    );
+
+    return;
+  }
+
+  const accountHolderName =
+    document.getElementById("accountHolderName").value.trim();
+
+  const bankName =
+    document.getElementById("bankName").value.trim();
+
+  const accountNumber =
+    document.getElementById("accountNumber").value.trim();
+
+  const bankCode =
+    document.getElementById("bankCode").value.trim();
+
+  if (
+    !accountHolderName ||
+    !bankName ||
+    !/^[0-9]{10}$/.test(accountNumber) ||
+    !bankCode
+  ) {
+
+    showBankMessage(
+      "Enter the account holder name, bank name, valid 10-digit account number and bank code.",
+      "error"
+    );
+
+    return;
+  }
+
+  saveBankButton.disabled = true;
+  saveBankButton.textContent = "Saving...";
+
+  const { data, error } = await supabase
+    .from("payout_accounts")
+    .update({
+      account_holder_name: accountHolderName,
+      bank_name: bankName,
+      account_number: accountNumber,
+      bank_code: bankCode,
+      verification_status: "pending"
+    })
+    .eq("id", existingPayoutAccount.id)
+    .eq("tutor_id", currentUser.id)
+    .select(`
+      id,
+      account_holder_name,
+      bank_name,
+      bank_code,
+      account_number,
+      verification_status
+    `)
+    .maybeSingle();
+
+  if (error) {
+
+    showBankMessage(
+      "Unable to save bank details: " + error.message,
+      "error"
+    );
+
+  } else if (!data) {
+
+    showBankMessage(
+      "No bank account was updated. Check your account permissions or contact support.",
+      "error"
+    );
+
+  } else {
+
+    existingPayoutAccount = data;
+
+    bankVerificationStatus.textContent =
+      data.verification_status;
+
+    showBankMessage(
+      "Your bank details have been saved. Verification is pending.",
+      "success"
+    );
+
+  }
+
+  saveBankButton.disabled = false;
+  saveBankButton.textContent = "Save Bank Details";
+
+});
+
+// ======================================
+// LOG OUT
+// ======================================
+
 document.getElementById("logoutBtn")
 .addEventListener("click", async () => {
 
@@ -850,6 +1189,10 @@ document.getElementById("logoutBtn")
 
 });
 
+// ======================================
+// INITIALIZE PAGE
+// ======================================
+
 async function initializePage() {
 
   const hasAccess = await checkTutorAccess();
@@ -857,10 +1200,13 @@ async function initializePage() {
   if (!hasAccess) return;
 
   await loadProfile();
+  await loadBankDetails();
 
 }
 
 initializePage();
 
-</script></body>
+</script>
+
+</body>
 </html>
