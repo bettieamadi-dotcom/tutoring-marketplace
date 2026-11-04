@@ -1,15 +1,14 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Earnings | Tutor Pearl</title>
-
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<title>Tutor Pearl | My Earnings</title>
 
 <style>
-* { box-sizing: border-box; }
+* {
+    box-sizing: border-box;
+}
 
 body {
     margin: 0;
@@ -30,7 +29,7 @@ header {
 
 header h2 {
     margin: 0;
-    font-size: 21px;
+    font-size: 20px;
 }
 
 header a {
@@ -74,7 +73,6 @@ h3 {
     font-size: 25px;
     font-weight: bold;
     margin-top: 12px;
-    color: #ffffff;
     overflow-wrap: anywhere;
 }
 
@@ -114,6 +112,7 @@ button:disabled {
     padding: 12px;
     border-radius: 7px;
     display: none;
+    line-height: 1.5;
     overflow-wrap: anywhere;
 }
 
@@ -194,9 +193,17 @@ th {
 }
 
 @media(max-width:600px) {
-    header h2 { font-size: 18px; }
-    .container { width: 92%; }
-    .amount { font-size: 22px; }
+    header h2 {
+        font-size: 18px;
+    }
+
+    .container {
+        width: 92%;
+    }
+
+    .amount {
+        font-size: 22px;
+    }
 }
 </style>
 </head>
@@ -212,11 +219,14 @@ th {
 
     <div class="card">
         <h3>Earnings Overview</h3>
-        <p class="muted">View your lesson earnings and manage your payout requests.</p>
+        <p class="muted">
+            View your lesson earnings and manage your payout requests.
+        </p>
         <div id="pageMessage" class="message"></div>
     </div>
 
     <div class="summary">
+
         <div class="card">
             <h3>Total Recorded Earnings</h3>
             <div class="amount" id="totalEarnings">₦0.00</div>
@@ -231,18 +241,20 @@ th {
             <h3>Paid Earnings</h3>
             <div class="amount" id="paidEarnings">₦0.00</div>
         </div>
+
     </div>
 
     <div class="card" style="margin-top:20px;">
         <h3>Request a Payout</h3>
 
         <p class="muted">
-            Select one of your verified bank accounts. Your payout request
-            will be sent to the Tutor Pearl administration team for processing.
+            Select a verified bank account. Your request will be sent
+            to the Tutor Pearl administration team for processing.
         </p>
 
         <label for="bankAccount">Verified Bank Account</label>
-        <select id="bankAccount">
+
+        <select id="bankAccount" disabled>
             <option value="">Loading verified accounts...</option>
         </select>
 
@@ -259,6 +271,7 @@ th {
 
     <div class="card">
         <h3>Earning History</h3>
+
         <div class="table-wrap">
             <table>
                 <thead>
@@ -269,6 +282,7 @@ th {
                         <th>Status</th>
                     </tr>
                 </thead>
+
                 <tbody id="earningsTable">
                     <tr>
                         <td colspan="4">Loading earnings...</td>
@@ -280,9 +294,10 @@ th {
 
     <div class="card">
         <h3>Payout Request History</h3>
+
         <p class="muted">
-            Track the progress of your payout requests and view transfer
-            references when available.
+            Track your payout requests and see transfer references
+            when the administrator processes your payment.
         </p>
 
         <div class="table-wrap">
@@ -295,6 +310,7 @@ th {
                         <th>Transfer Reference</th>
                     </tr>
                 </thead>
+
                 <tbody id="payoutTable">
                     <tr>
                         <td colspan="4">Loading payout requests...</td>
@@ -306,11 +322,15 @@ th {
 
 </div>
 
-<script>
+<script type="module">
+
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
 const SUPABASE_URL = "https://chmdsvfmlscrbqomqifp.supabase.co";
+
 const SUPABASE_KEY = "sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ";
 
-const supabase = window.supabase.createClient(
+const supabase = createClient(
     SUPABASE_URL,
     SUPABASE_KEY
 );
@@ -354,28 +374,51 @@ function formatDate(value) {
     });
 }
 
-function showMessage(elementId, message, type) {
-    const element = document.getElementById(elementId);
+function showMessage(id, message, type) {
+    const element = document.getElementById(id);
+
     element.textContent = message;
     element.className = "message " + type;
 }
 
-function clearMessage(elementId) {
-    const element = document.getElementById(elementId);
+function clearMessage(id) {
+    const element = document.getElementById(id);
+
     element.textContent = "";
     element.className = "message";
 }
 
+function showLoadingError(message) {
+    document.getElementById("earningsTable").innerHTML =
+        `<tr><td colspan="4" class="empty">${safe(message)}</td></tr>`;
+
+    document.getElementById("payoutTable").innerHTML =
+        `<tr><td colspan="4" class="empty">${safe(message)}</td></tr>`;
+
+    document.getElementById("bankAccount").innerHTML =
+        `<option value="">Unable to load bank accounts</option>`;
+
+    document.getElementById("bankAccount").disabled = true;
+
+    document.getElementById("requestButton").disabled = true;
+
+    showMessage("pageMessage", message, "error");
+}
+
 async function loadPage() {
-    const pageMessage = document.getElementById("pageMessage");
-
     try {
-        const { data: authData, error: authError } =
-            await supabase.auth.getUser();
 
-        if (authError) throw authError;
+        showMessage(
+            "pageMessage",
+            "Connecting to your Tutor Pearl account...",
+            "info"
+        );
 
-        currentUser = authData.user;
+        const { data, error } = await supabase.auth.getUser();
+
+        if (error) throw error;
+
+        currentUser = data.user;
 
         if (!currentUser) {
             window.location.href = "tutor-login.html";
@@ -383,55 +426,63 @@ async function loadPage() {
         }
 
         if (currentUser.user_metadata?.account_type !== "tutor") {
-            showMessage(
-                "pageMessage",
-                "Access denied. This page is for tutors only.",
-                "error"
+            showLoadingError(
+                "Access denied. This page is for tutor accounts only."
             );
             return;
         }
 
         await loadAllData();
 
+        clearMessage("pageMessage");
+
     } catch (error) {
-        showMessage(
-            "pageMessage",
-            error.message || "Unable to load your earnings.",
-            "error"
+
+        console.error("My Earnings loading error:", error);
+
+        showLoadingError(
+            error.message || "Unable to load your account information."
         );
     }
 }
 
 async function loadAllData() {
-    document.getElementById("requestButton").disabled = true;
 
-    const results = await Promise.all([
-        supabase
-            .from("tutor_earnings")
-            .select("id, amount, currency, status, created_at, booking_id")
-            .eq("tutor_id", currentUser.id)
-            .order("created_at", { ascending: false }),
+    const earningsResult = await supabase
+        .from("tutor_earnings")
+        .select("id, amount, currency, status, created_at, booking_id")
+        .eq("tutor_id", currentUser.id)
+        .order("created_at", { ascending: false });
 
-        supabase
-            .from("payout_accounts")
-            .select("id, bank_name, account_holder_name, account_number, currency, verification_status, is_default")
-            .eq("tutor_id", currentUser.id)
-            .eq("verification_status", "verified"),
+    if (earningsResult.error) {
+        throw new Error(
+            "Earnings could not load: " + earningsResult.error.message
+        );
+    }
 
-        supabase
-            .from("payout_requests")
-            .select("id, amount, currency, status, created_at, processed_at, provider_transfer_id, payout_account_id")
-            .eq("tutor_id", currentUser.id)
-            .order("created_at", { ascending: false })
-    ]);
+    const accountsResult = await supabase
+        .from("payout_accounts")
+        .select("id, bank_name, account_holder_name, account_number, currency, verification_status, is_default")
+        .eq("tutor_id", currentUser.id)
+        .eq("verification_status", "verified");
 
-    const earningsResult = results[0];
-    const accountsResult = results[1];
-    const payoutsResult = results[2];
+    if (accountsResult.error) {
+        throw new Error(
+            "Bank accounts could not load: " + accountsResult.error.message
+        );
+    }
 
-    if (earningsResult.error) throw earningsResult.error;
-    if (accountsResult.error) throw accountsResult.error;
-    if (payoutsResult.error) throw payoutsResult.error;
+    const payoutsResult = await supabase
+        .from("payout_requests")
+        .select("id, amount, currency, status, created_at, processed_at, provider_transfer_id, payout_account_id")
+        .eq("tutor_id", currentUser.id)
+        .order("created_at", { ascending: false });
+
+    if (payoutsResult.error) {
+        throw new Error(
+            "Payout requests could not load: " + payoutsResult.error.message
+        );
+    }
 
     earningsRecords = earningsResult.data || [];
     verifiedAccounts = accountsResult.data || [];
@@ -443,6 +494,7 @@ async function loadAllData() {
 }
 
 function renderEarnings() {
+
     const total = earningsRecords
         .filter(item => item.currency === "NGN")
         .reduce((sum, item) => sum + Number(item.amount || 0), 0);
@@ -471,8 +523,10 @@ function renderEarnings() {
     withdrawableBalance = Math.max(0, available - reserved);
 
     document.getElementById("totalEarnings").textContent = money(total);
+
     document.getElementById("availableEarnings").textContent =
         money(withdrawableBalance);
+
     document.getElementById("paidEarnings").textContent = money(paid);
 
     document.getElementById("payoutAmount").textContent =
@@ -481,12 +535,17 @@ function renderEarnings() {
     const table = document.getElementById("earningsTable");
 
     if (!earningsRecords.length) {
+
         table.innerHTML = `
             <tr>
                 <td colspan="4" class="empty">
-                    No earnings recorded yet. You can return to your dashboard without logging out.
+                    No earnings recorded yet.
+                    Your earnings will appear here after a lesson is
+                    completed and its payment is successfully recorded.
                 </td>
-            </tr>`;
+            </tr>
+        `;
+
         return;
     }
 
@@ -505,24 +564,36 @@ function renderEarnings() {
 }
 
 function renderAccounts() {
+
     const select = document.getElementById("bankAccount");
     const button = document.getElementById("requestButton");
 
+    select.disabled = false;
+
     if (!verifiedAccounts.length) {
-        select.innerHTML = `<option value="">No verified bank account found</option>`;
+
+        select.innerHTML =
+            `<option value="">No verified bank account found</option>`;
+
+        select.disabled = true;
         button.disabled = true;
 
         showMessage(
             "payoutMessage",
-            "You need a verified bank account before you can request a payout. Add your bank account through your tutor profile settings and have it verified by an administrator.",
+            "You need a verified bank account before requesting a payout. Add your bank account through your tutor profile settings and have it verified by an administrator.",
             "info"
         );
+
         return;
     }
 
+    clearMessage("payoutMessage");
+
     select.innerHTML = `
         <option value="">Select a verified bank account</option>
+
         ${verifiedAccounts.map(account => {
+
             const lastFour = account.account_number
                 ? String(account.account_number).slice(-4)
                 : "Not available";
@@ -538,10 +609,13 @@ function renderAccounts() {
                     ${safe(label)}
                 </option>
             `;
+
         }).join("")}
     `;
 
-    const defaultAccount = verifiedAccounts.find(item => item.is_default);
+    const defaultAccount = verifiedAccounts.find(
+        account => account.is_default
+    );
 
     if (defaultAccount) {
         select.value = defaultAccount.id;
@@ -551,15 +625,19 @@ function renderAccounts() {
 }
 
 function renderPayoutRequests() {
+
     const table = document.getElementById("payoutTable");
 
     if (!payoutRequests.length) {
+
         table.innerHTML = `
             <tr>
                 <td colspan="4" class="empty">
                     You have not submitted any payout requests yet.
                 </td>
-            </tr>`;
+            </tr>
+        `;
+
         return;
     }
 
@@ -578,86 +656,101 @@ function renderPayoutRequests() {
 }
 
 function updateRequestButton() {
-    const selectedAccount = document.getElementById("bankAccount").value;
+
+    const accountId = document.getElementById("bankAccount").value;
 
     document.getElementById("requestButton").disabled =
-        !selectedAccount ||
+        !accountId ||
         withdrawableBalance <= 0 ||
-        !verifiedAccounts.length;
+        verifiedAccounts.length === 0;
 }
 
-document.getElementById("bankAccount").addEventListener("change", () => {
-    clearMessage("payoutMessage");
-    updateRequestButton();
-});
-
-document.getElementById("requestButton").addEventListener("click", async () => {
-    const accountId = document.getElementById("bankAccount").value;
-    const button = document.getElementById("requestButton");
-
-    if (!accountId) {
-        showMessage(
-            "payoutMessage",
-            "Please select a verified bank account.",
-            "error"
-        );
-        return;
-    }
-
-    if (withdrawableBalance <= 0) {
-        showMessage(
-            "payoutMessage",
-            "You do not have an available balance to request.",
-            "error"
-        );
-        return;
-    }
-
-    const confirmed = window.confirm(
-        "You are requesting a payout of " +
-        money(withdrawableBalance) +
-        ". Do you want to continue?"
-    );
-
-    if (!confirmed) return;
-
-    button.disabled = true;
-    button.textContent = "Submitting...";
-
-    clearMessage("payoutMessage");
-
-    try {
-        const { data, error } = await supabase.rpc(
-            "tutor_request_payout",
-            {
-                p_payout_account_id: accountId
-            }
-        );
-
-        if (error) throw error;
-
-        showMessage(
-            "payoutMessage",
-            "Your payout request has been submitted successfully. You can track its status in your payout request history.",
-            "success"
-        );
-
-        await loadAllData();
-
-    } catch (error) {
-        showMessage(
-            "payoutMessage",
-            error.message || "Unable to submit your payout request. Please try again.",
-            "error"
-        );
-
-    } finally {
-        button.textContent = "Request Payout";
+document.getElementById("bankAccount").addEventListener(
+    "change",
+    () => {
+        clearMessage("payoutMessage");
         updateRequestButton();
     }
-});
+);
+
+document.getElementById("requestButton").addEventListener(
+    "click",
+    async () => {
+
+        const accountId = document.getElementById("bankAccount").value;
+
+        const button = document.getElementById("requestButton");
+
+        if (!accountId) {
+            showMessage(
+                "payoutMessage",
+                "Please select a verified bank account.",
+                "error"
+            );
+            return;
+        }
+
+        if (withdrawableBalance <= 0) {
+            showMessage(
+                "payoutMessage",
+                "You do not have an available balance to request.",
+                "error"
+            );
+            return;
+        }
+
+        const confirmed = window.confirm(
+            "You are requesting a payout of " +
+            money(withdrawableBalance) +
+            ". Do you want to continue?"
+        );
+
+        if (!confirmed) return;
+
+        button.disabled = true;
+        button.textContent = "Submitting...";
+
+        clearMessage("payoutMessage");
+
+        try {
+
+            const { data, error } = await supabase.rpc(
+                "tutor_request_payout",
+                {
+                    p_payout_account_id: accountId
+                }
+            );
+
+            if (error) throw error;
+
+            showMessage(
+                "payoutMessage",
+                "Your payout request has been submitted successfully. You can track its progress in your payout request history.",
+                "success"
+            );
+
+            await loadAllData();
+
+        } catch (error) {
+
+            console.error("Payout request error:", error);
+
+            showMessage(
+                "payoutMessage",
+                error.message || "Unable to submit your payout request.",
+                "error"
+            );
+
+        } finally {
+
+            button.textContent = "Request Payout";
+            updateRequestButton();
+        }
+    }
+);
 
 loadPage();
+
 </script>
 
 </body>
