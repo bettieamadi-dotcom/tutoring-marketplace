@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Discover tutors, learn new skills, master subjects, and prepare for important exams with our online tutoring marketplace.">
+  <meta name="description" content="Discover tutors, learn new skills, master subjects, and prepare for important exams with Tutor Pearl.">
   <meta name="theme-color" content="#211038">
 
   <title>Tutor Pearl | Find Your Perfect Tutor</title>
@@ -63,6 +63,13 @@
       padding-top: 14px;
     }
 
+    .registration-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
     @media (max-width: 768px) {
       .login-menu {
         display: block;
@@ -79,6 +86,10 @@
 
       .login-trigger {
         width: fit-content;
+      }
+
+      .registration-links {
+        flex-direction: column;
       }
     }
   </style>
@@ -110,6 +121,8 @@
 
       <a href="#how-it-works">How It Works</a>
 
+      <a href="student-signup.html">Start as a Student</a>
+
       <a href="tutor-signup.html">Teach With Us</a>
 
       <details class="login-menu">
@@ -136,7 +149,7 @@
 
       </details>
 
-      <a href="#subjects" class="nav-button">
+      <a href="student-signup.html" class="nav-button">
         Get Started
       </a>
 
@@ -167,12 +180,12 @@
 
         <div class="hero-actions">
 
-          <a href="#subjects" class="button button-primary">
-            Explore Subjects
+          <a href="student-signup.html" class="button button-primary">
+            Register as a Student
           </a>
 
           <a href="tutor-signup.html" class="button button-secondary">
-            Become a Tutor
+            Register as a Tutor
           </a>
 
         </div>
@@ -300,8 +313,8 @@
           tutors, compare profiles, and choose lessons that suit them.
         </p>
 
-        <a href="tutor-signup.html" class="button button-primary">
-          Interested in Teaching?
+        <a href="student-signup.html" class="button button-primary">
+          Register as a Student
         </a>
 
       </div>
@@ -374,7 +387,7 @@
         <h2>Turn Your Knowledge Into Opportunity</h2>
 
         <p>
-          Are you passionate about teaching? We're working towards
+          Are you passionate about teaching? We're building
           a platform where educators can share their expertise,
           connect with learners, and grow their teaching careers.
         </p>
