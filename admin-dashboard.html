@@ -1,9 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tutor Pearl | Admin Dashboard</title>
+
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#211038;color:white}
@@ -41,35 +43,51 @@ video{width:100%;max-height:350px;background:#10091b;border-radius:10px}
 .status{display:inline-block;background:#65458A;padding:5px 9px;border-radius:20px;font-size:12px}
 .action-row{margin-top:12px;padding-top:10px;border-top:1px solid #65458A}
 .small{font-size:13px}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:15px 0}
+.summary-card{background:#211038;border:1px solid #65458A;border-radius:10px;padding:16px;min-width:0}
+.summary-card h3{font-size:15px;margin-top:0}
+.summary-value{font-size:23px;font-weight:bold;color:#C8A8FF;overflow-wrap:anywhere}
+.summary-card p{line-height:1.5;margin:7px 0}
+.section-note{line-height:1.6}
+.reference{overflow-wrap:anywhere;word-break:break-word}
 </style>
 </head>
+
 <body>
+
 <header>
 <h1>Tutor Pearl Admin</h1>
 <button id="logoutBtn" class="logout" hidden>Log Out</button>
 </header>
+
 <main>
+
 <section id="loginPanel" class="panel">
 <h2>Administrator Login</h2>
 <p class="muted">Sign in with your administrator account.</p>
+
 <form id="loginForm">
 <input type="email" id="email" placeholder="Administrator email" autocomplete="username" required>
 <input type="password" id="password" placeholder="Password" autocomplete="current-password" required>
 <button class="primary" type="submit">Sign In</button>
 </form>
+
 <p id="loginMessage" class="message"></p>
 </section>
 
 <section id="dashboardPanel" hidden>
+
 <div class="panel">
 <h2>Welcome, Administrator</h2>
-<p class="muted">Manage tutor applications, payout accounts, tutor earnings and manual payout requests.</p>
+<p class="muted">Manage tutor applications, payments, Tutor Pearl commissions, tutor earnings, bank accounts and payout requests.</p>
 <button id="refreshAllBtn" class="primary">Refresh All Sections</button>
 <p id="dashboardMessage" class="message"></p>
 </div>
 
 <nav class="tabs" aria-label="Admin sections">
 <button type="button" class="active" data-tab="applicationsPanel">Tutor Applications</button>
+<button type="button" data-tab="paymentsPanel">Payment Overview</button>
+<button type="button" data-tab="transactionsPanel">Transactions</button>
 <button type="button" data-tab="accountsPanel">Bank Verification</button>
 <button type="button" data-tab="earningsPanel">Tutor Earnings</button>
 <button type="button" data-tab="payoutsPanel">Payout Requests</button>
@@ -78,6 +96,26 @@ video{width:100%;max-height:350px;background:#10091b;border-radius:10px}
 <section id="applicationsPanel" class="panel tab-panel">
 <h2>Pending Tutor Applications</h2>
 <div id="tutorList"></div>
+</section>
+
+<section id="paymentsPanel" class="panel tab-panel" hidden>
+<h2>Payment Overview</h2>
+<p class="muted section-note">
+Financial totals are retrieved from verified payment records. Successful payments are used to calculate Tutor Pearl's 15% commission and tutors' 85% share. Figures are separated by currency.
+</p>
+<button id="refreshPaymentsBtn" class="primary">Refresh Payment Overview</button>
+<p id="paymentsMessage" class="message"></p>
+<div id="paymentSummary"></div>
+</section>
+
+<section id="transactionsPanel" class="panel tab-panel" hidden>
+<h2>Payment Transactions</h2>
+<p class="muted section-note">
+Review individual student payments, tutors, subjects, payment references and transaction statuses.
+</p>
+<button id="refreshTransactionsBtn" class="primary">Refresh Transactions</button>
+<p id="transactionsMessage" class="message"></p>
+<div id="transactionsList"></div>
 </section>
 
 <section id="accountsPanel" class="panel tab-panel" hidden>
@@ -103,6 +141,7 @@ video{width:100%;max-height:350px;background:#10091b;border-radius:10px}
 <p id="payoutsMessage" class="message"></p>
 <div id="payoutsList"></div>
 </section>
+
 </section>
 </main>
 
@@ -122,6 +161,7 @@ const supabase=createClient(
 );
 
 const $=id=>document.getElementById(id);
+
 const loginPanel=$("loginPanel");
 const dashboardPanel=$("dashboardPanel");
 const loginForm=$("loginForm");
@@ -136,7 +176,8 @@ let pendingTutors=[];
 
 function addText(parent,tag,text,className=""){
   const el=document.createElement(tag);
-  el.textContent=(text===null || text===undefined || text==="")?"Not provided":String(text);
+  el.textContent=(text===null || text===undefined || text==="")
+    ?"Not provided":String(text);
   if(className)el.className=className;
   parent.appendChild(el);
   return el;
@@ -153,37 +194,69 @@ function setMessage(id,message){
   $(id).textContent=message;
 }
 
+function formatDate(value){
+  if(!value)return "Not provided";
+  const date=new Date(value);
+  return Number.isNaN(date.getTime())
+    ?String(value):date.toLocaleString();
+}
+
+function formatMoney(currency,amount){
+  const value=Number(amount||0);
+  return (currency||"")+" "+value.toLocaleString(undefined,{
+    minimumFractionDigits:2,
+    maximumFractionDigits:2
+  });
+}
+
 async function showDashboard(){
   const {data:access,error}=await supabase.rpc("admin_check_access");
+
   if(error || access!==true){
     await supabase.auth.signOut();
     showLogin("This account does not have administrator access.");
     return;
   }
+
   loginPanel.hidden=true;
   dashboardPanel.hidden=false;
   logoutBtn.hidden=false;
-  await loadTutors();
-  await Promise.all([loadAccounts(),loadEarnings(),loadPayouts()]);
+
+  await Promise.all([
+    loadTutors(),
+    loadPayments(),
+    loadTransactions(),
+    loadAccounts(),
+    loadEarnings(),
+    loadPayouts()
+  ]);
 }
+
+/* TUTOR APPLICATIONS */
 
 async function loadTutors(){
   tutorList.replaceChildren();
   dashboardMessage.textContent="Loading tutor applications...";
+
   const {data,error}=await supabase.rpc("admin_get_pending_tutors");
+
   if(error){
     dashboardMessage.textContent="Could not load applications: "+error.message;
     return;
   }
+
   pendingTutors=data||[];
   dashboardMessage.textContent=pendingTutors.length+" pending application(s) found.";
+
   if(!pendingTutors.length){
     addText(tutorList,"p","There are currently no pending tutor applications.","muted");
     return;
   }
+
   pendingTutors.forEach(tutor=>{
     const card=document.createElement("article");
     card.className="tutor-card";
+
     if(tutor.profile_photo_url){
       const photo=document.createElement("img");
       photo.src=tutor.profile_photo_url;
@@ -191,22 +264,27 @@ async function loadTutors(){
       photo.onerror=()=>photo.remove();
       card.appendChild(photo);
     }
+
     addText(card,"h3",tutor.full_name);
     addText(card,"p",tutor.headline);
     addText(card,"p","Subjects: "+(tutor.subjects||"Not provided"));
     addText(card,"p","Hourly rate: "+(tutor.currency||"USD")+" "+(tutor.hourly_rate??"Not provided"));
+
     const view=document.createElement("button");
     view.className="review";
     view.textContent="View Full Application";
     view.addEventListener("click",()=>openApplication(tutor));
+
     const approve=document.createElement("button");
     approve.className="approve";
     approve.textContent="Approve";
     approve.addEventListener("click",()=>reviewTutor(tutor.id,"approved",approve,reject));
+
     const reject=document.createElement("button");
     reject.className="reject";
     reject.textContent="Reject";
     reject.addEventListener("click",()=>reviewTutor(tutor.id,"rejected",approve,reject));
+
     card.append(view,approve,reject);
     tutorList.appendChild(card);
   });
@@ -214,7 +292,9 @@ async function loadTutors(){
 
 function openApplication(tutor){
   details.replaceChildren();
+
   addText(details,"h2","Tutor Application Review");
+
   if(tutor.profile_photo_url){
     const photo=document.createElement("img");
     photo.src=tutor.profile_photo_url;
@@ -222,6 +302,7 @@ function openApplication(tutor){
     photo.className="profile-photo";
     details.appendChild(photo);
   }
+
   const fields=[
     ["Full name",tutor.full_name],
     ["Professional headline",tutor.headline],
@@ -232,17 +313,26 @@ function openApplication(tutor){
     ["Biography",tutor.biography],
     ["Application status",tutor.approval_status]
   ];
+
   fields.forEach(([label,value])=>{
     const row=document.createElement("div");
     row.className="detail";
+
     const strong=document.createElement("strong");
     strong.textContent=label;
     row.appendChild(strong);
+
     addText(row,"p",value);
     details.appendChild(row);
   });
+
   addText(details,"h3","Introduction Video");
-  const videoUrl=tutor.intro_video_url||tutor.introduction_video_url||tutor.video_intro_url||tutor.profile_video_url||"";
+
+  const videoUrl=tutor.intro_video_url||
+    tutor.introduction_video_url||
+    tutor.video_intro_url||
+    tutor.profile_video_url||"";
+
   if(videoUrl){
     const video=document.createElement("video");
     video.controls=true;
@@ -252,136 +342,325 @@ function openApplication(tutor){
   }else{
     addText(details,"p","No introduction video has been submitted or connected yet.","muted");
   }
+
   modal.hidden=false;
 }
 
 async function reviewTutor(id,decision,approveBtn,rejectBtn){
   const action=decision==="approved"?"approve":"reject";
+
   if(!confirm("Are you sure you want to "+action+" this tutor?"))return;
+
   approveBtn.disabled=true;
   rejectBtn.disabled=true;
-  const {data,error}=await supabase.rpc("admin_review_tutor",{tutor_id:id,decision});
+
+  const {data,error}=await supabase.rpc("admin_review_tutor",{
+    tutor_id:id,
+    decision
+  });
+
   if(error){
     alert("Review failed: "+error.message);
     approveBtn.disabled=false;
     rejectBtn.disabled=false;
     return;
   }
+
   if(data!==true){
     alert("This application was already reviewed or could not be found.");
   }else{
     alert("Tutor application "+decision+".");
     modal.hidden=true;
   }
+
   await loadTutors();
 }
+
+/* PAYMENT OVERVIEW */
+
+async function loadPayments(){
+  const summary=$("paymentSummary");
+  summary.replaceChildren();
+
+  setMessage("paymentsMessage","Loading payment overview...");
+
+  const {data,error}=await supabase.rpc("admin_get_payment_summary");
+
+  if(error){
+    setMessage("paymentsMessage","Could not load payment overview: "+error.message);
+    return;
+  }
+
+  const rows=data||[];
+
+  if(!rows.length){
+    setMessage("paymentsMessage","No payment records are currently available.");
+    addText(summary,"p","Payment totals will appear here when payment records exist.","muted");
+    return;
+  }
+
+  setMessage("paymentsMessage",rows.length+" currency summary record(s) found.");
+
+  rows.forEach(row=>{
+    const section=document.createElement("div");
+    section.className="data-card";
+
+    addText(section,"h3","Financial Summary — "+row.currency);
+
+    const grid=document.createElement("div");
+    grid.className="summary-grid";
+
+    function metric(title,value,description=""){
+      const card=document.createElement("div");
+      card.className="summary-card";
+
+      addText(card,"h3",title);
+      addText(card,"div",value,"summary-value");
+
+      if(description)addText(card,"p",description,"muted");
+
+      grid.appendChild(card);
+    }
+
+    metric(
+      "Successful Payments",
+      formatMoney(row.currency,row.successful_amount),
+      Number(row.successful_count||0)+" successful transaction(s)"
+    );
+
+    metric(
+      "Tutor Pearl Commission (15%)",
+      formatMoney(row.currency,row.platform_commission),
+      "Commission recorded on successful payments"
+    );
+
+    metric(
+      "Tutor Earnings (85%)",
+      formatMoney(row.currency,row.tutor_earnings),
+      "Tutor share recorded on successful payments"
+    );
+
+    metric(
+      "Pending Payments",
+      formatMoney(row.currency,row.pending_amount),
+      Number(row.pending_count||0)+" pending transaction(s)"
+    );
+
+    metric(
+      "Failed Payments",
+      formatMoney(row.currency,row.failed_amount),
+      Number(row.failed_count||0)+" failed transaction(s)"
+    );
+
+    metric(
+      "Refunded / Partially Refunded Payments",
+      formatMoney(row.currency,row.refunded_amount),
+      Number(row.refunded_count||0)+" refunded or partially refunded transaction(s). This is the associated payment amount, not necessarily the amount refunded."
+    );
+
+    section.appendChild(grid);
+    summary.appendChild(section);
+  });
+}
+
+/* PAYMENT TRANSACTIONS */
+
+async function loadTransactions(){
+  const list=$("transactionsList");
+  list.replaceChildren();
+
+  setMessage("transactionsMessage","Loading payment transactions...");
+
+  const {data,error}=await supabase.rpc("admin_get_payment_transactions");
+
+  if(error){
+    setMessage("transactionsMessage","Could not load transactions: "+error.message);
+    return;
+  }
+
+  const rows=data||[];
+
+  setMessage("transactionsMessage",rows.length+" payment transaction(s) found.");
+
+  if(!rows.length){
+    addText(list,"p","No payment transactions have been recorded yet.","muted");
+    return;
+  }
+
+  rows.forEach(payment=>{
+    const card=document.createElement("article");
+    card.className="data-card";
+
+    addText(card,"h3",payment.student_name+" → "+payment.tutor_name);
+
+    addText(card,"p","Subject: "+payment.subject);
+    addText(card,"p","Payment amount: "+formatMoney(payment.currency,payment.amount));
+    addText(card,"p","Payment status: "+payment.payment_status,"status");
+
+    addText(card,"p","Tutor Pearl commission: "+formatMoney(payment.currency,payment.platform_commission));
+    addText(card,"p","Tutor share: "+formatMoney(payment.currency,payment.tutor_amount));
+    addText(card,"p","Processing fee: "+formatMoney(payment.currency,payment.processing_fee));
+
+    addText(card,"p","Payment provider: "+payment.provider);
+
+    const reference=payment.transaction_reference||"No transaction reference recorded";
+    addText(card,"p","Transaction reference: "+reference,"small reference");
+
+    addText(card,"p","Payment date: "+formatDate(payment.payment_date),"small muted");
+    addText(card,"p","Payment ID: "+payment.payment_id,"small muted");
+    addText(card,"p","Booking ID: "+payment.booking_id,"small muted");
+
+    list.appendChild(card);
+  });
+}
+
+/* BANK ACCOUNTS */
 
 async function loadAccounts(){
   const list=$("accountsList");
   list.replaceChildren();
+
   setMessage("accountsMessage","Loading bank accounts...");
+
   const {data,error}=await supabase.rpc("admin_get_payout_accounts");
+
   if(error){
     setMessage("accountsMessage","Could not load bank accounts: "+error.message);
     return;
   }
+
   const rows=data||[];
+
   setMessage("accountsMessage",rows.length+" bank account record(s) found.");
+
   if(!rows.length){
     addText(list,"p","No tutor bank accounts have been submitted yet.","muted");
     return;
   }
+
   rows.forEach(account=>{
     const card=document.createElement("article");
     card.className="data-card";
+
     addText(card,"h3",account.tutor_name);
     addText(card,"p","Account holder: "+account.account_holder_name);
     addText(card,"p","Bank: "+account.bank_name);
     addText(card,"p","Account number: "+account.account_number);
     addText(card,"p","Bank code: "+account.bank_code);
     addText(card,"p","Verification status: "+account.verification_status,"status");
+
     if(account.verification_status==="pending"){
       const verify=document.createElement("button");
       verify.className="approve";
       verify.textContent="Verify Account";
       verify.addEventListener("click",()=>reviewAccount(account.account_id,"verified",verify,reject));
+
       const reject=document.createElement("button");
       reject.className="reject";
       reject.textContent="Reject Account";
       reject.addEventListener("click",()=>reviewAccount(account.account_id,"rejected",verify,reject));
+
       card.append(verify,reject);
     }
+
     list.appendChild(card);
   });
 }
 
 async function reviewAccount(accountId,decision,verifyBtn,rejectBtn){
   const verb=decision==="verified"?"verify":"reject";
+
   if(!confirm("Are you sure you want to "+verb+" this bank account?"))return;
+
   verifyBtn.disabled=true;
   rejectBtn.disabled=true;
+
   const {data,error}=await supabase.rpc("admin_review_payout_account",{
     payout_account_id:accountId,
     decision
   });
+
   if(error){
     alert("Bank account review failed: "+error.message);
     verifyBtn.disabled=false;
     rejectBtn.disabled=false;
     return;
   }
+
   if(data!==true)alert("The bank account could not be updated.");
   else alert("Bank account "+decision+".");
+
   await Promise.all([loadAccounts(),loadPayouts()]);
 }
+
+/* TUTOR EARNINGS */
 
 async function loadEarnings(){
   const list=$("earningsList");
   list.replaceChildren();
+
   setMessage("earningsMessage","Loading tutor earnings...");
+
   const {data,error}=await supabase.rpc("admin_get_tutor_earnings");
+
   if(error){
     setMessage("earningsMessage","Could not load tutor earnings: "+error.message);
     return;
   }
+
   const rows=data||[];
+
   setMessage("earningsMessage",rows.length+" earning record(s) found.");
+
   if(!rows.length){
     addText(list,"p","No tutor earnings have been recorded yet.","muted");
     return;
   }
+
   rows.forEach(earning=>{
     const card=document.createElement("article");
     card.className="data-card";
+
     addText(card,"h3",earning.tutor_name);
-    addText(card,"p","Amount: "+earning.currency+" "+earning.amount);
+    addText(card,"p","Amount: "+formatMoney(earning.currency,earning.amount));
     addText(card,"p","Status: "+earning.status,"status");
     addText(card,"p","Created: "+formatDate(earning.created_at),"small muted");
     addText(card,"p","Earning ID: "+earning.earning_id,"small muted");
+
     list.appendChild(card);
   });
 }
 
+/* PAYOUT REQUESTS */
+
 async function loadPayouts(){
   const list=$("payoutsList");
   list.replaceChildren();
+
   setMessage("payoutsMessage","Loading payout requests...");
+
   const {data,error}=await supabase.rpc("admin_get_payout_requests");
+
   if(error){
     setMessage("payoutsMessage","Could not load payout requests: "+error.message);
     return;
   }
+
   const rows=data||[];
+
   setMessage("payoutsMessage",rows.length+" payout request(s) found.");
+
   if(!rows.length){
     addText(list,"p","There are currently no payout requests.","muted");
     return;
   }
+
   rows.forEach(request=>{
     const card=document.createElement("article");
     card.className="data-card";
+
     addText(card,"h3",request.tutor_name);
-    addText(card,"p","Requested amount: "+request.currency+" "+request.amount);
+    addText(card,"p","Requested amount: "+formatMoney(request.currency,request.amount));
     addText(card,"p","Status: "+request.status,"status");
     addText(card,"p","Bank: "+request.bank_name);
     addText(card,"p","Account holder: "+request.account_holder_name);
@@ -392,28 +671,35 @@ async function loadPayouts(){
     if(request.status==="pending"||request.status==="processing"){
       const actionBox=document.createElement("div");
       actionBox.className="action-row";
+
       const label=document.createElement("label");
       label.textContent="Payout action";
       actionBox.appendChild(label);
+
       const select=document.createElement("select");
       select.innerHTML='<option value="processing">Mark as processing</option><option value="paid">Mark as paid</option><option value="failed">Mark as failed</option>';
       actionBox.appendChild(select);
+
       const reference=document.createElement("input");
       reference.type="text";
       reference.placeholder="Bank transfer reference (required when marking paid)";
       reference.autocomplete="off";
       actionBox.appendChild(reference);
+
       const save=document.createElement("button");
       save.className="primary";
       save.textContent="Save Payout Update";
       save.addEventListener("click",()=>processPayout(request.request_id,select.value,reference.value,save));
       actionBox.appendChild(save);
+
       const note=document.createElement("p");
       note.className="muted small";
       note.textContent="Only mark as paid after you have completed the bank transfer. The transfer reference is required.";
       actionBox.appendChild(note);
+
       card.appendChild(actionBox);
     }
+
     list.appendChild(card);
   });
 }
@@ -423,54 +709,64 @@ async function processPayout(requestId,decision,reference,button){
     alert("Enter the bank transfer reference before marking this payout as paid.");
     return;
   }
+
   const promptText=decision==="paid"
     ?"Confirm that you have already transferred the money to the tutor and want to mark this request as paid?"
     :"Are you sure you want to mark this payout as "+decision+"?";
+
   if(!confirm(promptText))return;
+
   button.disabled=true;
+
   const {data,error}=await supabase.rpc("admin_process_payout",{
     request_id:requestId,
     decision,
     transfer_reference:reference.trim()||null
   });
+
   if(error){
     alert("Payout update failed: "+error.message);
     button.disabled=false;
     return;
   }
+
   if(data!==true){
     alert("The payout request was not updated. It may already have been processed.");
   }else{
     alert("Payout request updated to "+decision+".");
   }
+
   await loadPayouts();
 }
 
-function formatDate(value){
-  if(!value)return "Not provided";
-  const date=new Date(value);
-  return Number.isNaN(date.getTime())?String(value):date.toLocaleString();
-}
+/* NAVIGATION AND AUTHENTICATION */
 
 document.querySelectorAll("[data-tab]").forEach(button=>{
   button.addEventListener("click",()=>{
     document.querySelectorAll("[data-tab]").forEach(tab=>tab.classList.remove("active"));
     button.classList.add("active");
-    document.querySelectorAll(".tab-panel").forEach(panel=>panel.hidden=panel.id!==button.dataset.tab);
+
+    document.querySelectorAll(".tab-panel").forEach(panel=>{
+      panel.hidden=panel.id!==button.dataset.tab;
+    });
   });
 });
 
 loginForm.addEventListener("submit",async event=>{
   event.preventDefault();
+
   loginMessage.textContent="Signing in...";
+
   const {error}=await supabase.auth.signInWithPassword({
     email:$("email").value.trim(),
     password:$("password").value
   });
+
   if(error){
     loginMessage.textContent=error.message;
     return;
   }
+
   await showDashboard();
 });
 
@@ -480,17 +776,33 @@ logoutBtn.addEventListener("click",async()=>{
 });
 
 $("refreshAllBtn").addEventListener("click",async()=>{
-  await Promise.all([loadTutors(),loadAccounts(),loadEarnings(),loadPayouts()]);
+  await Promise.all([
+    loadTutors(),
+    loadPayments(),
+    loadTransactions(),
+    loadAccounts(),
+    loadEarnings(),
+    loadPayouts()
+  ]);
 });
+
+$("refreshPaymentsBtn").addEventListener("click",loadPayments);
+$("refreshTransactionsBtn").addEventListener("click",loadTransactions);
 $("refreshAccountsBtn").addEventListener("click",loadAccounts);
 $("refreshEarningsBtn").addEventListener("click",loadEarnings);
 $("refreshPayoutsBtn").addEventListener("click",loadPayouts);
+
 $("closeModal").addEventListener("click",()=>modal.hidden=true);
-modal.addEventListener("click",event=>{if(event.target===modal)modal.hidden=true;});
+
+modal.addEventListener("click",event=>{
+  if(event.target===modal)modal.hidden=true;
+});
 
 const {data:{session}}=await supabase.auth.getSession();
+
 if(session)await showDashboard();
 else showLogin();
+
 </script>
 </body>
 </html>
