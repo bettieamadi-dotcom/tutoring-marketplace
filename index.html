@@ -7,21 +7,133 @@
   <meta name="description" content="Discover tutors, learn new skills, master subjects, and prepare for important exams with Tutor Pearl.">
   <meta name="theme-color" content="#211038">
 
-  <title>Tutor Pearl | Find Your Perfect Tutor</title>
+  <title>Tutor Pearl | Learn, Grow and Succeed</title>
 
-  <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
   <style>
+    :root {
+      --purple: #211038;
+      --purple-deep: #18092b;
+      --purple-light: #321650;
+      --purple-card: #2b1744;
+      --purple-bright: #8d5bd1;
+      --lavender: #cbb5ed;
+      --lavender-light: #eee7f8;
+      --white: #ffffff;
+      --muted: #d1c4df;
+      --border: rgba(255,255,255,.13);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 100px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--purple);
+      color: var(--white);
+      line-height: 1.7;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button,
+    a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .container {
+      width: min(1160px, 90%);
+      margin: auto;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(24,9,43,.97);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(15px);
+    }
+
+    .header-inner {
+      min-height: 82px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 25px;
+    }
+
+    .logo {
+      color: white;
+      font-family: 'Manrope', sans-serif;
+      font-size: 27px;
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      white-space: nowrap;
+    }
+
+    .logo span {
+      color: var(--lavender);
+    }
+
+    .navigation {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+    }
+
+    .navigation > a,
+    .login-trigger {
+      color: #eee7f8;
+      font-size: 13px;
+      font-weight: 700;
+      transition: .2s;
+    }
+
+    .navigation > a:hover,
+    .login-trigger:hover {
+      color: var(--lavender);
+    }
+
+    .nav-button {
+      background: #ffffff;
+      color: var(--purple) !important;
+      padding: 11px 17px;
+      border-radius: 8px;
+      font-weight: 800 !important;
+    }
+
+    .nav-button:hover {
+      background: var(--lavender-light);
+    }
+
     .login-menu {
       position: relative;
-      display: inline-block;
     }
 
     .login-trigger {
       cursor: pointer;
       list-style: none;
-      user-select: none;
     }
 
     .login-trigger::-webkit-details-marker {
@@ -30,66 +142,804 @@
 
     .login-dropdown {
       position: absolute;
-      top: calc(100% + 10px);
+      top: calc(100% + 15px);
       right: 0;
-      z-index: 1000;
-      min-width: 190px;
+      width: 190px;
       padding: 8px;
-      background: #ffffff;
-      border: 1px solid #e9e1f2;
-      border-radius: 12px;
-      box-shadow: 0 8px 24px rgba(33, 16, 56, 0.15);
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 12px 35px rgba(0,0,0,.25);
     }
 
     .login-dropdown a {
       display: block;
-      padding: 12px 14px;
-      color: #211038;
-      text-decoration: none;
+      padding: 11px 12px;
+      color: var(--purple);
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 7px;
+    }
+
+    .login-dropdown a:hover {
+      background: var(--lavender-light);
+    }
+
+    .admin-login-link {
+      border-top: 1px solid #e8dfef;
+      margin-top: 5px;
+      padding-top: 14px !important;
+    }
+
+    .menu-toggle {
+      display: none;
+      color: white;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-size: 23px;
+      cursor: pointer;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 105px 0 95px;
+      background:
+        radial-gradient(ellipse at 85% 15%, rgba(135,85,190,.22), transparent 38%),
+        linear-gradient(135deg, #211038, #291344 65%, #321650);
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      width: 390px;
+      height: 390px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 50%;
+      right: -100px;
+      top: -150px;
+    }
+
+    .hero-inner {
+      position: relative;
+      max-width: 850px;
+      margin: auto;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: #e4d6f5;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 30px;
+      padding: 9px 17px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 25px;
+    }
+
+    .hero-badge span {
+      color: var(--lavender);
+      font-size: 17px;
+    }
+
+    .hero h1 {
+      font-family: 'Manrope', sans-serif;
+      font-size: clamp(43px, 6vw, 72px);
+      line-height: 1.12;
+      letter-spacing: -2.8px;
+      margin-bottom: 23px;
+      font-weight: 800;
+    }
+
+    .hero h1 span {
+      display: block;
+      color: var(--lavender);
+    }
+
+    .hero-description {
+      max-width: 670px;
+      margin: 0 auto 32px;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .hero-actions {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 13px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 13px 21px;
       border-radius: 8px;
       font-size: 14px;
+      font-weight: 800;
+      transition: .2s;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+    }
+
+    .button-primary {
+      background: white;
+      color: var(--purple);
+    }
+
+    .button-primary:hover {
+      background: var(--lavender-light);
+    }
+
+    .button-secondary {
+      border-color: rgba(255,255,255,.45);
+      color: white;
+      background: transparent;
+    }
+
+    .button-secondary:hover {
+      background: rgba(255,255,255,.09);
+    }
+
+    .learning-strip {
+      padding: 26px 0;
+      background: #190a2c;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .learning-strip-inner {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 25px 55px;
+    }
+
+    .strip-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #e8def2;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .strip-item span {
+      color: var(--lavender);
+      font-size: 19px;
+    }
+
+    .section {
+      padding: 90px 0;
+    }
+
+    .section-heading {
+      max-width: 720px;
+      margin: 0 auto 45px;
+      text-align: center;
+    }
+
+    .eyebrow {
+      display: block;
+      color: var(--lavender);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .section-heading h2,
+    .about-copy h2,
+    .contact-copy h2 {
+      font-family: 'Manrope', sans-serif;
+      font-size: clamp(30px, 4vw, 43px);
+      line-height: 1.2;
+      letter-spacing: -1.3px;
+      margin-bottom: 15px;
+    }
+
+    .section-heading p {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .subjects-section {
+      background: var(--purple);
+    }
+
+    .subject-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .subject-card {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      text-align: left;
+      min-height: 190px;
+      padding: 25px;
+      background: var(--purple-card);
+      color: white;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      cursor: pointer;
+      transition: .25s;
+    }
+
+    .subject-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--lavender);
+      background: #392052;
+    }
+
+    .subject-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 47px;
+      height: 47px;
+      border-radius: 11px;
+      background: rgba(203,181,237,.13);
+      color: var(--lavender);
+      font-size: 23px;
+      margin-bottom: 18px;
+    }
+
+    .subject-name {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
+
+    .subject-description {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .search-panel {
+      max-width: 680px;
+      margin: 45px auto 0;
+      padding: 24px;
+      background: #2b1744;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+    }
+
+    .search-panel label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .search-row input {
+      width: 100%;
+      min-width: 0;
+      padding: 13px 15px;
+      border-radius: 8px;
+      border: 1px solid #6a5680;
+      background: #1d0e30;
+      color: white;
+      outline: none;
+    }
+
+    .search-row input:focus {
+      border-color: var(--lavender);
+    }
+
+    .search-row input::placeholder {
+      color: #b5a6c5;
+    }
+
+    .search-feedback,
+    .empty-state {
+      color: var(--lavender);
+      font-size: 13px;
+      margin-top: 10px;
+    }
+
+    .tutors-section {
+      background: #190a2c;
+    }
+
+    .tutor-placeholder {
+      max-width: 760px;
+      margin: auto;
+      text-align: center;
+      padding: 50px 30px;
+      background: var(--purple-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+    }
+
+    .placeholder-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 65px;
+      height: 65px;
+      border-radius: 16px;
+      background: rgba(203,181,237,.13);
+      color: var(--lavender);
+      font-size: 30px;
+      margin-bottom: 18px;
+    }
+
+    .tutor-placeholder h3 {
+      font-size: 23px;
+      margin-bottom: 12px;
+    }
+
+    .tutor-placeholder p {
+      max-width: 540px;
+      margin: 0 auto 23px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .how-section {
+      background: var(--purple);
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .step-card {
+      padding: 29px;
+      background: var(--purple-card);
+      border: 1px solid var(--border);
+      border-radius: 13px;
+    }
+
+    .step-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: #493064;
+      color: var(--lavender);
+      font-weight: 800;
+      font-size: 17px;
+      margin-bottom: 20px;
+    }
+
+    .step-card h3 {
+      font-size: 18px;
+      margin-bottom: 9px;
+    }
+
+    .step-card p {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .about-section {
+      background: #190a2c;
+    }
+
+    .about-intro {
+      max-width: 800px;
+      margin: auto;
+      text-align: center;
+    }
+
+    .about-intro p {
+      color: var(--muted);
+      font-size: 16px;
+      margin-top: 14px;
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 19px;
+      margin-top: 43px;
+    }
+
+    .about-card {
+      padding: 28px;
+      background: var(--purple-card);
+      border: 1px solid var(--border);
+      border-radius: 13px;
+    }
+
+    .about-card-icon {
+      font-size: 25px;
+      color: var(--lavender);
+      margin-bottom: 14px;
+    }
+
+    .about-card h3 {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    .about-card p {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .why-section {
+      background: var(--purple);
+    }
+
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .why-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      padding: 23px;
+      background: var(--purple-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    .why-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: rgba(203,181,237,.13);
+      color: var(--lavender);
+      font-size: 19px;
+    }
+
+    .why-item h3 {
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+
+    .why-item p {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .mission-section {
+      background: #190a2c;
+    }
+
+    .mission-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .mission-card {
+      padding: 35px;
+      background: var(--purple-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+
+    .mission-card h3 {
+      color: var(--lavender);
+      font-family: 'Manrope', sans-serif;
+      font-size: 24px;
+      margin-bottom: 14px;
+    }
+
+    .mission-card p {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .become-section {
+      padding: 85px 0;
+      background: linear-gradient(135deg, #321650, #211038);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .become-content {
+      max-width: 760px;
+      margin: auto;
+      text-align: center;
+    }
+
+    .become-content h2 {
+      font-family: 'Manrope', sans-serif;
+      font-size: clamp(30px, 4vw, 42px);
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+
+    .become-content p {
+      color: var(--muted);
+      margin-bottom: 25px;
+    }
+
+    .faq-section {
+      background: var(--purple);
+    }
+
+    .faq-list {
+      max-width: 820px;
+      margin: auto;
+    }
+
+    .faq-list details {
+      margin-bottom: 13px;
+      padding: 19px 22px;
+      background: var(--purple-card);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+    }
+
+    .faq-list summary {
+      color: white;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .faq-list details p {
+      color: var(--muted);
+      font-size: 14px;
+      padding-top: 13px;
+    }
+
+    .contact-section {
+      background: #190a2c;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 55px;
+      align-items: center;
+    }
+
+    .contact-copy p {
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .contact-email {
+      display: inline-block;
+      color: var(--lavender);
+      font-size: 16px;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+
+    .contact-card {
+      padding: 32px;
+      background: var(--purple-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+
+    .contact-card h3 {
+      font-size: 21px;
+      margin-bottom: 12px;
+    }
+
+    .contact-card p {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 22px;
+    }
+
+    .site-footer {
+      padding: 45px 0 25px;
+      background: var(--purple-deep);
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-top {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 30px;
+      padding-bottom: 30px;
+    }
+
+    .footer-description {
+      color: var(--muted);
+      font-size: 13px;
+      max-width: 330px;
+      margin-top: 10px;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: 17px 23px;
+    }
+
+    .footer-links a {
+      color: #e4d9ef;
+      font-size: 13px;
       font-weight: 600;
     }
 
-    .login-dropdown a:hover,
-    .login-dropdown a:focus {
-      background: #f2eafa;
-      color: #6b16b5;
+    .footer-links a:hover {
+      color: var(--lavender);
     }
 
-    .login-dropdown .admin-login-link {
-      border-top: 1px solid #eee5f5;
-      margin-top: 5px;
-      padding-top: 14px;
+    .copyright {
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+      text-align: center;
+      color: #bbaacb;
+      font-size: 12px;
     }
 
-    .registration-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 20px;
+    @media (max-width: 950px) {
+      .navigation {
+        gap: 13px;
+      }
+
+      .navigation > a,
+      .login-trigger {
+        font-size: 12px;
+      }
+
+      .subject-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
 
     @media (max-width: 768px) {
-      .login-menu {
+      .header-inner {
+        min-height: 72px;
+        flex-wrap: wrap;
+        padding: 12px 0;
+      }
+
+      .menu-toggle {
         display: block;
+      }
+
+      .navigation {
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        padding: 10px 0 15px;
+      }
+
+      .navigation.active {
+        display: flex;
+      }
+
+      .navigation > a,
+      .login-trigger {
+        display: block;
+        padding: 12px 5px;
+        font-size: 14px;
+      }
+
+      .navigation .nav-button {
+        text-align: center;
+        margin-top: 7px;
+      }
+
+      .login-menu {
         width: 100%;
       }
 
       .login-dropdown {
         position: static;
         width: 100%;
-        margin-top: 8px;
-        box-sizing: border-box;
+        margin-top: 5px;
         box-shadow: none;
       }
 
-      .login-trigger {
-        width: fit-content;
+      .hero {
+        padding: 75px 0;
       }
 
-      .registration-links {
+      .hero h1 {
+        letter-spacing: -1.5px;
+      }
+
+      .hero-description {
+        font-size: 15px;
+      }
+
+      .steps-grid,
+      .about-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .contact-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+
+      .section {
+        padding: 70px 0;
+      }
+    }
+
+    @media (max-width: 540px) {
+      .container {
+        width: 91%;
+      }
+
+      .hero h1 {
+        font-size: 42px;
+      }
+
+      .hero-actions {
         flex-direction: column;
+      }
+
+      .hero-actions .button {
+        width: 100%;
+      }
+
+      .subject-grid,
+      .why-grid,
+      .mission-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .subject-card {
+        min-height: 160px;
+      }
+
+      .search-row {
+        flex-direction: column;
+      }
+
+      .search-row button {
+        width: 100%;
+      }
+
+      .learning-strip-inner {
+        justify-content: flex-start;
+        gap: 14px 25px;
+      }
+
+      .strip-item {
+        font-size: 12px;
+      }
+
+      .tutor-placeholder {
+        padding: 35px 20px;
+      }
+
+      .footer-top {
+        flex-direction: column;
+      }
+
+      .footer-links {
+        gap: 14px 18px;
       }
     }
   </style>
@@ -97,7 +947,8 @@
 
 <body>
 
-  <header class="site-header">
+<header class="site-header">
+  <div class="container header-inner">
 
     <a href="index.html" class="logo" aria-label="Tutor Pearl homepage">
       Tutor<span>Pearl</span>
@@ -108,173 +959,130 @@
       id="menu-toggle"
       aria-label="Open navigation menu"
       aria-expanded="false"
-      aria-controls="main-navigation"
-    >
+      aria-controls="main-navigation">
       ☰
     </button>
 
     <nav class="navigation" id="main-navigation">
 
       <a href="#subjects">Subjects</a>
-
       <a href="#tutors">Find Tutors</a>
-
       <a href="#how-it-works">How It Works</a>
+      <a href="#about">About Us</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contact">Contact</a>
 
       <a href="student-signup.html">Start as a Student</a>
-
       <a href="tutor-signup.html">Teach With Us</a>
 
       <details class="login-menu">
-
-        <summary class="nav-button login-trigger">
-          Login ▾
-        </summary>
+        <summary class="login-trigger">Login ▾</summary>
 
         <div class="login-dropdown">
-
-          <a href="student-login.html">
-            Student Login
-          </a>
-
-          <a href="tutor-login.html">
-            Tutor Login
-          </a>
-
-          <a href="admin-dashboard.html" class="admin-login-link">
-            Admin Login
-          </a>
-
+          <a href="student-login.html">Student Login</a>
+          <a href="tutor-login.html">Tutor Login</a>
+          <a href="admin-dashboard.html" class="admin-login-link">Admin Login</a>
         </div>
-
       </details>
 
-      <a href="student-signup.html" class="nav-button">
-        Get Started
-      </a>
+      <a href="student-signup.html" class="nav-button">Get Started</a>
 
     </nav>
+  </div>
+</header>
 
-  </header>
+<main>
 
-  <main>
+  <section class="hero">
+    <div class="container hero-inner">
 
-    <section class="hero">
-
-      <div class="hero-content">
-
-        <div class="hero-badge">
-          Your next learning journey starts here
-        </div>
-
-        <h1>
-          Find the Right Tutor.
-          <span>Unlock Your Potential.</span>
-        </h1>
-
-        <p class="hero-description">
-          Learn from anywhere in the world. Connect with tutors,
-          develop new skills, and work towards your personal,
-          academic, and professional goals.
-        </p>
-
-        <div class="hero-actions">
-
-          <a href="student-signup.html" class="button button-primary">
-            Register as a Student
-          </a>
-
-          <a href="tutor-signup.html" class="button button-secondary">
-            Register as a Tutor
-          </a>
-
-        </div>
-
-        <form class="search-form" id="subject-search">
-
-          <label for="search-input">
-            What would you like to learn?
-          </label>
-
-          <div class="search-row">
-
-            <input
-              type="search"
-              id="search-input"
-              name="subject"
-              placeholder="Try English, Mathematics, IELTS..."
-              autocomplete="off"
-            >
-
-            <button type="submit" class="button button-primary">
-              Search
-            </button>
-
-          </div>
-
-          <p
-            class="search-feedback"
-            id="search-feedback"
-            aria-live="polite"
-          ></p>
-
-        </form>
-
+      <div class="hero-badge">
+        <span>✦</span>
+        A better way to learn and grow
       </div>
 
-    </section>
+      <h1>
+        Your Learning.
+        Your Growth.
+        <span>Your Future.</span>
+      </h1>
 
-    <section class="subjects-section" id="subjects">
+      <p class="hero-description">
+        Discover knowledgeable tutors, strengthen your skills and
+        make progress towards your academic and personal goals.
+        Quality online learning begins with the right support.
+      </p>
+
+      <div class="hero-actions">
+        <a href="student-signup.html" class="button button-primary">
+          Register as a Student
+        </a>
+
+        <a href="tutor-signup.html" class="button button-secondary">
+          Register as a Tutor
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="learning-strip">
+    <div class="container learning-strip-inner">
+
+      <div class="strip-item"><span>◈</span> Learn Online</div>
+      <div class="strip-item"><span>✦</span> Personal Learning Support</div>
+      <div class="strip-item"><span>◎</span> Explore New Skills</div>
+      <div class="strip-item"><span>◇</span> Grow With Confidence</div>
+
+    </div>
+  </section>
+
+  <section class="section subjects-section" id="subjects">
+    <div class="container">
 
       <div class="section-heading">
-
-        <span class="eyebrow">
-          Explore your possibilities
-        </span>
-
+        <span class="eyebrow">Explore your possibilities</span>
         <h2>What Would You Like to Learn?</h2>
-
         <p>
-          Discover subjects, develop valuable skills, and prepare
+          Discover subjects, develop valuable skills and prepare
           for the next step in your journey.
         </p>
-
       </div>
 
       <div class="subject-grid" id="subject-grid">
 
         <button class="subject-card" type="button" data-subject="English">
-          <span class="subject-icon" aria-hidden="true">📚</span>
+          <span class="subject-icon">Aa</span>
           <span class="subject-name">English</span>
           <span class="subject-description">Speaking, grammar and writing</span>
         </button>
 
         <button class="subject-card" type="button" data-subject="Mathematics">
-          <span class="subject-icon" aria-hidden="true">🔢</span>
+          <span class="subject-icon">∑</span>
           <span class="subject-name">Mathematics</span>
           <span class="subject-description">Build confidence with numbers</span>
         </button>
 
         <button class="subject-card" type="button" data-subject="Languages">
-          <span class="subject-icon" aria-hidden="true">🌍</span>
+          <span class="subject-icon">文</span>
           <span class="subject-name">Languages</span>
           <span class="subject-description">Igbo, Yoruba, French and more</span>
         </button>
 
         <button class="subject-card" type="button" data-subject="Exam Preparation">
-          <span class="subject-icon" aria-hidden="true">🎓</span>
+          <span class="subject-icon">✓</span>
           <span class="subject-name">Exam Preparation</span>
           <span class="subject-description">IELTS, SAT and other exams</span>
         </button>
 
         <button class="subject-card" type="button" data-subject="Sciences">
-          <span class="subject-icon" aria-hidden="true">🧪</span>
+          <span class="subject-icon">⚛</span>
           <span class="subject-name">Sciences</span>
           <span class="subject-description">Biology, Chemistry and Physics</span>
         </button>
 
         <button class="subject-card" type="button" data-subject="Digital Skills">
-          <span class="subject-icon" aria-hidden="true">💻</span>
+          <span class="subject-icon">⌘</span>
           <span class="subject-name">Digital Skills</span>
           <span class="subject-description">Technology and career skills</span>
         </button>
@@ -285,32 +1093,54 @@
         No matching categories found. Try another search.
       </p>
 
-    </section>
+      <div class="search-panel">
+        <form class="search-form" id="subject-search">
 
-    <section class="tutors-section" id="tutors">
+          <label for="search-input">What would you like to learn?</label>
+
+          <div class="search-row">
+            <input
+              type="search"
+              id="search-input"
+              name="subject"
+              placeholder="Try English, Mathematics, IELTS..."
+              autocomplete="off">
+
+            <button type="submit" class="button button-primary">
+              Search
+            </button>
+          </div>
+
+          <p class="search-feedback" id="search-feedback" aria-live="polite"></p>
+
+        </form>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="section tutors-section" id="tutors">
+    <div class="container">
 
       <div class="section-heading">
-
         <span class="eyebrow">Your goals matter</span>
-
         <h2>Discover Your Learning Journey</h2>
-
         <p>
           Find the right learning experience for your needs.
-          Tutor listings will appear here as tutors join the platform.
+          Explore tutor profiles and choose the support that suits you.
         </p>
-
       </div>
 
       <div class="tutor-placeholder">
 
-        <div class="placeholder-icon" aria-hidden="true">✦</div>
+        <div class="placeholder-icon">✦</div>
 
         <h3>Your Future Tutor Could Be Here</h3>
 
         <p>
           We're building a community where students can discover
-          tutors, compare profiles, and choose lessons that suit them.
+          tutors, review their profiles and choose lessons that
+          support their learning goals.
         </p>
 
         <a href="student-signup.html" class="button button-primary">
@@ -319,103 +1149,386 @@
 
       </div>
 
-    </section>
+    </div>
+  </section>
 
-    <section class="how-section" id="how-it-works">
+  <section class="section how-section" id="how-it-works">
+    <div class="container">
 
       <div class="section-heading">
-
         <span class="eyebrow">Simple and convenient</span>
-
-        <h2>How It Will Work</h2>
-
+        <h2>How It Works</h2>
         <p>
           A straightforward path from discovering a subject
           to learning with a tutor.
         </p>
-
       </div>
 
       <div class="steps-grid">
 
         <article class="step-card">
-
           <div class="step-number">01</div>
-
           <h3>Choose a Subject</h3>
-
           <p>
             Explore the subjects and skills that match your goals.
           </p>
-
         </article>
 
         <article class="step-card">
-
           <div class="step-number">02</div>
-
           <h3>Find Your Tutor</h3>
-
           <p>
-            Review tutor profiles, qualifications, and teaching styles.
+            Review tutor profiles, qualifications and teaching styles.
           </p>
-
         </article>
 
         <article class="step-card">
-
           <div class="step-number">03</div>
-
           <h3>Book a Lesson</h3>
-
           <p>
-            Choose a suitable time and arrange your learning session.
+            Choose a suitable time and arrange your online learning session.
           </p>
-
         </article>
 
       </div>
+    </div>
+  </section>
 
-    </section>
+  <section class="section about-section" id="about">
+    <div class="container">
 
-    <section class="become-section" id="become-tutor">
-
-      <div class="become-content">
-
-        <span class="eyebrow">For educators and experts</span>
-
-        <h2>Turn Your Knowledge Into Opportunity</h2>
+      <div class="about-intro">
+        <span class="eyebrow">Get to know us</span>
+        <h2>About Tutor Pearl</h2>
 
         <p>
-          Are you passionate about teaching? We're building
-          a platform where educators can share their expertise,
-          connect with learners, and grow their teaching careers.
+          Tutor Pearl is an online tutoring platform created to
+          connect students with knowledgeable and dedicated tutors.
+          We believe that every learner deserves access to guidance
+          that helps them understand more, achieve more and grow
+          in confidence.
         </p>
 
-        <a href="tutor-signup.html" class="button button-primary">
-          Register as a Tutor
-        </a>
+        <p>
+          Whether a student needs help with school subjects,
+          exam preparation or a new skill, our aim is to make
+          finding the right learning support easier.
+        </p>
+      </div>
+
+      <div class="about-grid">
+
+        <article class="about-card">
+          <div class="about-card-icon">◎</div>
+          <h3>Our Learning Community</h3>
+          <p>
+            We bring students and tutors together in a welcoming
+            online environment built around learning and progress.
+          </p>
+        </article>
+
+        <article class="about-card">
+          <div class="about-card-icon">◇</div>
+          <h3>Our Approach</h3>
+          <p>
+            We believe in clear explanations, patient teaching
+            and learning experiences that support individual goals.
+          </p>
+        </article>
+
+        <article class="about-card">
+          <div class="about-card-icon">✦</div>
+          <h3>Our Commitment</h3>
+          <p>
+            We want to make quality tutoring more accessible
+            and help learners take meaningful steps forward.
+          </p>
+        </article>
 
       </div>
 
-    </section>
+    </div>
+  </section>
 
-  </main>
+  <section class="section why-section" id="why-tutor-pearl">
+    <div class="container">
 
-  <footer class="site-footer">
+      <div class="section-heading">
+        <span class="eyebrow">The Tutor Pearl experience</span>
+        <h2>Why Choose Tutor Pearl?</h2>
+        <p>
+          Learning is more rewarding when you have the right
+          guidance and a convenient way to access it.
+        </p>
+      </div>
 
-    <a href="index.html" class="logo">
-      Tutor<span>Pearl</span>
-    </a>
+      <div class="why-grid">
 
-    <p>Learn more. Grow further. Reach your potential.</p>
+        <article class="why-item">
+          <div class="why-icon">◎</div>
+          <div>
+            <h3>Learn From Anywhere</h3>
+            <p>
+              Connect with tutors through online lessons without
+              needing to travel to a classroom.
+            </p>
+          </div>
+        </article>
 
-    <p class="copyright">
+        <article class="why-item">
+          <div class="why-icon">◇</div>
+          <div>
+            <h3>Explore Different Subjects</h3>
+            <p>
+              Discover learning opportunities across academic
+              subjects, languages and digital skills.
+            </p>
+          </div>
+        </article>
+
+        <article class="why-item">
+          <div class="why-icon">✦</div>
+          <div>
+            <h3>Support Your Goals</h3>
+            <p>
+              Find learning support that matches your interests
+              and the progress you want to make.
+            </p>
+          </div>
+        </article>
+
+        <article class="why-item">
+          <div class="why-icon">✓</div>
+          <div>
+            <h3>A Convenient Experience</h3>
+            <p>
+              Manage your learning journey through your
+              Tutor Pearl account.
+            </p>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="section mission-section" id="mission">
+    <div class="container">
+
+      <div class="section-heading">
+        <span class="eyebrow">What guides us</span>
+        <h2>Our Mission and Vision</h2>
+        <p>
+          The purpose behind the learning community we are building.
+        </p>
+      </div>
+
+      <div class="mission-grid">
+
+        <article class="mission-card">
+          <h3>Our Mission</h3>
+          <p>
+            To make quality tutoring more accessible by connecting
+            students with knowledgeable, supportive tutors through
+            a simple and convenient online learning experience.
+          </p>
+        </article>
+
+        <article class="mission-card">
+          <h3>Our Vision</h3>
+          <p>
+            To build a trusted learning community where students
+            can develop their abilities, tutors can share their
+            knowledge and education can open new opportunities.
+          </p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="become-section" id="become-tutor">
+    <div class="container become-content">
+
+      <span class="eyebrow">For educators and experts</span>
+
+      <h2>Share Your Knowledge. Make a Difference.</h2>
+
+      <p>
+        Are you passionate about teaching? Join Tutor Pearl
+        and connect with learners who can benefit from your
+        knowledge and experience.
+      </p>
+
+      <a href="tutor-signup.html" class="button button-primary">
+        Register as a Tutor
+      </a>
+
+    </div>
+  </section>
+
+  <section class="section faq-section" id="faq">
+    <div class="container">
+
+      <div class="section-heading">
+        <span class="eyebrow">Need some answers?</span>
+        <h2>Frequently Asked Questions</h2>
+        <p>
+          Find answers to common questions about learning
+          and teaching with Tutor Pearl.
+        </p>
+      </div>
+
+      <div class="faq-list">
+
+        <details>
+          <summary>What is Tutor Pearl?</summary>
+          <p>
+            Tutor Pearl is an online tutoring platform that connects
+            students with tutors for virtual lessons across different
+            subjects and skills.
+          </p>
+        </details>
+
+        <details>
+          <summary>How do I register as a student?</summary>
+          <p>
+            Select Start as a Student or Register as a Student,
+            complete the registration form and create your account.
+          </p>
+        </details>
+
+        <details>
+          <summary>How can I become a tutor?</summary>
+          <p>
+            Select Teach With Us or Register as a Tutor and complete
+            the tutor application. Your application will be reviewed.
+          </p>
+        </details>
+
+        <details>
+          <summary>Are lessons conducted online?</summary>
+          <p>
+            Yes. Tutor Pearl lessons are virtual. Students and tutors
+            connect online for their scheduled lessons.
+          </p>
+        </details>
+
+        <details>
+          <summary>Do tutors need a university degree?</summary>
+          <p>
+            A bachelor's degree is not a general requirement.
+            Tutors should have good knowledge of the subjects
+            they teach and be able to explain concepts clearly,
+            communicate patiently and support learners.
+          </p>
+        </details>
+
+        <details>
+          <summary>Can I use a phone or a computer?</summary>
+          <p>
+            Yes. A suitable smartphone, tablet or computer can be
+            used, provided you have a reliable internet connection
+            and the equipment needed for your lessons.
+          </p>
+        </details>
+
+        <details>
+          <summary>How do students book lessons?</summary>
+          <p>
+            Students can explore available tutors, review their
+            profiles and submit a booking request for a suitable
+            lesson time.
+          </p>
+        </details>
+
+        <details>
+          <summary>How do I contact Tutor Pearl?</summary>
+          <p>
+            You can contact our support team by email at
+            tutorpearlsupport@gmail.com for assistance.
+          </p>
+        </details>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="section contact-section" id="contact">
+    <div class="container contact-grid">
+
+      <div class="contact-copy">
+        <span class="eyebrow">We're here to help</span>
+        <h2>Get in Touch With Tutor Pearl</h2>
+
+        <p>
+          Have a question about registration, lessons, tutor
+          applications or your account? Our support team is
+          available to help.
+        </p>
+
+        <a class="contact-email" href="mailto:tutorpearlsupport@gmail.com">
+          tutorpearlsupport@gmail.com
+        </a>
+      </div>
+
+      <div class="contact-card">
+        <h3>Need assistance?</h3>
+
+        <p>
+          Send us an email and include a short explanation
+          of how we can help. If your enquiry concerns an
+          account, please include the email address associated
+          with your account. Never send your password.
+        </p>
+
+        <a
+          href="mailto:tutorpearlsupport@gmail.com?subject=Tutor%20Pearl%20Support"
+          class="button button-primary">
+          Contact Support
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+
+    <div class="footer-top">
+
+      <div>
+        <a href="index.html" class="logo">
+          Tutor<span>Pearl</span>
+        </a>
+
+        <p class="footer-description">
+          A learning community connecting students and
+          dedicated tutors through online education.
+        </p>
+      </div>
+
+      <div class="footer-links">
+        <a href="#subjects">Subjects</a>
+        <a href="#about">About Us</a>
+        <a href="#mission">Our Mission</a>
+        <a href="#faq">FAQ</a>
+        <a href="#contact">Contact Us</a>
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <a href="terms-of-service.html">Terms of Service</a>
+      </div>
+
+    </div>
+
+    <div class="copyright">
       &copy; <span id="current-year">2026</span> Tutor Pearl.
       All rights reserved.
-    </p>
+    </div>
 
-  </footer>
+  </div>
+</footer>
 
 </body>
 </html>
