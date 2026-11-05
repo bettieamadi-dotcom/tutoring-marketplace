@@ -51,13 +51,11 @@
       text-decoration: none;
     }
 
-    button,
-    input {
+    button, input {
       font: inherit;
     }
 
-    button,
-    a {
+    button, a {
       -webkit-tap-highlight-color: transparent;
     }
 
@@ -181,10 +179,12 @@
       cursor: pointer;
     }
 
+    /* HERO */
+
     .hero {
       position: relative;
       overflow: hidden;
-      padding: 105px 0 95px;
+      padding: 75px 0;
       background:
         radial-gradient(ellipse at 85% 15%, rgba(135,85,190,.22), transparent 38%),
         linear-gradient(135deg, #211038, #291344 65%, #321650);
@@ -203,9 +203,14 @@
 
     .hero-inner {
       position: relative;
-      max-width: 850px;
-      margin: auto;
-      text-align: center;
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      align-items: center;
+      gap: 45px;
+    }
+
+    .hero-copy {
+      max-width: 650px;
     }
 
     .hero-badge {
@@ -229,7 +234,7 @@
 
     .hero h1 {
       font-family: 'Manrope', sans-serif;
-      font-size: clamp(43px, 6vw, 72px);
+      font-size: clamp(43px, 5vw, 65px);
       line-height: 1.12;
       letter-spacing: -2.8px;
       margin-bottom: 23px;
@@ -242,17 +247,27 @@
     }
 
     .hero-description {
-      max-width: 670px;
-      margin: 0 auto 32px;
+      max-width: 600px;
+      margin-bottom: 32px;
       color: var(--muted);
       font-size: 17px;
     }
 
     .hero-actions {
       display: flex;
-      justify-content: center;
       flex-wrap: wrap;
       gap: 13px;
+    }
+
+    .hero-photo {
+      display: block;
+      width: 100%;
+      height: 440px;
+      object-fit: cover;
+      object-position: center;
+      border-radius: 22px;
+      border: 5px solid rgba(203,181,237,.35);
+      box-shadow: 0 22px 55px rgba(0,0,0,.3);
     }
 
     .button {
@@ -352,6 +367,28 @@
     .section-heading p {
       color: var(--muted);
       font-size: 15px;
+    }
+
+    /* FEATURE PHOTOGRAPHS */
+
+    .section-feature-image {
+      display: block;
+      width: 100%;
+      height: 340px;
+      object-fit: cover;
+      object-position: center;
+      border-radius: 18px;
+      border: 4px solid rgba(203,181,237,.25);
+      margin: 0 auto 42px;
+      box-shadow: 0 18px 45px rgba(0,0,0,.22);
+    }
+
+    .about-feature-image {
+      object-position: center 35%;
+    }
+
+    .children-feature-image {
+      object-position: center 45%;
     }
 
     .subjects-section {
@@ -860,7 +897,17 @@
       }
 
       .hero {
-        padding: 75px 0;
+        padding: 65px 0;
+      }
+
+      .hero-inner {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        text-align: center;
+      }
+
+      .hero-copy {
+        max-width: 100%;
       }
 
       .hero h1 {
@@ -868,7 +915,19 @@
       }
 
       .hero-description {
+        margin-left: auto;
+        margin-right: auto;
         font-size: 15px;
+      }
+
+      .hero-actions {
+        justify-content: center;
+      }
+
+      .hero-photo {
+        height: 340px;
+        max-width: 550px;
+        margin: auto;
       }
 
       .steps-grid,
@@ -883,6 +942,10 @@
 
       .section {
         padding: 70px 0;
+      }
+
+      .section-feature-image {
+        height: 290px;
       }
     }
 
@@ -901,6 +964,14 @@
 
       .hero-actions .button {
         width: 100%;
+      }
+
+      .hero-photo {
+        height: 270px;
+      }
+
+      .section-feature-image {
+        height: 230px;
       }
 
       .subject-grid,
@@ -993,35 +1064,47 @@
 
 <main>
 
+  <!-- HERO SECTION WITH BLACK FEMALE LEARNER -->
+
   <section class="hero">
     <div class="container hero-inner">
 
-      <div class="hero-badge">
-        <span>✦</span>
-        A better way to learn and grow
+      <div class="hero-copy">
+
+        <div class="hero-badge">
+          <span>✦</span>
+          A better way to learn and grow
+        </div>
+
+        <h1>
+          Your Learning.
+          Your Growth.
+          <span>Your Future.</span>
+        </h1>
+
+        <p class="hero-description">
+          Discover knowledgeable tutors, strengthen your skills and
+          make progress towards your academic and personal goals.
+          Quality online learning begins with the right support.
+        </p>
+
+        <div class="hero-actions">
+          <a href="student-signup.html" class="button button-primary">
+            Register as a Student
+          </a>
+
+          <a href="tutor-signup.html" class="button button-secondary">
+            Register as a Tutor
+          </a>
+        </div>
+
       </div>
 
-      <h1>
-        Your Learning.
-        Your Growth.
-        <span>Your Future.</span>
-      </h1>
-
-      <p class="hero-description">
-        Discover knowledgeable tutors, strengthen your skills and
-        make progress towards your academic and personal goals.
-        Quality online learning begins with the right support.
-      </p>
-
-      <div class="hero-actions">
-        <a href="student-signup.html" class="button button-primary">
-          Register as a Student
-        </a>
-
-        <a href="tutor-signup.html" class="button button-secondary">
-          Register as a Tutor
-        </a>
-      </div>
+      <img
+        class="hero-photo"
+        src="https://images.unsplash.com/photo-1758612214848-04e700d192ce?auto=format&fit=crop&fm=jpg&ixid=NHwxMjA3fDA%3D&ixlib=rb-4.1.0&q=60&w=1400"
+        alt="Black woman studying at home with headphones and a laptop"
+        loading="eager">
 
     </div>
   </section>
@@ -1152,6 +1235,8 @@
     </div>
   </section>
 
+  <!-- HOW IT WORKS WITH REAL CHILDREN LEARNING THROUGH PLAY -->
+
   <section class="section how-section" id="how-it-works">
     <div class="container">
 
@@ -1163,6 +1248,12 @@
           to learning with a tutor.
         </p>
       </div>
+
+      <img
+        class="section-feature-image children-feature-image"
+        src="https://images.pexels.com/photos/8535193/pexels-photo-8535193.jpeg?auto=compress&cs=tinysrgb&w=1400"
+        alt="Young children learning through play with colourful wooden building blocks"
+        loading="lazy">
 
       <div class="steps-grid">
 
@@ -1194,6 +1285,8 @@
     </div>
   </section>
 
+  <!-- ABOUT US WITH TWO TEENAGERS -->
+
   <section class="section about-section" id="about">
     <div class="container">
 
@@ -1215,6 +1308,12 @@
           finding the right learning support easier.
         </p>
       </div>
+
+      <img
+        class="section-feature-image about-feature-image"
+        src="https://images.pexels.com/photos/5306435/pexels-photo-5306435.jpeg?auto=compress&cs=tinysrgb&w=1400"
+        alt="Two teenagers studying together with books and school materials"
+        loading="lazy">
 
       <div class="about-grid">
 
