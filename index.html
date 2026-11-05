@@ -1,224 +1,408 @@
-<!DOCTYPE html><html lang="en">
+
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Discover tutors, learn new skills, master subjects, and prepare for important exams with our online tutoring marketplace.">
   <meta name="theme-color" content="#211038">
+
   <title>Tutor Pearl | Find Your Perfect Tutor</title>
+
   <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
-</head><body>
+
+  <style>
+    .login-menu {
+      position: relative;
+      display: inline-block;
+    }
+
+    .login-trigger {
+      cursor: pointer;
+      list-style: none;
+      user-select: none;
+    }
+
+    .login-trigger::-webkit-details-marker {
+      display: none;
+    }
+
+    .login-dropdown {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      z-index: 1000;
+      min-width: 190px;
+      padding: 8px;
+      background: #ffffff;
+      border: 1px solid #e9e1f2;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(33, 16, 56, 0.15);
+    }
+
+    .login-dropdown a {
+      display: block;
+      padding: 12px 14px;
+      color: #211038;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .login-dropdown a:hover,
+    .login-dropdown a:focus {
+      background: #f2eafa;
+      color: #6b16b5;
+    }
+
+    .login-dropdown .admin-login-link {
+      border-top: 1px solid #eee5f5;
+      margin-top: 5px;
+      padding-top: 14px;
+    }
+
+    @media (max-width: 768px) {
+      .login-menu {
+        display: block;
+        width: 100%;
+      }
+
+      .login-dropdown {
+        position: static;
+        width: 100%;
+        margin-top: 8px;
+        box-sizing: border-box;
+        box-shadow: none;
+      }
+
+      .login-trigger {
+        width: fit-content;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
   <header class="site-header">
-    <a href="#" class="logo" aria-label="Tutor Pearl homepage">
+
+    <a href="index.html" class="logo" aria-label="Tutor Pearl homepage">
       Tutor<span>Pearl</span>
-    </a><button
-  class="menu-toggle"
-  id="menu-toggle"
-  aria-label="Open navigation menu"
-  aria-expanded="false"
-  aria-controls="main-navigation"
->
-  ☰
-</button>
+    </a>
 
-<nav class="navigation" id="main-navigation">
-  <a href="#subjects">Subjects</a>
-  <a href="#tutors">Find Tutors</a>
-  <a href="#how-it-works">How It Works</a>
-  <a href="tutor-signup.html">Teach With Us</a>
-  <a href="#subjects" class="nav-button">Get Started</a>
-</nav>
+    <button
+      class="menu-toggle"
+      id="menu-toggle"
+      aria-label="Open navigation menu"
+      aria-expanded="false"
+      aria-controls="main-navigation"
+    >
+      ☰
+    </button>
 
-  </header>  <main>
+    <nav class="navigation" id="main-navigation">
+
+      <a href="#subjects">Subjects</a>
+
+      <a href="#tutors">Find Tutors</a>
+
+      <a href="#how-it-works">How It Works</a>
+
+      <a href="tutor-signup.html">Teach With Us</a>
+
+      <details class="login-menu">
+
+        <summary class="nav-button login-trigger">
+          Login ▾
+        </summary>
+
+        <div class="login-dropdown">
+
+          <a href="student-login.html">
+            Student Login
+          </a>
+
+          <a href="tutor-login.html">
+            Tutor Login
+          </a>
+
+          <a href="admin-dashboard.html" class="admin-login-link">
+            Admin Login
+          </a>
+
+        </div>
+
+      </details>
+
+      <a href="#subjects" class="nav-button">
+        Get Started
+      </a>
+
+    </nav>
+
+  </header>
+
+  <main>
+
     <section class="hero">
-      <div class="hero-content">    <div class="hero-badge">
-      Your next learning journey starts here
-    </div>
 
-    <h1>
-      Find the Right Tutor.
-      <span>Unlock Your Potential.</span>
-    </h1>
+      <div class="hero-content">
 
-    <p class="hero-description">
-      Learn from anywhere in the world. Connect with tutors,
-      develop new skills, and work towards your personal,
-      academic, and professional goals.
-    </p>
+        <div class="hero-badge">
+          Your next learning journey starts here
+        </div>
 
-    <div class="hero-actions">
-      <a href="#subjects" class="button button-primary">
-        Explore Subjects
-      </a>
+        <h1>
+          Find the Right Tutor.
+          <span>Unlock Your Potential.</span>
+        </h1>
 
-      <a href="tutor-signup.html" class="button button-secondary">
-        Become a Tutor
-      </a>
-    </div>
+        <p class="hero-description">
+          Learn from anywhere in the world. Connect with tutors,
+          develop new skills, and work towards your personal,
+          academic, and professional goals.
+        </p>
 
-    <form class="search-form" id="subject-search">
-      <label for="search-input">What would you like to learn?</label>
+        <div class="hero-actions">
 
-      <div class="search-row">
-        <input
-          type="search"
-          id="search-input"
-          name="subject"
-          placeholder="Try English, Mathematics, IELTS..."
-          autocomplete="off"
-        >
+          <a href="#subjects" class="button button-primary">
+            Explore Subjects
+          </a>
 
-        <button type="submit" class="button button-primary">
-          Search
-        </button>
+          <a href="tutor-signup.html" class="button button-secondary">
+            Become a Tutor
+          </a>
+
+        </div>
+
+        <form class="search-form" id="subject-search">
+
+          <label for="search-input">
+            What would you like to learn?
+          </label>
+
+          <div class="search-row">
+
+            <input
+              type="search"
+              id="search-input"
+              name="subject"
+              placeholder="Try English, Mathematics, IELTS..."
+              autocomplete="off"
+            >
+
+            <button type="submit" class="button button-primary">
+              Search
+            </button>
+
+          </div>
+
+          <p
+            class="search-feedback"
+            id="search-feedback"
+            aria-live="polite"
+          ></p>
+
+        </form>
+
       </div>
 
-      <p class="search-feedback" id="search-feedback" aria-live="polite"></p>
-    </form>
+    </section>
 
-  </div>
-</section>
+    <section class="subjects-section" id="subjects">
 
-<section class="subjects-section" id="subjects">
-  <div class="section-heading">
-    <span class="eyebrow">Explore your possibilities</span>
-    <h2>What Would You Like to Learn?</h2>
-    <p>
-      Discover subjects, develop valuable skills, and prepare
-      for the next step in your journey.
-    </p>
-  </div>
+      <div class="section-heading">
 
-  <div class="subject-grid" id="subject-grid">
+        <span class="eyebrow">
+          Explore your possibilities
+        </span>
 
-    <button class="subject-card" type="button" data-subject="English">
-      <span class="subject-icon" aria-hidden="true">📚</span>
-      <span class="subject-name">English</span>
-      <span class="subject-description">Speaking, grammar and writing</span>
-    </button>
+        <h2>What Would You Like to Learn?</h2>
 
-    <button class="subject-card" type="button" data-subject="Mathematics">
-      <span class="subject-icon" aria-hidden="true">🔢</span>
-      <span class="subject-name">Mathematics</span>
-      <span class="subject-description">Build confidence with numbers</span>
-    </button>
+        <p>
+          Discover subjects, develop valuable skills, and prepare
+          for the next step in your journey.
+        </p>
 
-    <button class="subject-card" type="button" data-subject="Languages">
-      <span class="subject-icon" aria-hidden="true">🌍</span>
-      <span class="subject-name">Languages</span>
-      <span class="subject-description">Igbo, Yoruba, French and more</span>
-    </button>
+      </div>
 
-    <button class="subject-card" type="button" data-subject="Exam Preparation">
-      <span class="subject-icon" aria-hidden="true">🎓</span>
-      <span class="subject-name">Exam Preparation</span>
-      <span class="subject-description">IELTS, SAT and other exams</span>
-    </button>
+      <div class="subject-grid" id="subject-grid">
 
-    <button class="subject-card" type="button" data-subject="Sciences">
-      <span class="subject-icon" aria-hidden="true">🧪</span>
-      <span class="subject-name">Sciences</span>
-      <span class="subject-description">Biology, Chemistry and Physics</span>
-    </button>
+        <button class="subject-card" type="button" data-subject="English">
+          <span class="subject-icon" aria-hidden="true">📚</span>
+          <span class="subject-name">English</span>
+          <span class="subject-description">Speaking, grammar and writing</span>
+        </button>
 
-    <button class="subject-card" type="button" data-subject="Digital Skills">
-      <span class="subject-icon" aria-hidden="true">💻</span>
-      <span class="subject-name">Digital Skills</span>
-      <span class="subject-description">Technology and career skills</span>
-    </button>
+        <button class="subject-card" type="button" data-subject="Mathematics">
+          <span class="subject-icon" aria-hidden="true">🔢</span>
+          <span class="subject-name">Mathematics</span>
+          <span class="subject-description">Build confidence with numbers</span>
+        </button>
 
-  </div>
+        <button class="subject-card" type="button" data-subject="Languages">
+          <span class="subject-icon" aria-hidden="true">🌍</span>
+          <span class="subject-name">Languages</span>
+          <span class="subject-description">Igbo, Yoruba, French and more</span>
+        </button>
 
-  <p class="empty-state" id="empty-state" hidden>
-    No matching categories found. Try another search.
-  </p>
-</section>
+        <button class="subject-card" type="button" data-subject="Exam Preparation">
+          <span class="subject-icon" aria-hidden="true">🎓</span>
+          <span class="subject-name">Exam Preparation</span>
+          <span class="subject-description">IELTS, SAT and other exams</span>
+        </button>
 
-<section class="tutors-section" id="tutors">
-  <div class="section-heading">
-    <span class="eyebrow">Your goals matter</span>
-    <h2>Discover Your Learning Journey</h2>
-    <p>
-      Find the right learning experience for your needs.
-      Tutor listings will appear here as tutors join the platform.
-    </p>
-  </div>
+        <button class="subject-card" type="button" data-subject="Sciences">
+          <span class="subject-icon" aria-hidden="true">🧪</span>
+          <span class="subject-name">Sciences</span>
+          <span class="subject-description">Biology, Chemistry and Physics</span>
+        </button>
 
-  <div class="tutor-placeholder">
-    <div class="placeholder-icon" aria-hidden="true">✦</div>
-    <h3>Your Future Tutor Could Be Here</h3>
-    <p>
-      We're building a community where students can discover
-      tutors, compare profiles, and choose lessons that suit them.
-    </p>
-    <a href="tutor-signup.html" class="button button-primary">
-      Interested in Teaching?
+        <button class="subject-card" type="button" data-subject="Digital Skills">
+          <span class="subject-icon" aria-hidden="true">💻</span>
+          <span class="subject-name">Digital Skills</span>
+          <span class="subject-description">Technology and career skills</span>
+        </button>
+
+      </div>
+
+      <p class="empty-state" id="empty-state" hidden>
+        No matching categories found. Try another search.
+      </p>
+
+    </section>
+
+    <section class="tutors-section" id="tutors">
+
+      <div class="section-heading">
+
+        <span class="eyebrow">Your goals matter</span>
+
+        <h2>Discover Your Learning Journey</h2>
+
+        <p>
+          Find the right learning experience for your needs.
+          Tutor listings will appear here as tutors join the platform.
+        </p>
+
+      </div>
+
+      <div class="tutor-placeholder">
+
+        <div class="placeholder-icon" aria-hidden="true">✦</div>
+
+        <h3>Your Future Tutor Could Be Here</h3>
+
+        <p>
+          We're building a community where students can discover
+          tutors, compare profiles, and choose lessons that suit them.
+        </p>
+
+        <a href="tutor-signup.html" class="button button-primary">
+          Interested in Teaching?
+        </a>
+
+      </div>
+
+    </section>
+
+    <section class="how-section" id="how-it-works">
+
+      <div class="section-heading">
+
+        <span class="eyebrow">Simple and convenient</span>
+
+        <h2>How It Will Work</h2>
+
+        <p>
+          A straightforward path from discovering a subject
+          to learning with a tutor.
+        </p>
+
+      </div>
+
+      <div class="steps-grid">
+
+        <article class="step-card">
+
+          <div class="step-number">01</div>
+
+          <h3>Choose a Subject</h3>
+
+          <p>
+            Explore the subjects and skills that match your goals.
+          </p>
+
+        </article>
+
+        <article class="step-card">
+
+          <div class="step-number">02</div>
+
+          <h3>Find Your Tutor</h3>
+
+          <p>
+            Review tutor profiles, qualifications, and teaching styles.
+          </p>
+
+        </article>
+
+        <article class="step-card">
+
+          <div class="step-number">03</div>
+
+          <h3>Book a Lesson</h3>
+
+          <p>
+            Choose a suitable time and arrange your learning session.
+          </p>
+
+        </article>
+
+      </div>
+
+    </section>
+
+    <section class="become-section" id="become-tutor">
+
+      <div class="become-content">
+
+        <span class="eyebrow">For educators and experts</span>
+
+        <h2>Turn Your Knowledge Into Opportunity</h2>
+
+        <p>
+          Are you passionate about teaching? We're working towards
+          a platform where educators can share their expertise,
+          connect with learners, and grow their teaching careers.
+        </p>
+
+        <a href="tutor-signup.html" class="button button-primary">
+          Register as a Tutor
+        </a>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+
+    <a href="index.html" class="logo">
+      Tutor<span>Pearl</span>
     </a>
-  </div>
-</section>
 
-<section class="how-section" id="how-it-works">
-  <div class="section-heading">
-    <span class="eyebrow">Simple and convenient</span>
-    <h2>How It Will Work</h2>
-    <p>
-      A straightforward path from discovering a subject
-      to learning with a tutor.
+    <p>Learn more. Grow further. Reach your potential.</p>
+
+    <p class="copyright">
+      &copy; <span id="current-year">2026</span> Tutor Pearl.
+      All rights reserved.
     </p>
-  </div>
-
-  <div class="steps-grid">
-
-    <article class="step-card">
-      <div class="step-number">01</div>
-      <h3>Choose a Subject</h3>
-      <p>
-        Explore the subjects and skills that match your goals.
-      </p>
-    </article>
-
-    <article class="step-card">
-      <div class="step-number">02</div>
-      <h3>Find Your Tutor</h3>
-      <p>
-        Review tutor profiles, qualifications, and teaching styles.
-      </p>
-    </article>
-
-    <article class="step-card">
-      <div class="step-number">03</div>
-      <h3>Book a Lesson</h3>
-      <p>
-        Choose a suitable time and arrange your learning session.
-      </p>
-    </article>
-
-  </div>
-</section>
-
-<section class="become-section" id="become-tutor">
-  <div class="become-content">
-    <span class="eyebrow">For educators and experts</span>
-    <h2>Turn Your Knowledge Into Opportunity</h2>
-    <p>
-      Are you passionate about teaching? We're working towards
-      a platform where educators can share their expertise,
-      connect with learners, and grow their teaching careers.
-    </p>
-
-    <a href="tutor-signup.html" class="button button-primary">
-      Register as a Tutor
-    </a>
-  </div>
-</section>
-
-  </main>  <footer class="site-footer">
-    <a href="#" class="logo">Tutor<span>Pearl</span></a>
-    <p>Learn more. Grow further. Reach your potential.</p><p class="copyright">
-  &copy; <span id="current-year">2026</span> Tutor Pearl.
-  All rights reserved.
-</p>
 
   </footer>
+
 </body>
 </html>
