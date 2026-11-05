@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -113,11 +114,44 @@ button:disabled {
     color: #211038;
 }
 
+.generate-meet {
+    background: #A6E8C1;
+    color: #173D2A;
+}
+
+.join-meet {
+    display: inline-block;
+    padding: 11px 17px;
+    border-radius: 7px;
+    background: #C8A8FF;
+    color: #211038;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.meet-section {
+    margin-top: 18px;
+    padding: 15px;
+    background: #211038;
+    border: 1px solid #65458a;
+    border-radius: 10px;
+}
+
+.meet-section h4 {
+    color: #E7DBFF;
+    margin: 0 0 10px;
+}
+
+.meet-section p {
+    margin: 8px 0;
+}
+
 .message {
     padding: 13px;
     border-radius: 8px;
     margin: 15px 0;
     display: none;
+    overflow-wrap: anywhere;
 }
 
 .error {
@@ -247,6 +281,9 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
 "sb_publishable_A1NbTHmXm8gqCDsj-EKFwQ_3SvQ6nPZ";
 
+const GOOGLE_MEET_FUNCTION_URL =
+SUPABASE_URL + "/functions/v1/google-meet";
+
 const supabase = createClient(
     SUPABASE_URL,
     SUPABASE_KEY
@@ -367,6 +404,223 @@ function createRequestStatus(status) {
 }
 
 
+/* GOOGLE MEET GENERATION */
+
+async function generateGoogleMeet(
+    bookingId,
+    generateButton
+) {
+
+    const confirmed = window.confirm(
+        "Generate a Google Meet link for this lesson? " +
+        "The booking must be accepted and successfully paid."
+    );
+
+    if (!confirmed) return;
+
+    generateButton.disabled = true;
+    generateButton.textContent = "Generating meeting...";
+
+    try {
+
+        const {
+            data: sessionData,
+            error: sessionError
+        } = await supabase.auth.getSession();
+
+        if (sessionError) throw sessionError;
+
+        const session = sessionData.session;
+
+        if (!session || !session.access_token) {
+            throw new Error(
+                "Your login session has expired. Please log in again."
+            );
+        }
+
+        const response = await fetch(
+            GOOGLE_MEET_FUNCTION_URL + "?action=create",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json",
+                    "apikey": SUPABASE_KEY,
+                    "Authorization":
+                        "Bearer " + session.access_token
+                },
+
+                body: JSON.stringify({
+                    booking_id: bookingId
+                })
+            }
+        );
+
+        const responseText = await response.text();
+
+        let result = {};
+
+        try {
+            result = responseText
+                ? JSON.parse(responseText)
+                : {};
+        } catch {
+            result = {
+                message: responseText
+            };
+        }
+
+        if (
+            !response.ok ||
+            result.success === false
+        ) {
+
+            throw new Error(
+                result.message ||
+                result.error ||
+                "Google Meet could not be generated. Please check the booking payment and try again."
+            );
+        }
+
+        await loadBookings();
+
+        showMessage(
+            result.message ||
+            "Google Meet meeting generated successfully. Your saved meeting link is now displayed in the booking.",
+            "success"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Google Meet generation error:",
+            error
+        );
+
+        showMessage(
+            error.message ||
+            "Unable to generate the Google Meet link.",
+            "error"
+        );
+
+        generateButton.disabled = false;
+
+        generateButton.textContent =
+            "Generate Google Meet";
+    }
+}
+
+
+/* DISPLAY GOOGLE MEET SECTION */
+
+function renderGoogleMeet(booking, card) {
+
+    const meetSection = document.createElement("div");
+
+    meetSection.className = "meet-section";
+
+    addText(
+        meetSection,
+        "h4",
+        "",
+        "Google Meet Lesson"
+    );
+
+    if (booking.google_meet_link) {
+
+        let validMeetUrl = null;
+
+        try {
+
+            const parsedUrl = new URL(
+                booking.google_meet_link
+            );
+
+            if (parsedUrl.protocol === "https:") {
+                validMeetUrl = parsedUrl.href;
+            }
+
+        } catch (error) {
+            console.error("Invalid saved Meet URL:", error);
+        }
+
+        if (validMeetUrl) {
+
+            addText(
+                meetSection,
+                "p",
+                "",
+                "Your Google Meet link is ready."
+            );
+
+            const joinLink =
+                document.createElement("a");
+
+            joinLink.className = "join-meet";
+
+            joinLink.href = validMeetUrl;
+
+            joinLink.target = "_blank";
+
+            joinLink.rel = "noopener noreferrer";
+
+            joinLink.textContent = "Join Google Meet";
+
+            meetSection.appendChild(joinLink);
+
+        } else {
+
+            addText(
+                meetSection,
+                "p",
+                "",
+                "A meeting link is saved, but it could not be opened safely. Please contact support."
+            );
+        }
+
+    } else if (
+        booking.booking_status === "accepted"
+    ) {
+
+        addText(
+            meetSection,
+            "p",
+            "",
+            "Generate a Google Meet link for this accepted lesson. A successful payment is required."
+        );
+
+        const generateButton =
+            document.createElement("button");
+
+        generateButton.className = "generate-meet";
+
+        generateButton.textContent =
+            "Generate Google Meet";
+
+        generateButton.addEventListener(
+            "click",
+            () => generateGoogleMeet(
+                booking.booking_id,
+                generateButton
+            )
+        );
+
+        meetSection.appendChild(generateButton);
+
+    } else {
+
+        addText(
+            meetSection,
+            "p",
+            "",
+            "A Google Meet link will be available after this booking is accepted."
+        );
+    }
+
+    card.appendChild(meetSection);
+}
+
+
 /* RESCHEDULE REVIEW */
 
 async function reviewReschedule(
@@ -408,14 +662,14 @@ async function reviewReschedule(
             );
         }
 
+        await loadBookings();
+
         showMessage(
             decision === "approved"
                 ? "Rescheduling request approved. The original booking has been updated."
                 : "Rescheduling request declined. The original booking remains unchanged.",
             "success"
         );
-
-        await loadBookings();
 
     } catch (error) {
 
@@ -600,12 +854,12 @@ async function completeLesson(
             );
         }
 
+        await loadBookings();
+
         showMessage(
             "Lesson successfully marked as completed. The student can now submit a review.",
             "success"
         );
-
-        await loadBookings();
 
     } catch (error) {
 
@@ -816,6 +1070,11 @@ async function loadBookings() {
             }
 
 
+            /* GOOGLE MEET SECTION */
+
+            renderGoogleMeet(booking, card);
+
+
             /* MARK ACCEPTED LESSON AS COMPLETED */
 
             if (
@@ -931,12 +1190,12 @@ async function respondToBooking(
             return;
         }
 
+        await loadBookings();
+
         showMessage(
             "Booking successfully " + decision + ".",
             "success"
         );
-
-        await loadBookings();
 
     } catch (error) {
 
