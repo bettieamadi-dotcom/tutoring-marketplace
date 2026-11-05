@@ -1,0 +1,626 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Discover Tutor Pearl, an online learning platform connecting students with tutors for personalised virtual lessons.">
+  <title>About Us | Tutor Pearl</title>
+
+  <style>
+    :root {
+      --purple: #6735a5;
+      --deep-purple: #43216f;
+      --light-purple: #f3edfb;
+      --white: #ffffff;
+      --dark: #292238;
+      --muted: #6e6878;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--dark);
+      background: var(--white);
+      line-height: 1.7;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    header {
+      background: var(--white);
+      box-shadow: 0 2px 15px rgba(50, 25, 80, 0.08);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .navbar {
+      max-width: 1180px;
+      margin: auto;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .logo {
+      color: var(--purple);
+      font-size: 27px;
+      font-weight: 800;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      color: var(--dark);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .nav-links a:hover {
+      color: var(--purple);
+    }
+
+    .nav-login {
+      background: var(--purple);
+      color: white !important;
+      padding: 10px 19px;
+      border-radius: 25px;
+    }
+
+    .hero {
+      background: linear-gradient(120deg, #f4edfc, #ffffff);
+      padding: 75px 24px;
+    }
+
+    .hero-inner {
+      max-width: 1150px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      align-items: center;
+      gap: 55px;
+    }
+
+    .eyebrow {
+      color: var(--purple);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 13px;
+    }
+
+    h1 {
+      color: var(--deep-purple);
+      font-size: clamp(38px, 5vw, 58px);
+      line-height: 1.15;
+      margin: 17px 0;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 17px;
+      max-width: 550px;
+    }
+
+    .hero-image {
+      width: 100%;
+      height: 390px;
+      object-fit: cover;
+      border-radius: 24px;
+      box-shadow: 0 15px 40px rgba(50, 25, 80, 0.15);
+    }
+
+    .button {
+      display: inline-block;
+      background: var(--purple);
+      color: white;
+      padding: 13px 25px;
+      border-radius: 28px;
+      font-weight: 700;
+      margin-top: 25px;
+    }
+
+    .button:hover {
+      background: var(--deep-purple);
+    }
+
+    section {
+      padding: 75px 24px;
+    }
+
+    .section-inner {
+      max-width: 1120px;
+      margin: auto;
+    }
+
+    .section-heading {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .section-heading h2 {
+      color: var(--deep-purple);
+      font-size: 34px;
+      margin-bottom: 10px;
+    }
+
+    .section-heading p {
+      color: var(--muted);
+      max-width: 680px;
+      margin: auto;
+    }
+
+    .adult-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 30px;
+    }
+
+    .person-card {
+      background: white;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 28px rgba(50, 25, 80, 0.09);
+    }
+
+    .person-card img {
+      width: 100%;
+      height: 330px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .person-card-content {
+      padding: 22px;
+      text-align: center;
+    }
+
+    .person-card h3 {
+      color: var(--deep-purple);
+      font-size: 21px;
+      margin-bottom: 6px;
+    }
+
+    .person-card p {
+      color: var(--muted);
+    }
+
+    .children-section {
+      background: var(--light-purple);
+    }
+
+    .children-image {
+      display: block;
+      width: 100%;
+      max-width: 850px;
+      height: 390px;
+      object-fit: cover;
+      border-radius: 22px;
+      margin: auto;
+      box-shadow: 0 12px 35px rgba(50, 25, 80, 0.12);
+    }
+
+    .children-caption {
+      text-align: center;
+      max-width: 720px;
+      margin: 25px auto 0;
+      color: var(--muted);
+    }
+
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .value-card {
+      background: var(--light-purple);
+      padding: 30px 24px;
+      border-radius: 18px;
+      text-align: center;
+    }
+
+    .value-icon {
+      font-size: 35px;
+      margin-bottom: 12px;
+    }
+
+    .value-card h3 {
+      color: var(--deep-purple);
+      margin-bottom: 10px;
+    }
+
+    .value-card p {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .how-section {
+      background: #fbf9fe;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    .step {
+      background: white;
+      padding: 25px 18px;
+      border-radius: 17px;
+      text-align: center;
+      box-shadow: 0 5px 20px rgba(50, 25, 80, 0.06);
+    }
+
+    .step-number {
+      width: 43px;
+      height: 43px;
+      border-radius: 50%;
+      background: var(--purple);
+      color: white;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 15px;
+      font-weight: 800;
+    }
+
+    .step h3 {
+      color: var(--deep-purple);
+      margin-bottom: 8px;
+    }
+
+    .step p {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .commitment {
+      background: var(--deep-purple);
+      color: white;
+      text-align: center;
+      padding: 75px 24px;
+    }
+
+    .commitment h2 {
+      font-size: 34px;
+      margin-bottom: 15px;
+    }
+
+    .commitment p {
+      max-width: 700px;
+      margin: auto;
+      color: #eee4fb;
+    }
+
+    .commitment .button {
+      background: white;
+      color: var(--deep-purple);
+    }
+
+    footer {
+      background: #24143a;
+      color: #eee4fb;
+      padding: 35px 24px;
+      text-align: center;
+    }
+
+    footer a {
+      color: white;
+      margin: 0 9px;
+      font-size: 14px;
+    }
+
+    footer p {
+      margin-top: 14px;
+      font-size: 13px;
+      color: #cbb9e1;
+    }
+
+    @media (max-width: 800px) {
+      .hero-inner {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+
+      .hero-image {
+        height: 300px;
+      }
+
+      .values-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .steps {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .nav-links {
+        justify-content: center;
+        gap: 12px;
+      }
+
+      .navbar {
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 550px) {
+      .adult-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .person-card img {
+        height: 290px;
+      }
+
+      .children-image {
+        height: 260px;
+      }
+
+      .steps {
+        grid-template-columns: 1fr;
+      }
+
+      section {
+        padding: 55px 18px;
+      }
+
+      .hero {
+        padding: 55px 18px;
+      }
+
+      .section-heading h2 {
+        font-size: 29px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <nav class="navbar">
+      <a class="logo" href="index.html">Tutor Pearl</a>
+
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="about-us.html">About Us</a>
+        <a href="faq.html">FAQ</a>
+        <a href="contact-us.html">Contact Us</a>
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <a href="terms-of-service.html">Terms of Service</a>
+        <a class="nav-login" href="student-login.html">Login</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+
+    <section class="hero">
+      <div class="hero-inner">
+        <div>
+          <span class="eyebrow">Welcome to Tutor Pearl</span>
+          <h1>Learning Together. Growing Together.</h1>
+          <p>
+            Tutor Pearl connects students with dedicated tutors through
+            convenient online lessons. We believe every learner deserves
+            the opportunity to grow, build confidence and achieve more.
+          </p>
+          <a class="button" href="student-signup.html">Start Learning</a>
+        </div>
+
+        <img
+          class="hero-image"
+          src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1100&q=85"
+          alt="Online learning with a laptop"
+        >
+      </div>
+    </section>
+
+    <section>
+      <div class="section-inner">
+        <div class="section-heading">
+          <span class="eyebrow">Our Community</span>
+          <h2>Meet the People Behind Every Lesson</h2>
+          <p>
+            Great learning happens when knowledgeable tutors and curious
+            students come together.
+          </p>
+        </div>
+
+        <div class="adult-grid">
+          <article class="person-card">
+            <img
+              src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=900&q=85"
+              alt="Woman representing an online tutor"
+              loading="lazy"
+            >
+            <div class="person-card-content">
+              <h3>Dedicated Tutors</h3>
+              <p>
+                Meet passionate people who share their knowledge and help
+                learners reach their goals.
+              </p>
+            </div>
+          </article>
+
+          <article class="person-card">
+            <img
+              src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=900&q=85"
+              alt="Man representing a member of the tutoring community"
+              loading="lazy"
+            >
+            <div class="person-card-content">
+              <h3>Supportive Learning</h3>
+              <p>
+                We welcome tutors and learners from different backgrounds
+                and communities.
+              </p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="children-section">
+      <div class="section-inner">
+        <div class="section-heading">
+          <span class="eyebrow">Every Learner Matters</span>
+          <h2>A Place for Young Minds to Shine</h2>
+          <p>
+            Every child deserves encouragement, patience and access to
+            learning opportunities.
+          </p>
+        </div>
+
+        <img
+          class="children-image"
+          src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1400&q=85"
+          alt="Children learning together in a classroom"
+          loading="lazy"
+        >
+
+        <p class="children-caption">
+          Tutor Pearl celebrates learners of different ages, backgrounds
+          and abilities. We want every student to feel welcome, supported
+          and confident throughout their learning journey.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-inner">
+        <div class="section-heading">
+          <span class="eyebrow">Our Purpose</span>
+          <h2>Who We Are</h2>
+          <p>
+            Tutor Pearl is an online tutoring marketplace designed to
+            connect students with tutors for personalised virtual learning.
+            We make it easier to find learning support and share teaching
+            knowledge from different locations.
+          </p>
+        </div>
+
+        <div class="values-grid">
+          <article class="value-card">
+            <div class="value-icon">💜</div>
+            <h3>Our Mission</h3>
+            <p>
+              To make quality learning opportunities more accessible by
+              connecting students with tutors in a welcoming online space.
+            </p>
+          </article>
+
+          <article class="value-card">
+            <div class="value-icon">🌍</div>
+            <h3>Our Vision</h3>
+            <p>
+              To build a learning community where people from different
+              backgrounds can teach, learn and grow together.
+            </p>
+          </article>
+
+          <article class="value-card">
+            <div class="value-icon">⭐</div>
+            <h3>Our Values</h3>
+            <p>
+              We value patience, knowledge, respect, reliability and the
+              belief that every learner can make progress.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="how-section">
+      <div class="section-inner">
+        <div class="section-heading">
+          <span class="eyebrow">Getting Started</span>
+          <h2>How Tutor Pearl Works</h2>
+          <p>
+            Getting started is simple for both students and tutors.
+          </p>
+        </div>
+
+        <div class="steps">
+          <article class="step">
+            <div class="step-number">1</div>
+            <h3>Create an Account</h3>
+            <p>
+              Students and tutors create their accounts on the platform.
+            </p>
+          </article>
+
+          <article class="step">
+            <div class="step-number">2</div>
+            <h3>Find Your Match</h3>
+            <p>
+              Students explore available tutors and choose suitable lessons.
+            </p>
+          </article>
+
+          <article class="step">
+            <div class="step-number">3</div>
+            <h3>Book a Lesson</h3>
+            <p>
+              Students submit lesson bookings and complete the required payment.
+            </p>
+          </article>
+
+          <article class="step">
+            <div class="step-number">4</div>
+            <h3>Learn Online</h3>
+            <p>
+              Students and tutors meet virtually for their scheduled lessons.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="commitment">
+      <div class="section-inner">
+        <h2>Your Learning Journey Starts Here</h2>
+        <p>
+          Whether you want to learn something new or share what you know,
+          Tutor Pearl is here to help you take the next step.
+        </p>
+
+        <a class="button" href="student-signup.html">Join as a Student</a>
+        <a class="button" href="tutor-signup.html">Join as a Tutor</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>
+      <a href="index.html">Home</a>
+      <a href="about-us.html">About Us</a>
+      <a href="faq.html">FAQ</a>
+      <a href="contact-us.html">Contact Us</a>
+      <a href="privacy-policy.html">Privacy Policy</a>
+      <a href="terms-of-service.html">Terms of Service</a>
+    </div>
+
+    <p>© 2026 Tutor Pearl. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>
